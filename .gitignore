@@ -1,0 +1,19 @@
+# .NET build outputs
+**/bin/
+**/obj/
+artifacts/
+.dotnet/
+acl-recovery/
+
+# User/local tooling
+.vs/
+*.user
+*.suo
+
+# Secrets and local configuration
+.env
+.env.*
+*.pfx
+*.snk
+*.key
+*.pem
