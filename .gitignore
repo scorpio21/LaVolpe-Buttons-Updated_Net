@@ -4,6 +4,7 @@
 artifacts/
 .dotnet/
 acl-recovery/
+LaVolpe-Buttons-Updated-/
 
 # User/local tooling
 .vs/
