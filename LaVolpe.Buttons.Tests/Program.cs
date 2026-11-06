@@ -1,0 +1,392 @@
+using LaVolpe.Buttons.Net;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace LaVolpe.Buttons.Tests;
+
+/// <summary>
+/// Pruebas de compatibilidad ejecutables, sin dependencias externas.
+/// Se ejecutan sobre WinForms real (STA) y devuelven código de salida 1 si algo falla.
+/// </summary>
+internal static class Program
+{
+    private static int _passed;
+    private static readonly List<string> _failed = new();
+    private static readonly List<IDisposable> _attached = new();
+    private static string _current = "";
+
+    [STAThread]
+    private static int Main()
+    {
+        Application.EnableVisualStyles();
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.WriteLine("LaVolpe.Buttons.Tests - pruebas de compatibilidad");
+        Console.WriteLine(new string('-', 70));
+
+        Test("Text y Caption sincronizados", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "Hola" });
+            Check(button.Text == "Hola", $"Text='{button.Text}'");
+            button.Text = "Adios";
+            Check(button.Caption == "Adios", $"Caption='{button.Caption}'");
+            button.Caption = "Otra vez";
+            Check(button.Text == "Otra vez", $"Text='{button.Text}'");
+        });
+
+        Test("Caption nulo se normaliza a cadena vacía", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "x" });
+            button.Caption = null!;
+            Check(button.Caption.Length == 0, $"Caption='{button.Caption}'");
+        });
+
+        Test("Valores por defecto de VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            Check(button.ButtonStyle == BackStyle.Windows95, $"ButtonStyle={button.ButtonStyle}");
+            Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
+            Check(button.HoverBackColor == button.BackColor, $"{button.HoverBackColor} != {button.BackColor}");
+            Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
+        });
+
+        Test("BackColor hereda del contenedor", form =>
+        {
+            form.BackColor = Color.FromArgb(230, 230, 230);
+            var button = Add(form, new LaVolpeButton());
+            Check(button.BackColor == form.BackColor, $"{button.BackColor} != {form.BackColor}");
+        });
+
+        Test("CommandButton rechaza Value", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.Value = true;
+            Check(!button.Value, $"Value={button.Value}");
+        });
+
+        Test("PerformClick dispara Click y DialogResult", form =>
+        {
+            var button = Add(form, new LaVolpeButton { DialogResult = DialogResult.OK });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
+            button.PerformClick();
+            Check(clicks == 1, $"clicks={clicks}");
+            Check(form.DialogResult == DialogResult.OK, $"DialogResult={form.DialogResult}");
+        });
+
+        Test("PerformClick respeta Enabled", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Enabled = false });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
+            button.PerformClick();
+            Check(clicks == 0, $"clicks={clicks}");
+        });
+
+        Test("OptionButton deselecciona hermanos", form =>
+        {
+            var first = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            var second = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            first.Value = true;
+            second.Value = true;
+            Check(!first.Value && second.Value, $"first={first.Value} second={second.Value}");
+        });
+
+        Test("Clic en opción ya elegida no dispara Click", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
+            button.Value = true;
+            button.PerformClick();
+            Check(clicks == 0, $"clicks={clicks}");
+        });
+
+        Test("GotFocus selecciona OptionButton", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            form.Activate();
+            Application.DoEvents();
+            button.Focus();
+            Application.DoEvents();
+            Check(button.Value, $"Value={button.Value} Focused={button.Focused}");
+        });
+
+        Test("CheckBox alterna Value", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox });
+            button.PerformClick();
+            Check(button.Value, "primer clic");
+            button.PerformClick();
+            Check(!button.Value, "segundo clic");
+        });
+
+        Test("IButtonControl y NotifyDefault", form =>
+        {
+            var button = Add(form, new LaVolpeButton { DialogResult = DialogResult.Yes });
+            Check(((IButtonControl)button).DialogResult == DialogResult.Yes);
+            button.NotifyDefault(true);
+            Check(button.Default, "Default no se activó");
+            button.NotifyDefault(false);
+            Check(!button.Default, "Default no se desactivó");
+        });
+
+        Test("Región para formas no rectangulares", form =>
+        {
+            var shapes = new[]
+            {
+                ButtonShape.LeftDiagonal, ButtonShape.RightDiagonal, ButtonShape.FullDiagonal,
+                ButtonShape.Round3D, ButtonShape.Round3DFixed, ButtonShape.RoundFlat
+            };
+            foreach (var shape in shapes)
+            {
+                var button = Add(form, new LaVolpeButton { ButtonShape = shape, Size = new Size(120, 40) });
+                Check(button.Region is not null, $"{shape}: Region=null");
+            }
+        });
+
+        Test("Rectangular XP recorta las esquinas", form =>
+        {
+            var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, Size = new Size(120, 40) });
+            Check(button.Region is not null && !button.Region!.IsVisible(0, 0), button.Region is null ? "Region=null" : "esquina (0,0) visible");
+        });
+
+        Test("CustomFlat usa la imagen como máscara", form =>
+        {
+            var image = new Bitmap(60, 40);
+            _attached.Add(image);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Magenta);
+                using var brush = new SolidBrush(Color.RoyalBlue);
+                graphics.FillEllipse(brush, 0, 0, 60, 40);
+            }
+            var button = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, Picture = image, Size = new Size(60, 40) });
+            Check(button.PictureSize == ImageSize.FillScaleUpDown, $"PictureSize={button.PictureSize}");
+            Check(button.Region is not null && !button.Region!.IsVisible(0, 0), button.Region is null ? "Region=null" : "máscara no aplicada");
+        });
+
+        Test("Imagen liberada no derriba el control", form =>
+        {
+            var image = new Bitmap(40, 40);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Magenta);
+                graphics.FillEllipse(Brushes.RoyalBlue, 0, 0, 40, 40);
+            }
+            var button = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, Picture = image, Size = new Size(40, 40) });
+            Application.DoEvents();
+            image.Dispose();
+            button.ButtonShape = ButtonShape.CustomFlat;   // fuerza a recalcular la región con la imagen liberada
+            button.Invalidate();
+            form.Refresh();
+            Application.DoEvents();
+            Check(true);
+        });
+
+        Test("MouseIcon crea y libera el cursor", form =>
+        {
+            var image = new Bitmap(24, 24);
+            _attached.Add(image);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Transparent);
+                graphics.FillEllipse(Brushes.Red, 2, 2, 20, 20);
+            }
+            var button = Add(form, new LaVolpeButton());
+            button.MouseIcon = image;
+            Check(button.Cursor != Cursors.Default && button.Cursor.Handle != IntPtr.Zero, "cursor no creado");
+            button.MouseIcon = null;
+            Check(button.Cursor == Cursors.Default, "cursor no restaurado");
+        });
+
+        Test("DelayDrawing(bool) no lanza y repinta", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.DelayDrawing(true);
+            button.BackColor = Color.Red;
+            button.DelayDrawing(false);
+            Check(button.BackColor == Color.Red, $"BackColor={button.BackColor}");
+        });
+
+        Test("hDC válido a 32 bpp", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            var dc = button.hDC;
+            Check(dc != IntPtr.Zero, "hDC=0");
+            Check(GetDeviceCaps(dc, 12) == 32, $"BITSPIXEL={GetDeviceCaps(dc, 12)}");
+        });
+
+        Test("MousePointer asigna cursores estándar", form =>
+        {
+            // Los valores numéricos deben coincidir con VB6 para conservar .frm/.frx.
+            Check((int)MousePointerConstants.SizeNESW == 6, $"SizeNESW={(int)MousePointerConstants.SizeNESW}");
+            Check((int)MousePointerConstants.SizeNS == 7, $"SizeNS={(int)MousePointerConstants.SizeNS}");
+            Check((int)MousePointerConstants.SizeNWSE == 8, $"SizeNWSE={(int)MousePointerConstants.SizeNWSE}");
+            Check((int)MousePointerConstants.SizeWE == 9, $"SizeWE={(int)MousePointerConstants.SizeWE}");
+            Check((int)MousePointerConstants.UpArrow == 10, $"UpArrow={(int)MousePointerConstants.UpArrow}");
+            Check((int)MousePointerConstants.Hourglass == 11, $"Hourglass={(int)MousePointerConstants.Hourglass}");
+            Check((int)MousePointerConstants.NoDrop == 12, $"NoDrop={(int)MousePointerConstants.NoDrop}");
+            Check((int)MousePointerConstants.ArrowHourglass == 13, $"ArrowHourglass={(int)MousePointerConstants.ArrowHourglass}");
+            Check((int)MousePointerConstants.ArrowQuestion == 14, $"ArrowQuestion={(int)MousePointerConstants.ArrowQuestion}");
+            Check((int)MousePointerConstants.SizeAll == 15, $"SizeAll={(int)MousePointerConstants.SizeAll}");
+            Check((int)MousePointerConstants.Custom == 99, $"Custom={(int)MousePointerConstants.Custom}");
+            var button = Add(form, new LaVolpeButton());
+            button.MousePointer = MousePointerConstants.Arrow;
+            Check(button.Cursor == Cursors.Arrow, $"Arrow={button.Cursor}");
+            button.MousePointer = MousePointerConstants.Crosshair;
+            Check(button.Cursor == Cursors.Cross, $"Crosshair={button.Cursor}");
+            button.MousePointer = MousePointerConstants.Hourglass;
+            Check(button.Cursor == Cursors.WaitCursor, $"Hourglass={button.Cursor}");
+            button.MousePointer = MousePointerConstants.SizeWE;
+            Check(button.Cursor == Cursors.SizeWE, $"SizeWE={button.Cursor}");
+            button.MousePointer = MousePointerConstants.Default;
+            Check(button.Cursor == Cursors.Default, $"Default={button.Cursor}");
+        });
+
+        Test("MouseIcon implica MousePointer vbCustom", form =>
+        {
+            var image = new Bitmap(16, 16);
+            _attached.Add(image);
+            using (var graphics = Graphics.FromImage(image)) graphics.FillEllipse(Brushes.Blue, 2, 2, 12, 12);
+            var button = Add(form, new LaVolpeButton { MouseIcon = image });
+            Check(button.MousePointer == MousePointerConstants.Custom, $"MousePointer={button.MousePointer}");
+            Check(button.Cursor != Cursors.Default, "cursor personalizado no aplicado");
+        });
+
+        Test("DragIcon crea y libera su cursor", form =>
+        {
+            var image = new Bitmap(20, 20);
+            _attached.Add(image);
+            using (var graphics = Graphics.FromImage(image)) graphics.FillRectangle(Brushes.Green, 0, 0, 20, 20);
+            var button = Add(form, new LaVolpeButton());
+            button.DragIcon = image;
+            Check(button.DragIcon == image, "DragIcon no asignado");
+            var field = typeof(LaVolpeButton).GetField("_dragIconCursor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Check(field?.GetValue(button) is Cursor, "cursor de arrastre no creado");
+            button.DragIcon = null;
+            Check(field?.GetValue(button) is null, "cursor de arrastre no liberado");
+        });
+
+        Test("CheckBox/OptionButton marcan toda la superficie", form =>
+        {
+            var check = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Size = new Size(100, 40), Value = true });
+            var plain = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Size = new Size(100, 40) });
+            using var checkedBitmap = new Bitmap(100, 40);
+            using var plainBitmap = new Bitmap(100, 40);
+            check.DrawToBitmap(checkedBitmap, new Rectangle(0, 0, 100, 40));
+            plain.DrawToBitmap(plainBitmap, new Rectangle(0, 0, 100, 40));
+            var checkedColor = checkedBitmap.GetPixel(50, 20);
+            var plainColor = plainBitmap.GetPixel(50, 20);
+            Check(checkedColor != plainColor, $"sin cambio de estado: {checkedColor} vs {plainColor}");
+            // VB6 usa cCheckBox = ShadeColor(blanco, -0x20) en estilos no XP/Mac/Java.
+            Check(Math.Abs(checkedColor.R - 223) <= 3, $"color marcado={checkedColor}");
+        });
+
+        Test("Los 8 estilos se pintan sin excepciones", form =>
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    Caption = "Botón",
+                    Size = new Size(100, 36),
+                    ButtonStyle = (BackStyle)i,
+                    Mode = ButtonMode.CheckBox
+                });
+                using (var bitmap = new Bitmap(100, 36))
+                {
+                    button.DrawToBitmap(bitmap, new Rectangle(0, 0, 100, 36));
+                    button.Value = true;
+                    button.DrawToBitmap(bitmap, new Rectangle(0, 0, 100, 36));
+                    button.Value = false;
+                }
+            }
+            Check(true);
+        });
+
+        Test("Custom marcado pinta el caption", form =>
+        {
+            var image = new Bitmap(48, 48);
+            _attached.Add(image);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Magenta);
+                graphics.FillEllipse(Brushes.RoyalBlue, 0, 0, 48, 48);
+            }
+            var button = Add(form, new LaVolpeButton
+            {
+                ButtonShape = ButtonShape.CustomFlat,
+                Mode = ButtonMode.CheckBox,
+                Caption = "OK",
+                Picture = image,
+                Size = new Size(48, 48),
+                Value = true
+            });
+            using var bitmap = new Bitmap(48, 48);
+            button.DrawToBitmap(bitmap, new Rectangle(0, 0, 48, 48));
+            Check(button.Value, "Value no activado");
+        });
+
+        foreach (var failure in _failed)
+            Console.WriteLine($"FAIL  {failure}");
+        Console.WriteLine(new string('-', 70));
+        Console.WriteLine($"{_passed} correctas, {_failed.Count} fallidas");
+        return _failed.Count == 0 ? 0 : 1;
+    }
+
+    private static T Add<T>(Form form, T control) where T : Control
+    {
+        form.Controls.Add(control);
+        return control;
+    }
+
+    private static void Test(string name, Action<Form> body)
+    {
+        _current = name;
+        var form = new Form
+        {
+            ClientSize = new Size(640, 480),
+            StartPosition = FormStartPosition.Manual,
+            Location = new Point(-3000, 0),
+            ShowInTaskbar = false,
+            BackColor = Color.FromArgb(240, 240, 240)
+        };
+        try
+        {
+            form.Show();
+            Application.DoEvents();
+            body(form);
+            Application.DoEvents();
+            Console.WriteLine($"PASS  {name}");
+            _passed++;
+        }
+        catch (AssertFailedException ex)
+        {
+            _failed.Add($"{name} -> {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            _failed.Add($"{name} -> {ex.GetType().Name}: {ex.Message}");
+        }
+        finally
+        {
+            form.Close();
+            form.Dispose();
+            foreach (var disposable in _attached)
+                disposable.Dispose();
+            _attached.Clear();
+        }
+    }
+
+    private static void Check(bool condition, string detail = "")
+    {
+        if (!condition)
+            throw new AssertFailedException($"{_current}: {detail}");
+    }
+
+    [DllImport("gdi32.dll")]
+    private static extern int GetDeviceCaps(IntPtr hdc, int index);
+
+    private sealed class AssertFailedException(string message) : Exception(message);
+}

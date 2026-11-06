@@ -1,10 +1,12 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.Net", "LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj", "{A1E9B3C4-0F3A-4F5B-9C5A-111111111111}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.Sample", "LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj", "{B2F0C4D5-1A4B-406C-AD6B-222222222222}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.Tests", "LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj", "{3257E796-3BBB-4965-8375-5F2EB55A089A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,5 +22,9 @@ Global
 		{B2F0C4D5-1A4B-406C-AD6B-222222222222}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2F0C4D5-1A4B-406C-AD6B-222222222222}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2F0C4D5-1A4B-406C-AD6B-222222222222}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

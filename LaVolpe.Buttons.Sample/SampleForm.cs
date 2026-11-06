@@ -7,42 +7,109 @@ namespace LaVolpe.Buttons.Sample;
 
 public sealed class SampleForm : Form
 {
+    private readonly Label _status = new()
+    {
+        AutoSize = false,
+        Dock = DockStyle.Bottom,
+        Height = 46,
+        Padding = new Padding(12, 6, 12, 6),
+        BackColor = Color.White,
+        ForeColor = Color.FromArgb(60, 60, 60),
+        Text = "Pase el ratón por un botón o haga clic para ver los eventos."
+    };
+    private readonly List<Image> _ownedImages = new();
+
     public SampleForm()
     {
         Text = "LaVolpe Buttons - .NET sample";
-        ClientSize = new Size(560, 260);
+        ClientSize = new Size(760, 470);
         BackColor = Color.WhiteSmoke;
-        AutoScroll = true;
+        Font = new Font("Segoe UI", 9f);
         StartPosition = FormStartPosition.CenterScreen;
+        AutoScroll = true;
 
-        var resourcePath = (string name) => Path.Combine(AppContext.BaseDirectory, "Resources", name);
-        static Image? LoadImage(string path)
+        Controls.Add(new Label { Text = "ButtonStyle", Location = new Point(20, 12), AutoSize = true, ForeColor = Color.DimGray });
+        var styles = new[] { BackStyle.Windows95, BackStyle.Windows31, BackStyle.WindowsXp, BackStyle.Java, BackStyle.Flat, BackStyle.Hover, BackStyle.Netscape, BackStyle.Macintosh };
+        var styleNames = new[] { "Windows95", "Windows31", "XP", "Java", "Flat", "Hover", "Netscape", "Macintosh" };
+        for (int i = 0; i < styles.Length; i++)
+            Add(Make(styleNames[i], new Point(20 + i % 4 * 185, 32 + i / 4 * 46), new Size(170, 40), BackStyle: styles[i]));
+
+        Controls.Add(new Label { Text = "ButtonShape", Location = new Point(20, 132), AutoSize = true, ForeColor = Color.DimGray });
+        var shapes = new[] { ButtonShape.Rectangular, ButtonShape.LeftDiagonal, ButtonShape.RightDiagonal, ButtonShape.FullDiagonal, ButtonShape.Round3D, ButtonShape.Round3DFixed, ButtonShape.RoundFlat };
+        for (int i = 0; i < shapes.Length; i++)
+            Add(Make(shapes[i].ToString(), new Point(20 + i % 4 * 185, 152 + i / 4 * 52), new Size(170, 44), ButtonShape: shapes[i]));
+
+        Controls.Add(new Label { Text = "Mode", Location = new Point(20, 262), AutoSize = true, ForeColor = Color.DimGray });
+        var check = Make("Activar (CheckBox)", new Point(20, 282), new Size(170, 40), Mode: ButtonMode.CheckBox);
+        check.CheckedChanged += (_, _) => _status.Text = $"CheckBox: {(check.Checked ? "activado" : "desactivado")}";
+        Add(check);
+
+        var option1 = Make("Opción 1", new Point(200, 282), new Size(170, 40), Mode: ButtonMode.OptionButton);
+        var option2 = Make("Opción 2", new Point(380, 282), new Size(170, 40), Mode: ButtonMode.OptionButton);
+        option1.SelectedChanged += (_, _) => _status.Text = $"Opción 1: {(option1.Selected ? "seleccionada" : "libre")}";
+        option2.SelectedChanged += (_, _) => _status.Text = $"Opción 2: {(option2.Selected ? "seleccionada" : "libre")}";
+        Add(option1); Add(option2);
+
+        Controls.Add(new Label { Text = "Default / Cancel / imágenes / gradiente", Location = new Point(20, 332), AutoSize = true, ForeColor = Color.DimGray });
+        var accept = Make("Aceptar (Default)", new Point(20, 352), new Size(170, 40), BackStyle: BackStyle.WindowsXp);
+        accept.DialogResult = DialogResult.OK;
+        Add(accept);
+
+        var cancel = Make("Cancelar", new Point(200, 352), new Size(170, 40), BackStyle: BackStyle.WindowsXp);
+        cancel.Cancel = true;
+        Add(cancel);
+
+        var gradient = Make("Gradiente", new Point(380, 352), new Size(170, 40), BackStyle: BackStyle.WindowsXp);
+        gradient.GradientMode = GradientMode.TopToBottom;
+        gradient.GradientColor = Color.White;
+        Add(gradient);
+
+        var images = LoadImages();
+        var picture = Make("Con imagen", new Point(560, 352), new Size(170, 40), BackStyle: BackStyle.WindowsXp);
+        picture.Picture = images[0];
+        picture.PictureSize = ImageSize.Size24x24;
+        Add(picture);
+
+        // CustomFlat: la región de la ventana sale de la máscara de la imagen (píxel superior izquierdo).
+        var custom = Make("", new Point(560, 282), new Size(48, 48), ButtonShape: ButtonShape.CustomFlat);
+        custom.Picture = images[2];
+        custom.PictureSize = ImageSize.FillScaleUpDown;
+        custom.ToolTipText = "CustomFlat: región generada desde la imagen";
+        Add(custom);
+
+        accept.Click += (_, _) => _status.Text = $"Click en Aceptar (DialogResult = {accept.DialogResult})";
+        cancel.Click += (_, _) => _status.Text = "Click en Cancelar";
+        Controls.Add(_status);
+
+        FormClosed += (_, _) => { foreach (var image in _ownedImages) image.Dispose(); };
+    }
+
+    private LaVolpeButton Make(string caption, Point location, Size size, BackStyle? BackStyle = null,
+        ButtonShape? ButtonShape = null, ButtonMode? Mode = null)
+    {
+        var button = new LaVolpeButton { Caption = caption, Location = location, Size = size, ForeColor = Color.Black, BackColor = Color.FromArgb(250, 250, 250) };
+        if (BackStyle is not null) button.ButtonStyle = BackStyle.Value;
+        if (ButtonShape is not null) button.ButtonShape = ButtonShape.Value;
+        if (Mode is not null) button.Mode = Mode.Value;
+        button.MouseOnButton += (_, inside) => { if (inside) _status.Text = $"MouseOnButton: {caption}"; };
+        button.Click += (_, _) => _status.Text = $"Click: {caption}";
+        return button;
+    }
+
+    private void Add(Control control) => Controls.Add(control);
+
+    private List<Image?> LoadImages()
+    {
+        var result = new List<Image?>();
+        foreach (var name in new[] { "image0.png", "image1.png", "image2.png" })
         {
-            if (!File.Exists(path)) return null;
+            var path = Path.Combine(AppContext.BaseDirectory, "Resources", name);
+            if (!File.Exists(path)) { result.Add(null); continue; }
             using var source = Image.FromFile(path);
-            return new Bitmap(source);
+            var copy = new Bitmap(source);
+            _ownedImages.Add(copy);
+            result.Add(copy);
         }
-        var image0Path = resourcePath("image0.png");
-        var image1Path = resourcePath("image1.png");
-        var image2Path = resourcePath("image2.png");
-        var normal = new LaVolpeButton { ToolTipText = "Ejecuta la acción Aceptar", Caption = "Aceptar", Location = new Point(30, 30), Size = new Size(190, 45), ButtonStyle = BackStyle.WindowsXp, ButtonShape = ButtonShape.Round3D, GradientMode = GradientMode.TopToBottom, GradientColor = Color.White, Picture = LoadImage(image0Path), PictureSize = ImageSize.FillScaleUpDown };
-        var check = new LaVolpeButton { ToolTipText = "Activa o desactiva la opción", Name = "checkBoxActivar", Caption = "Activar (CheckBox)", Mode = ButtonMode.CheckBox, Location = new Point(30, 95), Size = new Size(190, 45), ButtonStyle = BackStyle.Flat, ButtonShape = ButtonShape.RoundFlat, BackColor = Color.White, ForeColor = Color.Black, HoverBackColor = Color.LightGreen, Picture = LoadImage(image1Path), PictureSize = ImageSize.Size24x24, Visible = true };
-        var option1 = new LaVolpeButton { ToolTipText = "Selecciona la opción 1", Name = "optionButton1", Caption = "Opción 1 (OptionButton)", Mode = ButtonMode.OptionButton, Location = new Point(260, 30), Size = new Size(220, 45), ButtonShape = ButtonShape.LeftDiagonal, Picture = LoadImage(image2Path), PictureSize = ImageSize.Size24x24, BackColor = Color.White, ForeColor = Color.Black, Visible = true };
-        var option2 = new LaVolpeButton { ToolTipText = "Selecciona la opción 2", Name = "optionButton2", Caption = "Opción 2 (OptionButton)", Mode = ButtonMode.OptionButton, Location = new Point(260, 95), Size = new Size(220, 45), ButtonShape = ButtonShape.RightDiagonal, BackColor = Color.White, ForeColor = Color.Black, Visible = true };
-        normal.Click += (_, _) => MessageBox.Show("Click recibido", "LaVolpe");
-        check.MouseOnButton += (_, inside) => Text = inside ? "LaVolpe Buttons - dentro" : "LaVolpe Buttons - .NET sample";
-        check.Click += (_, _) => Text = $"CheckBox: {(check.Value ? "activado" : "desactivado")}";
-        option1.Click += (_, _) => Text = "OptionButton 1 seleccionado";
-        option2.Click += (_, _) => Text = "OptionButton 2 seleccionado";
-        check.CheckedChanged += (_, _) => check.AccessibleDescription = check.Checked ? "Casilla activada" : "Casilla desactivada";
-        option1.SelectedChanged += (_, _) => option1.AccessibleDescription = option1.Selected ? "Opción 1 seleccionada" : "Opción 1 no seleccionada";
-        option2.SelectedChanged += (_, _) => option2.AccessibleDescription = option2.Selected ? "Opción 2 seleccionada" : "Opción 2 no seleccionada";
-        Controls.AddRange(new Control[] { normal, check, option1, option2 });
-        FormClosed += (_, _) =>
-        {
-            foreach (Control control in Controls)
-                if (control is LaVolpeButton button && button.Picture is IDisposable ownedImage)
-                    ownedImage.Dispose();
-        };
+        return result;
     }
 }

@@ -10,6 +10,8 @@ LaVolpe-Buttons-Updated-/
 .vs/
 *.user
 *.suo
+__pycache__/
+*.pyc
 
 # Secrets and local configuration
 .env

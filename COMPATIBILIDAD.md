@@ -4,45 +4,46 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 
 | Elemento VB6 | Equivalente .NET | Estado | % | Diferencias |
 |---|---|---:|---:|---|
-| `ButtonStyle` | `BackStyle` | Implementado | 85 | Estilos requieren comparación píxel a píxel |
+| `ButtonStyle` | `BackStyle` | Implementado | 75 | Tres anillos y colores por estado; cada anillo colapsa sus 4 lados en 2 |
 | `Mode` | `ButtonMode` | Implementado | 90 | Agrupación OptionButton depende del contenedor WinForms |
 | `Caption` | `Caption` | Implementado | 95 | `||` se convierte a salto de línea |
 | `CaptionAlign` | `ContentAlignment` | Implementado | 90 | Flags de DrawText no son idénticos |
 | `CaptionStyle` | `CaptionStyle` | Implementado | 85 | Sombra administrada aproximada |
-| `CustomClick` | `CustomClick` | Parcial | 50 | El desplazamiento se conserva, falta validar todos los estilos |
-| `ButtonShape` | `ButtonShape` | Implementado | 75 | Falta comparación de regiones irregulares |
+| `CustomClick` | `CustomClick` | Parcial | 65 | El desplazamiento se conserva, falta validar todos los estilos |
+| `ButtonShape` | `ButtonShape` | Implementado | 85 | Regiones, `LopOffCorners` y máscaras; `Custom*` estira en vez de redimensionar |
 | `Picture` | `Image` | Implementado | 80 | No es `StdPicture`/COM |
 | `PictureAlign` | `ImagePlacement` | Implementado | 85 | Cálculo distinto en casos extremos |
 | `PictureSize` | `ImageSize` | Implementado | 80 | Falta comparar interpolación original |
 | `Enabled` | `Control.Enabled` | Implementado | 95 | Colores deshabilitados administrados |
 | `ShowFocusRect` | `ShowFocusRect` | Implementado | 85 | Reglas VB6 de botón Default no idénticas |
-| `Value` | `Value`/`Checked`/`Selected` | Implementado | 90 | Eventos adicionales .NET |
-| `MousePointer` | `Cursor` | Parcial | 70 | Enumeraciones VB6 no mapeadas una a una |
-| `MouseIcon` | `Image` → `Cursor` | Parcial | 55 | Hotspot/transparencia requieren validación |
-| `Font` | `System.Drawing.Font` | Implementado | 85 | Falta persistencia equivalente StdFont |
-| `FontStyle` | `FontStyles` | Implementado | 85 | Conversión a Font administrada |
+| `Value` | `Value`/`Checked`/`Selected` | Implementado | 95 | Semántica VB6; estado marcado en toda la superficie |
+| `MousePointer` | `MousePointerConstants` → `Cursor` | Implementado | 100 | Mapa de los 15 valores VB6 y alias `vb*` |
+| `MouseIcon` | `Image` → `Cursor` | Implementado | 85 | Hotspot centrado, `DestroyIcon` e integración con `MousePointer = Custom` |
+| `Font` | `System.Drawing.Font` | Implementado | 95 | Hereda la fuente del contenedor como el ambiente VB6 |
+| `FontStyle` | `FontStyles` | Implementado | 95 | Alias `lv_Bold`…`lv_BoldItalicUnderline` |
 | `ForeColor` | `Control.ForeColor` | Implementado | 90 | OLE_COLOR no es el mismo tipo |
 | `BackColor` | `BackColor` | Implementado | 90 | OLE_COLOR no es el mismo tipo |
 | `GradientColor` | `Color` | Implementado | 85 | Fórmulas XP no demostradas equivalentes |
 | `GradientMode` | `GradientMode` | Implementado | 85 | Usa LinearGradientBrush |
-| `ResetDefaultColors` | `ResetDefaultColors` | Implementado | 85 | Defaults exactos deben validarse |
-| `HoverColorLocks` | `HoverColorLocks` | Implementado | 80 | Falta validar cada combinación |
+| `ResetDefaultColors` | `ResetDefaultColors` | Implementado | 80 | Restaura defaults y vuelve a heredar del contenedor |
+| `HoverColorLocks` | `HoverColorLocks` | Implementado | 90 | Default y combinaciones de VB6 implementados |
 | `HoverForeColor` | `Color` | Implementado | 90 | Semántica de locks aproximada |
 | `HoverBackColor` | `Color` | Implementado | 90 | Semántica de locks aproximada |
-| `hDC` | `CreateGraphics().GetHdc()` | Adaptado | 50 | Ciclo de vida HDC diferente; no conservar |
+| `hDC` | HDC cacheado del control | Adaptado | 90 | Se libera en `OnHandleDestroyed`/`Dispose`; sigue siendo un HDC administrado |
 | `hwnd` | `Handle` | Adaptado | 90 | Solo válido con handle creado |
 | `MouseDown/Up/Move` | Eventos WinForms | Implementado | 85 | Coordenadas/tipos diferentes |
 | `KeyDown/Press/Up` | Eventos WinForms | Implementado | 80 | KeyAscii no es idéntico |
-| `MouseOnButton` | `MouseOnButton` + timer 50 ms | Parcial | 75 | No usa región real en todos los estilos |
+| `MouseOnButton` | `MouseOnButton` + timer 50 ms | Parcial | 80 | Timer administrado por control; hover basado en `GraphicsPath`, no en la región de máscara |
 | `Click` | `Click` | Implementado | 95 | Orden de eventos puede diferir |
-| `DoubleClick` | `ButtonDoubleClick` | Implementado | 80 | Firma adaptada |
+| `DoubleClick` | `ButtonDoubleClick` | Implementado | 85 | Firma adaptada |
 | OLE events | DragDrop/GiveFeedback | Parcial | 45 | `DataObject` y argumentos no son equivalentes |
-| `DefaultCancel` | `Default`/`Cancel` | Adaptado | 75 | Enter/Escape solo en CommandButton; navegación usa contenedor WinForms |
+| `DefaultCancel` | `Default`/`Cancel` + `IButtonControl` | Adaptado | 85 | `DialogResult`/`NotifyDefault`; falta usar `AcceptButton`/`CancelButton` sin foco |
 | `ToolTipText` | `ToolTip` | Implementado | 85 | Componente externo WinForms |
 | `Index` | `Index` | Compatibilidad | 60 | No crea control arrays VB6 |
 | `HelpContextID` | `int` | Almacenado | 30 | Falta integración HelpProvider |
 | `WhatsThisHelpID` | `int` | Almacenado | 30 | Falta integración de ayuda |
 | `DragMode` | `DragMode` + `DoDragDrop` | Parcial | 70 | Secuencia start/complete adaptada; efectos y datos OLE distintos |
+| `DragIcon` | `Image` → `Cursor` | Implementado | 85 | `CreateIconIndirect` y `UseDefaultCursors = false` durante el arrastre |
 | `Tag` | `Control.Tag` | Implementado | 100 | Tipo más amplio en .NET |
 | `TabIndex/TabStop` | WinForms | Implementado | 100 | Semántica nativa WinForms |
 | `Left/Top/Width/Height` | WinForms | Implementado | 100 | Unidades y DPI pueden diferir |
@@ -50,16 +51,18 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 
 ## Resumen
 
-- API superficial: **aprox. 85 %**.
-- Pintado y estados: **aprox. 70 %**, pendiente comparación visual.
-- Eventos: **aprox. 75 %**.
+- API superficial: **aprox. 90 %** (alias `lv_*`, `Text`↔`Caption`, `IButtonControl`, `DelayDrawing(bool)`).
+- Pintado y estados: **aprox. 72 %**, tres anillos por estilo y degradado XP; pendiente comparación visual y colores por lado.
+- Eventos: **aprox. 80 %**.
 - OLE/ActiveX: **aprox. 45 %**.
 - Diseñador/persistencia: **aprox. 65 %** (metadatos Toolbox/Designer añadidos; falta validación real en Visual Studio).
-- Formulario de ejemplo: **aprox. 70 %**.
-- Port global estimado: **aprox. 75 %**.
+- Formulario de ejemplo: **aprox. 60 %**.
+- Port global estimado: **aprox. 76 %** (ver `ESTADO-PORT-NET.md`).
 
 No se declara compatibilidad binaria COM/ActiveX.
 
-## Incidencia de compilación de solución
+## Compilación de la solución
 
-La orden solicitada `dotnet build .\\LaVolpe.Buttons.Net.sln --configuration Release` no completa el restore en el SDK instalado `10.0.403` porque faltan los SDK resolvers `Microsoft.NET.SDK.WorkloadAutoImportPropsLocator` y `Microsoft.NET.SDK.WorkloadManifestTargetsLocator`. La compilación directa de `LaVolpe.Buttons.Sample.csproj` y su referencia `LaVolpe.Buttons.Net.csproj` sí termina con 0 errores y 0 advertencias.
+`dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release` termina con **0 errores y 0
+advertencias** con el `global.json` del repositorio (SDK 8.0.427). La afirmación anterior sobre los
+resolvers de workload del SDK 10.0.403 era un problema del entorno, no del código.
