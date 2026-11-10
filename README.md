@@ -44,10 +44,14 @@ El repositorio incluye `global.json` para seleccionar el SDK .NET 8.0.427 cuando
 ## Compilar
 
 ```powershell
+dotnet restore .\LaVolpe.Buttons.Net.sln
+dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release --no-restore -m:1
 dotnet build .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj --configuration Release
 dotnet build .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj --configuration Release
 dotnet build .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj --configuration Release
 ```
+
+`-m:1` mantiene la compilación de la solución estable en entornos donde el SDK cancela procesos Roslyn al compilar los proyectos WinForms en paralelo.
 
 ## Ejecutar el ejemplo
 
