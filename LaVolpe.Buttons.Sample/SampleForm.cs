@@ -91,7 +91,16 @@ public sealed class SampleForm : Form
     private LaVolpeButton Make(string caption, Point location, Size size, BackStyle? BackStyle = null,
         ButtonShape? ButtonShape = null, ButtonMode? Mode = null)
     {
-        var button = new LaVolpeButton { Caption = caption, Location = location, Size = size, ForeColor = Color.Black, BackColor = SystemColors.Control };
+        var button = new LaVolpeButton
+        {
+            Caption = caption,
+            Location = location,
+            Size = size,
+            Font = new Font("Tahoma", 9.75f),
+            FontStyle = FontStyles.Bold,
+            ForeColor = Color.Black,
+            BackColor = SystemColors.Control
+        };
         if (BackStyle is not null) button.ButtonStyle = BackStyle.Value;
         if (ButtonShape is not null) button.ButtonShape = ButtonShape.Value;
         if (Mode is not null) button.Mode = Mode.Value;
