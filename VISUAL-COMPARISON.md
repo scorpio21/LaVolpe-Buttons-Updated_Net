@@ -2,7 +2,7 @@
 
 ## Estado
 
-El comparador está implementado, pero la referencia VB6 no se ha podido ejecutar en este equipo. `VB6.EXE` devuelve el error de Windows `Reasignación no válida del archivo DLL del sistema` al abrir `LaVolpe-Buttons-Updated-/prjSampleButtons.vbp`.
+El comparador está implementado, pero la referencia VB6 no se ha podido ejecutar en este equipo. Tanto `VB6.EXE` al abrir `LaVolpe-Buttons-Updated-/prjSampleButtons.vbp` como el ejecutable compilado `LaVolpe-Buttons-Updated-/prjSampleButtons.exe` devuelven el error de Windows `Reasignación no válida del archivo DLL del sistema`.
 
 Por tanto, no se afirma paridad pixel a pixel. Las capturas `.NET` sirven como salida reproducible y la matriz mantiene esta diferencia como `no verificable`.
 

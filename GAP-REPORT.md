@@ -3,7 +3,7 @@
 ## Prioridad alta
 
 1. **Identidad ActiveX/COM ausente.** El port no conserva CLSID, OCX, `StdPicture`, `PropertyBag` ni persistencia binaria (`LaVolpe-Buttons-Updated-/lvButtons.ctl:27`, `:2652-2762`; `LaVolpe.Buttons.Net/LaVolpeButton.cs:23-24`). Requiere una capa COM separada si es requisito de migración.
-2. **Pintura no pixel-equivalente.** VB6 tiene ocho rutinas independientes con `FrameRgn`/GDI (`lvButtons.ctl:1966-2146`, `:2803-3386`); C# usa tres anillos comunes (`LaVolpeButton.cs:452-641`). Ya existe un comparador PNG (`LaVolpe.Buttons.Tests/Program.cs`) pero la referencia VB6 no pudo ejecutarse en este equipo.
+2. **Pintura no pixel-equivalente.** VB6 tiene ocho rutinas independientes con `FrameRgn`/GDI (`lvButtons.ctl:1966-2146`, `:2803-3386`); C# usa tres anillos comunes (`LaVolpeButton.cs:452-641`). Ya existe un comparador PNG (`LaVolpe.Buttons.Tests/Program.cs`), pero ni `VB6.EXE` ni `prjSampleButtons.exe` arrancan en este equipo por `Reasignación no válida del archivo DLL del sistema`.
 3. **Timer diferente.** VB6 usa callback global `lv_TimerCallBack` (`modLvTimer.bas:11-40`); C# usa un `Timer` WinForms por control (`LaVolpeButton.cs:64`, `:289`, `:363-364`).
 4. **DPI/fuentes sin comparación reproducible.** No hay ejecución 96/120/144/192 ni baseline visual del OCX; queda no verificable.
 
