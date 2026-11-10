@@ -4,7 +4,7 @@
 
 El comparador está implementado. La referencia VB6 sí se ejecuta cuando se inicia `prjSampleButtons.vbp` desde el IDE de VB6; la ventana de ejecución muestra los ocho estilos, diagonales, formas circulares, imágenes y controles de configuración. El ejecutable independiente `LaVolpe-Buttons-Updated-/prjSampleButtons.exe` devuelve en este equipo `Reasignación no válida del archivo DLL del sistema`, por lo que la captura automatizada debe hacerse desde el IDE o en otro equipo compatible.
 
-La referencia visual ya es observable, pero todavía no se afirma paridad pixel a pixel porque no se ha almacenado una captura VB6 con el mismo encuadre, tamaño y estado que cada PNG `.NET`. La matriz mantiene esa parte como `no verificable`.
+La referencia visual del formulario completo está almacenada en `artifacts/visual/vb6/sample.png`. El sample WinForms reproduce ahora la distribución del `frmSample.frm`, incluidos los tres botones diagonales con sus imágenes, el botón redondo, controles de opción y combos. La paridad pixel a pixel completa sigue sin afirmarse: el motor de pintura VB6/GDI y el de WinForms no son idénticos y la captura de referencia incluye el IDE alrededor del formulario.
 
 ## Generar capturas del port
 

@@ -14,7 +14,7 @@
 - `Default`/`Cancel` implementan `IButtonControl`, pero no conectan automáticamente `Form.AcceptButton` y `Form.CancelButton` (`LaVolpeButton.cs:103-106`, `:302`).
 - `Refresh` se expone como `RedrawButton`, y `ResetDefaultColors` como `ResetDefaultColorsNow`; son cambios de API fuente (`LaVolpeButton.cs:115`, `:288`).
 - Validaciones exhaustivas de enums y errores de setters VB6 no tienen una matriz de excepciones equivalente (`lvButtons.ctl:353-915`).
-- El sample no reproduce arrays de controles ni el formulario de diseñador (`frmSample.frm:810-996`, `SampleForm.cs:1-116`).
+- El sample WinForms ya reproduce los arrays de controles, posiciones, combos, checks, radios y acciones principales de `frmSample.frm` (`LaVolpe-Buttons-Updated-/frmSample.frm`, `LaVolpe.Buttons.Sample/SampleForm.cs`). La comparación pixel a pixel completa sigue pendiente porque VB6 y WinForms no usan el mismo motor GDI/WinForms y las imágenes de referencia se han extraído de la captura disponible.
 
 ## Infraestructura
 
