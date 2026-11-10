@@ -9,7 +9,7 @@ Fecha: 2026-11-10. SDK fijado por `global.json` a 8.0.427.
 | `dotnet build .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-restore` | Correcto; 0 warnings, 0 errors |
 | `dotnet build .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-restore` | Correcto; 0 warnings, 0 errors |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release --no-restore -m:1` | Correcto; 0 warnings, 0 errors |
-| `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build` | 29 correctas, 0 fallidas |
+| `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build` | 29 correctas, 0 fallidas; PropertyGrid y reglas de serialización verificadas |
 | `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet run ... -- --visual-compare .\artifacts\visual\net8 .\artifacts\visual\net8` | 32/32 capturas idénticas; 0 píxeles diferentes y delta 0 |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build` | Sample WinForms iniciado y verificado visualmente contra `artifacts/visual/vb6/sample.png` |

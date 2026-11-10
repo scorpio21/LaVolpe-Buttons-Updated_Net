@@ -87,6 +87,15 @@ internal static class Program
             Check(imageSizeText?.ToString() == "lv_Fill_ScaleUpDown", $"PictureSize={imageSizeText}");
             Check(pointerText?.ToString() == "vbCustom", $"MousePointer={pointerText}");
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValuesSupported(), "ButtonStyle no tiene lista desplegable");
+            Check(TypeDescriptor.GetDefaultProperty(button)?.Name == nameof(LaVolpeButton.Caption), "DefaultProperty no es Caption");
+            Check(TypeDescriptor.GetDefaultEvent(button)?.Name == nameof(LaVolpeButton.Click), "DefaultEvent no es Click");
+            Check(properties[nameof(LaVolpeButton.Caption)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "Caption no es serializable");
+            Check(!properties[nameof(LaVolpeButton.Caption)]!.ShouldSerializeValue(button), "Caption predeterminado debe omitirse");
+            button.Caption = "Designer button";
+            Check(properties[nameof(LaVolpeButton.Caption)]!.ShouldSerializeValue(button), "Caption modificado no se serializa");
+            Check(!properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle predeterminado debe omitirse");
+            button.ButtonStyle = BackStyle.WindowsXp;
+            Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle modificado no se serializa");
             Check(button.DragMode == DragModeConstants.vbManual, $"DragMode={button.DragMode}");
             button.DragMode = DragModeConstants.vbAutomatic;
             Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
