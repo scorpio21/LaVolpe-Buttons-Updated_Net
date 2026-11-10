@@ -254,7 +254,7 @@ public sealed class SampleForm : Form
             _images.Add(copy);
         }
 
-        foreach (var name in new[] { "vb6-diagonal-cd.png", "vb6-diagonal-laptop.png", "vb6-diagonal-floppy.png", "vb6-round-mouse.png" })
+        foreach (var name in new[] { "vb6-diagonal-cd.png", "vb6-diagonal-laptop.png", "vb6-diagonal-floppy.png", "vb6-round-mouse-icon.png" })
         {
             var path = Path.Combine(AppContext.BaseDirectory, "Resources", name);
             if (!File.Exists(path)) { _vb6SampleImages.Add(null); continue; }
