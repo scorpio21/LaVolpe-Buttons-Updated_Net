@@ -14,7 +14,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 25 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 29 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -44,7 +44,9 @@ El repositorio incluye `global.json` para seleccionar el SDK .NET 8.0.427 cuando
 ## Compilar
 
 ```powershell
-dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release
+dotnet build .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj --configuration Release
+dotnet build .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj --configuration Release
+dotnet build .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj --configuration Release
 ```
 
 ## Ejecutar el ejemplo
@@ -52,6 +54,27 @@ dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release
 ```powershell
 dotnet run --project .\LaVolpe.Buttons.Sample --configuration Release
 ```
+
+## Usarlo en una aplicación WinForms
+
+Añade una referencia a `LaVolpe.Buttons.Net.csproj` o a la DLL publicada y crea el control desde código:
+
+```csharp
+var aceptar = new LaVolpeButton
+{
+    Caption = "Aceptar",
+    ButtonStyle = BackStyle.WindowsXp,
+    Mode = ButtonMode.CommandButton,
+    DialogResult = DialogResult.OK,
+    Size = new Size(120, 36)
+};
+
+aceptar.Click += (_, _) => MessageBox.Show("Pulsado");
+Controls.Add(aceptar);
+AcceptButton = aceptar;
+```
+
+El control es WinForms (`net8.0-windows`); no se puede colocar directamente en WPF, ASP.NET o MAUI.
 
 El ejemplo recorre los 8 `ButtonStyle`, las 7 formas no personalizadas, los tres modos, los botones `Default`/`Cancel`, un gradiente, una imagen y una forma `CustomFlat` generada desde la máscara de una imagen.
 

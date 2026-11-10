@@ -59,6 +59,10 @@ public sealed class SampleForm : Form
         cancel.Cancel = true;
         Add(cancel);
 
+        // Integración WinForms real: Enter/Escape delegan en IButtonControl.
+        AcceptButton = accept;
+        CancelButton = cancel;
+
         var gradient = Make("Gradiente", new Point(380, 352), new Size(170, 40), BackStyle: BackStyle.WindowsXp);
         gradient.GradientMode = GradientMode.TopToBottom;
         gradient.GradientColor = Color.White;

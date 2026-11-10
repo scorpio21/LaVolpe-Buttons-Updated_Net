@@ -1,4 +1,5 @@
 using LaVolpe.Buttons.Net;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -48,6 +49,22 @@ internal static class Program
             Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
             Check(button.HoverBackColor == button.BackColor, $"{button.HoverBackColor} != {button.BackColor}");
             Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
+        });
+
+        Test("Opciones de diseñador WinForms", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            var properties = TypeDescriptor.GetProperties(button);
+            Check(properties[nameof(LaVolpeButton.Caption)] is not null, "Caption no aparece en PropertyGrid");
+            Check(properties[nameof(LaVolpeButton.ButtonStyle)] is not null, "ButtonStyle no aparece en PropertyGrid");
+            var styleText = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.ConvertTo(BackStyle.WindowsXp, typeof(string));
+            var modeText = properties[nameof(LaVolpeButton.Mode)]!.Converter.ConvertTo(ButtonMode.CheckBox, typeof(string));
+            Check(styleText?.ToString() == "lv_XP", $"BackStyle={styleText}");
+            Check(modeText?.ToString() == "lv_CheckBox", $"Mode={modeText}");
+            Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValuesSupported(), "ButtonStyle no tiene lista desplegable");
+            Check(button.DragMode == DragModeConstants.vbManual, $"DragMode={button.DragMode}");
+            button.DragMode = DragModeConstants.vbAutomatic;
+            Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
         });
 
         Test("BackColor hereda del contenedor", form =>
@@ -305,6 +322,48 @@ internal static class Program
             Check(true);
         });
 
+        Test("XP usa cuatro colores por anillo", form =>
+        {
+            var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, BackColor = Color.FromArgb(180,180,180), Size = new Size(120, 40) });
+            var method = typeof(LaVolpeButton).GetMethod("GetBorders", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var rings = (Array)method.Invoke(button, new object[] { button.BackColor, true, false, false })!;
+            Color Side(object ring, string name) => (Color)ring.GetType().GetField(name)!.GetValue(ring)!;
+            // Anillo interior: en VB6 los 4 lados se asignan por separado (polyColors 1..4).
+            var inner = rings.GetValue(2)!;
+            var left = Side(inner, "Left");
+            var top = Side(inner, "Top");
+            var right = Side(inner, "Right");
+            var bottom = Side(inner, "Bottom");
+            Check(left != top, $"izquierda={left} igual a superior={top}");
+            Check(right != bottom, $"derecha={right} igual a inferior={bottom}");
+        });
+
+        Test("XP deshabilitado oscurece el fondo", form =>
+        {
+            var enabled = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, Size = new Size(120, 40) });
+            var disabled = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, Size = new Size(120, 40), Enabled = false });
+            using var a = new Bitmap(120, 40);
+            using var b = new Bitmap(120, 40);
+            enabled.DrawToBitmap(a, new Rectangle(0, 0, 120, 40));
+            disabled.DrawToBitmap(b, new Rectangle(0, 0, 120, 40));
+            var ca = a.GetPixel(60, 20);
+            var cb = b.GetPixel(60, 20);
+            Check(cb.GetBrightness() < ca.GetBrightness(), $"deshabilitado={cb} no es más oscuro que {ca}");
+        });
+
+        Test("Offset de contenido por estado", form =>
+        {
+            var method = typeof(LaVolpeButton).GetMethod("ContentOffset", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            Point Offset(LaVolpeButton b, bool selected) => (Point)method.Invoke(b, new object[] { selected })!;
+            var plain = Add(form, new LaVolpeButton());
+            Check(Offset(plain, false) == Point.Empty, "sin estado no debe desplazar");
+            Check(Offset(plain, true) == new Point(1, 1), $"Win95 marcado={Offset(plain, true)}");
+            plain.ButtonShape = ButtonShape.Round3D;
+            Check(Offset(plain, true) == new Point(2, 1), $"forma redonda marcada={Offset(plain, true)}");
+            var java = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.Java });
+            Check(Offset(java, true) == Point.Empty, $"Java marcado={Offset(java, true)}");
+        });
+
         Test("Custom marcado pinta el caption", form =>
         {
             var image = new Bitmap(48, 48);
@@ -326,6 +385,14 @@ internal static class Program
             using var bitmap = new Bitmap(48, 48);
             button.DrawToBitmap(bitmap, new Rectangle(0, 0, 48, 48));
             Check(button.Value, "Value no activado");
+            bool dark = false;
+            for (int y = 16; y < 34 && !dark; y++)
+                for (int x = 8; x < 40 && !dark; x++)
+                {
+                    var c = bitmap.GetPixel(x, y);
+                    if (c.R < 100 && c.G < 100 && c.B < 100) dark = true;
+                }
+            Check(dark, "no se encontraron píxeles del caption");
         });
 
         foreach (var failure in _failed)

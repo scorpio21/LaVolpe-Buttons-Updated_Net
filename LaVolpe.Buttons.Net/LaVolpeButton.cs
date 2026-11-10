@@ -1,21 +1,63 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace LaVolpe.Buttons.Net;
 
-public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
-public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
-public enum ButtonMode { CommandButton=0, CheckBox=1, OptionButton=2, lv_CommandButton=CommandButton, lv_CheckBox=CheckBox, lv_OptionButton=OptionButton }
-public enum ButtonShape { Rectangular=0, LeftDiagonal=1, RightDiagonal=2, FullDiagonal=3, Round3D=4, Round3DFixed=5, RoundFlat=6, CustomFlat=7, Custom3DBorder=8, lv_Rectangular=Rectangular, lv_LeftDiagonal=LeftDiagonal, lv_RightDiagonal=RightDiagonal, lv_FullDiagonal=FullDiagonal, lv_Round3D=Round3D, lv_Round3DFixed=Round3DFixed, lv_RoundFlat=RoundFlat, lv_CustomFlat=CustomFlat, lv_Custom3DBorder=Custom3DBorder }
-public enum HoverColorLocks { TextAndBackColor=0, TextColorOnly=1, BackColorOnly=2, NoLocks=3, LockTextandBackColor=TextAndBackColor, LockTextColorOnly=TextColorOnly, LockBackColorOnly=BackColorOnly, lv_LockTextandBackColor=TextAndBackColor, lv_LockTextColorOnly=TextColorOnly, lv_LockBackColorOnly=BackColorOnly, lv_NoLocks=NoLocks }
-public enum CustomClick { Default=0, North=1, NorthEast=2, NorthWest=3, SouthEast=4, SouthWest=5, East=6, South=7, West=8, lv_Default=Default, lv_North=North, lv_NorthEast=NorthEast, lv_NorthWest=NorthWest, lv_SouthEast=SouthEast, lv_SouthWest=SouthWest, lv_East=East, lv_South=South, lv_West=West }
-public enum GradientMode { None=0, LeftToRight=1, RightToLeft=2, TopToBottom=3, BottomToTop=4, NoGradient=None, Left2Right=LeftToRight, Right2Left=RightToLeft, Top2Bottom=TopToBottom, Bottom2Top=BottomToTop }
-public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
-[Flags] public enum FontStyles { PlainStyle=0, Bold=2, Italic=4, Underline=8, BoldItalic=6, BoldUnderline=10, ItalicUnderline=12, BoldItalicUnderline=14, lv_PlainStyle=PlainStyle, lv_Bold=Bold, lv_Italic=Italic, lv_Underline=Underline, lv_BoldItalic=BoldItalic, lv_BoldUnderline=BoldUnderline, lv_ItalicUnderline=ItalicUnderline, lv_BoldItalicUnderline=BoldItalicUnderline }
-public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
-public enum MousePointerConstants { Default=0, Arrow=1, Crosshair=2, IBeam=3, SizeNESW=6, SizeNS=7, SizeNWSE=8, SizeWE=9, UpArrow=10, Hourglass=11, NoDrop=12, ArrowHourglass=13, ArrowQuestion=14, SizeAll=15, Custom=99, vbDefault=Default, vbArrow=Arrow, vbCrosshair=Crosshair, vbIBeam=IBeam, vbSizeNESW=SizeNESW, vbSizeNS=SizeNS, vbSizeNWSE=SizeNWSE, vbSizeWE=SizeWE, vbUpArrow=UpArrow, vbHourglass=Hourglass, vbNoDrop=NoDrop, vbArrowHourglass=ArrowHourglass, vbArrowQuestion=ArrowQuestion, vbSizeAll=SizeAll, vbCustom=Custom }
+// El control conserva los nombres C# para código existente, pero el PropertyGrid
+// muestra los miembros canónicos definidos por lvButtons.ctl (lv_* / vb*).
+internal sealed class VB6EnumConverter : EnumConverter
+{
+    public VB6EnumConverter() : base(typeof(Enum)) { }
+
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+    public override bool GetStandardValuesSupported(ITypeDescriptorContext? context) => true;
+    public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context)
+    {
+        var type = context?.PropertyDescriptor?.PropertyType;
+        return type?.IsEnum == true
+            ? new StandardValuesCollection(Enum.GetValues(type))
+            : new StandardValuesCollection(Array.Empty<object>());
+    }
+
+    public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object? value, Type destinationType)
+    {
+        if (destinationType == typeof(string) && value is Enum e)
+        {
+            var field = e.GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(f => f.Name.StartsWith("lv_", StringComparison.Ordinal) || f.Name.StartsWith("vb", StringComparison.Ordinal))
+                .FirstOrDefault(f => Convert.ToInt64(f.GetValue(null)) == Convert.ToInt64(e));
+            if (field is not null) return field.Name;
+        }
+        return base.ConvertTo(context, culture, value, destinationType);
+    }
+
+    public override object? ConvertFrom(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object value)
+    {
+        if (value is string text && context?.PropertyDescriptor?.PropertyType is { IsEnum: true } type)
+        {
+            var field = type.GetFields(BindingFlags.Public | BindingFlags.Static)
+                .FirstOrDefault(f => string.Equals(f.Name, text, StringComparison.Ordinal));
+            if (field is not null) return field.GetValue(null);
+        }
+        return base.ConvertFrom(context, culture, value);
+    }
+}
+
+[TypeConverter(typeof(VB6EnumConverter))] public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
+[TypeConverter(typeof(VB6EnumConverter))] public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
+[TypeConverter(typeof(VB6EnumConverter))] public enum ButtonMode { CommandButton=0, CheckBox=1, OptionButton=2, lv_CommandButton=CommandButton, lv_CheckBox=CheckBox, lv_OptionButton=OptionButton }
+[TypeConverter(typeof(VB6EnumConverter))] public enum ButtonShape { Rectangular=0, LeftDiagonal=1, RightDiagonal=2, FullDiagonal=3, Round3D=4, Round3DFixed=5, RoundFlat=6, CustomFlat=7, Custom3DBorder=8, lv_Rectangular=Rectangular, lv_LeftDiagonal=LeftDiagonal, lv_RightDiagonal=RightDiagonal, lv_FullDiagonal=FullDiagonal, lv_Round3D=Round3D, lv_Round3DFixed=Round3DFixed, lv_RoundFlat=RoundFlat, lv_CustomFlat=CustomFlat, lv_Custom3DBorder=Custom3DBorder }
+[TypeConverter(typeof(VB6EnumConverter))] public enum HoverColorLocks { TextAndBackColor=0, TextColorOnly=1, BackColorOnly=2, NoLocks=3, LockTextandBackColor=TextAndBackColor, LockTextColorOnly=TextColorOnly, LockBackColorOnly=BackColorOnly, lv_LockTextandBackColor=TextAndBackColor, lv_LockTextColorOnly=TextColorOnly, lv_LockBackColorOnly=BackColorOnly, lv_NoLocks=NoLocks }
+[TypeConverter(typeof(VB6EnumConverter))] public enum CustomClick { Default=0, North=1, NorthEast=2, NorthWest=3, SouthEast=4, SouthWest=5, East=6, South=7, West=8, lv_cDefault=Default, lv_cNorth=North, lv_cNorthEast=NorthEast, lv_cNorthWest=NorthWest, lv_cSouthEast=SouthEast, lv_cSouthWest=SouthWest, lv_cEast=East, lv_cSouth=South, lv_cWest=West, lv_Default=Default, lv_North=North, lv_NorthEast=NorthEast, lv_NorthWest=NorthWest, lv_SouthEast=SouthEast, lv_SouthWest=SouthWest, lv_East=East, lv_South=South, lv_West=West }
+[TypeConverter(typeof(VB6EnumConverter))] public enum GradientMode { None=0, LeftToRight=1, RightToLeft=2, TopToBottom=3, BottomToTop=4, NoGradient=None, Left2Right=LeftToRight, Right2Left=RightToLeft, Top2Bottom=TopToBottom, Bottom2Top=BottomToTop }
+[TypeConverter(typeof(VB6EnumConverter))] public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
+[Flags, TypeConverter(typeof(VB6EnumConverter))] public enum FontStyles { PlainStyle=0, Bold=2, Italic=4, Underline=8, BoldItalic=6, BoldUnderline=10, ItalicUnderline=12, BoldItalicUnderline=14, lv_PlainStyle=PlainStyle, lv_Bold=Bold, lv_Italic=Italic, lv_Underline=Underline, lv_BoldItalic=BoldItalic, lv_BoldUnderline=BoldUnderline, lv_ItalicUnderline=ItalicUnderline, lv_BoldItalicUnderline=BoldItalicUnderline }
+[TypeConverter(typeof(VB6EnumConverter))] public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
+[TypeConverter(typeof(VB6EnumConverter))] public enum MousePointerConstants { Default=0, Arrow=1, Crosshair=2, IBeam=3, SizeNESW=6, SizeNS=7, SizeNWSE=8, SizeWE=9, UpArrow=10, Hourglass=11, NoDrop=12, ArrowHourglass=13, ArrowQuestion=14, SizeAll=15, Custom=99, vbDefault=Default, vbArrow=Arrow, vbCrosshair=Crosshair, vbIBeam=IBeam, vbSizeNESW=SizeNESW, vbSizeNS=SizeNS, vbSizeNWSE=SizeNWSE, vbSizeWE=SizeWE, vbUpArrow=UpArrow, vbHourglass=Hourglass, vbNoDrop=NoDrop, vbArrowHourglass=ArrowHourglass, vbArrowQuestion=ArrowQuestion, vbSizeAll=SizeAll, vbCustom=Custom }
+[TypeConverter(typeof(VB6EnumConverter))] public enum DragModeConstants { vbManual=0, vbAutomatic=1, Manual=vbManual, Automatic=vbAutomatic }
 
 public delegate void LvMouseEventHandler(object sender, MouseEventArgs e);
 public delegate void LvKeyEventHandler(object sender, KeyEventArgs e);
@@ -62,15 +104,15 @@ public class LaVolpeButton : Control, IButtonControl
     public event EventHandler? OLECompleteDrag, OLESetData;
 
     public LaVolpeButton() { SetStyle(ControlStyles.UserPaint|ControlStyles.AllPaintingInWmPaint|ControlStyles.OptimizedDoubleBuffer|ControlStyles.ResizeRedraw|ControlStyles.Selectable,true); Size=new Size(90,33); TabStop=true; AllowDrop=true; AccessibleRole=AccessibleRole.PushButton; _hoverTimer=new System.Windows.Forms.Timer { Interval=50 }; _hoverTimer.Tick += (_,_) => TimerUpdate(0); }
-    [Category("LaVolpe"), DefaultValue("")] public string Caption { get=>_caption; set{ if(_caption==(value??""))return; _caption=value??""; base.Text=_caption; if(string.IsNullOrWhiteSpace(AccessibleName))AccessibleName=_caption.Replace("&",""); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(""), Description("Texto visible del botón; admite && para aceleradores y || para salto de línea.")] public string Caption { get=>_caption; set{ if(_caption==(value??""))return; _caption=value??""; base.Text=_caption; if(string.IsNullOrWhiteSpace(AccessibleName))AccessibleName=_caption.Replace("&",""); InvalidateIfNeeded();} }
     // VB6: Caption es el miembro por defecto; Text debe reflejarlo para accesibilidad y diseñador.
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text { get=>_caption; set=>Caption=value??string.Empty; }
-    [Category("LaVolpe")] public ButtonMode Mode { get=>_mode; set{ if(_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public ButtonShape ButtonShape { get=>_shape; set{_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular)] public ButtonShape ButtonShape { get=>_shape; set{_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(BackStyle.Windows95)] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
-    [Category("LaVolpe")] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
+    [Category("LaVolpe"), DefaultValue(false)] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
     [Browsable(false)] public bool Checked { get=>_value; set=>Value=value; }
     [Browsable(false)] public bool Selected { get=>_value; set=>Value=value; }
     [Category("Appearance")]
@@ -79,15 +121,15 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public GradientMode GradientMode { get=>_gradientMode; set{_gradientMode=value; InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{_gradientMode=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value; if(value is not null&&IsCustomShape) _pictureSize=ImageSize.FillScaleUpDown; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public ImagePlacement PictureAlign { get=>_pictureAlign; set{_pictureAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public ImageSize PictureSize { get=>_pictureSize; set{_pictureSize=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public ContentAlignment CaptionAlign { get=>_captionAlign; set{_captionAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public CaptionStyle CaptionStyle { get=>_captionStyle; set{_captionStyle=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{_hoverColorLocks=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public CustomClick CustomClick { get=>_customClick; set{_customClick=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public FontStyles FontStyle { get=>_fontStyle; set{_fontStyle=value; InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{_pictureAlign=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{_pictureSize=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{_captionAlign=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{_captionStyle=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{_hoverColorLocks=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(CustomClick.Default)] public CustomClick CustomClick { get=>_customClick; set{_customClick=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle)] public FontStyles FontStyle { get=>_fontStyle; set{_fontStyle=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? MouseIcon { get=>_mouseIcon; set{_mouseIcon=value;if(value is not null)_mousePointer=MousePointerConstants.Custom;ApplyMouseIcon();InvalidateIfNeeded();} }
     // VB6: MousePointerConstants, no un Cursor arbitrario. Custom usa MouseIcon.
     [Category("LaVolpe"), DefaultValue(MousePointerConstants.Default)]
@@ -102,7 +144,7 @@ public class LaVolpeButton : Control, IButtonControl
     public void DelayDrawing(bool delay){ _delayDrawing=delay; if(!delay) RedrawButton(); }
     [Category("Behavior"), DefaultValue(false)] public bool Cancel { get=>_cancel; set=>_cancel=value; }
     [Category("Behavior"), DefaultValue(false)] public bool Default { get=>_default; set=>_default=value; }
-    [Category("Behavior"), DefaultValue(false)] public bool DragMode { get=>_dragMode; set=>_dragMode=value; }
+    [Category("Behavior"), DefaultValue(DragModeConstants.vbManual)] public DragModeConstants DragMode { get=>_dragMode ? DragModeConstants.vbAutomatic : DragModeConstants.vbManual; set=>_dragMode=value==DragModeConstants.vbAutomatic; }
     [Category("Behavior"), DefaultValue(DialogResult.None)] public DialogResult DialogResult { get=>_dialogResult; set=>_dialogResult=value; }
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
     [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set=>_helpContextId=value; }
@@ -403,18 +445,18 @@ public class LaVolpeButton : Control, IButtonControl
         var hot = _hovered && !down;
         var back = GetStateBack(down,hot,selected);
         DrawButtonBackground(g,full,fillPath,back,down,hot,selected);
-        var contentRect = r;
-        if (_pressed) contentRect.Offset(CustomClickOffset());
         var useHoverFore = _hovered && _hoverColorLocks is not (HoverColorLocks.TextColorOnly or HoverColorLocks.TextAndBackColor);
-        var contentColor = !Enabled ? SystemColors.GrayText : (useHoverFore ? _hoverFore : ForeColor);
+        var contentColors = GetCaptionColors(useHoverFore,back);
         var clipState = g.Save();
         g.SetClip(fillPath, CombineMode.Intersect);
-        DrawContent(g,contentRect,contentColor,selected);
+        DrawContent(g,ClientRectangle,contentColors,selected,back);
         g.Restore(clipState);
         if(Focused&&ShowFocusRect) DrawFocusRing(g,r);
     }
     private Color GetStateBack(bool down, bool hot, bool selected)
     {
+        // VB6: sólo el CommandButton XP deshabilitado oscurece el fondo (-0x18).
+        if(!Enabled && _style==BackStyle.WindowsXp && _mode==ButtonMode.CommandButton) return Shade(GetUpBack(),-0x18,true);
         if(selected) return GetCheckBack();
         var up=GetUpBack();
         if(down) return GetDownBack(up);
@@ -455,7 +497,7 @@ public class LaVolpeButton : Control, IButtonControl
         {
             using var brush=CreateBrush(full,back); g.FillPath(brush,fillPath);
         }
-        else if(_style==BackStyle.WindowsXp)
+        else if(_style==BackStyle.WindowsXp && (Enabled || _mode!=ButtonMode.CommandButton))
         {
             // VB6: los botones XP llevan un degradado vertical fijo de 25 tonos.
             using var xp=new LinearGradientBrush(full,back,Shade(back,-25,true),LinearGradientMode.Vertical);
@@ -468,23 +510,34 @@ public class LaVolpeButton : Control, IButtonControl
         var rings=GetBorders(back,down,hot,selected);
         for(int i=0;i<rings.Length;i++)
         {
-            if(rings[i].top is null && rings[i].bottom is null) continue;
+            if(rings[i].IsEmpty) continue;
             var rr=Rectangle.Inflate(full,-i,-i);
             if(rr.Width<=2||rr.Height<=2) continue;
             using var path=CreatePath(rr);
-            DrawRing(g,path,rr,rings[i].top,rings[i].bottom);
+            DrawRing(g,path,rr,rings[i]);
         }
     }
-    // Cada anillo tiene color de lado superior/izquierdo y otro inferior/derecho (polyColors 1..12).
-    private static void DrawRing(Graphics g, GraphicsPath path, Rectangle b, Color? top, Color? bottom)
+    // Cada anillo guarda los cuatro lados por separado (polyColors 1..4, 5..8 y 9..12).
+    private readonly struct RingBorder
     {
-        var tl=top ?? bottom!.Value; var br=bottom ?? top!.Value;
+        public readonly Color? Left, Top, Right, Bottom;
+        public RingBorder(Color? left, Color? top, Color? right, Color? bottom){Left=left;Top=top;Right=right;Bottom=bottom;}
+        public static readonly RingBorder None = new(null,null,null,null);
+        public static RingBorder Same(Color? c) => new(c,c,c,c);
+        public static RingBorder Pair(Color? leftTop, Color? rightBottom) => new(leftTop,leftTop,rightBottom,rightBottom);
+        public bool IsEmpty => Left is null && Top is null && Right is null && Bottom is null;
+    }
+    private static void DrawRing(Graphics g, GraphicsPath path, Rectangle b, RingBorder ring)
+    {
+        var fallback = ring.Top ?? ring.Left ?? ring.Right ?? ring.Bottom;
+        if(fallback is null) return;
+        var f = fallback.Value;
         var bandT=Math.Max(2,b.Height/3);
-        DrawClipped(g,path,new Rectangle(b.Left,b.Top,b.Width,bandT+1),tl);
-        DrawClipped(g,path,new Rectangle(b.Left,b.Bottom-bandT-1,b.Width,bandT+1),br);
+        DrawClipped(g,path,new Rectangle(b.Left,b.Top,b.Width,bandT+1),ring.Top ?? f);
+        DrawClipped(g,path,new Rectangle(b.Left,b.Bottom-bandT-1,b.Width,bandT+1),ring.Bottom ?? f);
         var bandL=Math.Max(2,b.Width/3);
-        DrawClipped(g,path,new Rectangle(b.Left,b.Top+bandT,bandL,Math.Max(1,b.Height-2*bandT)),tl);
-        DrawClipped(g,path,new Rectangle(b.Right-bandL,b.Top+bandT,bandL,Math.Max(1,b.Height-2*bandT)),br);
+        DrawClipped(g,path,new Rectangle(b.Left,b.Top+bandT,bandL,Math.Max(1,b.Height-2*bandT)),ring.Left ?? f);
+        DrawClipped(g,path,new Rectangle(b.Right-bandL,b.Top+bandT,bandL,Math.Max(1,b.Height-2*bandT)),ring.Right ?? f);
     }
     private static void DrawClipped(Graphics g, GraphicsPath path, Rectangle clip, Color color)
     {
@@ -494,28 +547,37 @@ public class LaVolpeButton : Control, IButtonControl
         using(var pen=new Pen(color,1f)) g.DrawPath(pen,path);
         g.Restore(state);
     }
-    private (Color? top, Color? bottom)[] GetBorders(Color back, bool down, bool hot, bool selected)
+    private RingBorder[] GetBorders(Color back, bool down, bool hot, bool selected)
     {
-        var rings=new (Color? top, Color? bottom)[3];
+        var rings=new RingBorder[3];
         var gray=Color.FromArgb(128,128,128); var white=Color.White; var black=Color.Black;
         bool focused=Focused;
         switch(_style)
         {
             case BackStyle.Windows95:
             {
-                var mid = down ? back : Color.FromArgb(233,233,233);
-                var st = down ? 3 : (focused?1:0);
-                rings[2] = st==1 ? (mid,gray) : ((Color?)null,(Color?)null);
-                rings[1] = st switch { 0=>(mid,gray), 1=>(white,black), 3=>((Color?)null,gray), _=>((Color?)null,(Color?)null) };
-                rings[0] = selected ? (black,white) : ((focused?black:white),black);
+                // midShade es el borde pulsado; con Value/tecla vuelve a RGB(233,233,233).
+                var mid = (down && !selected) ? back : Color.FromArgb(233,233,233);
+                var st = (down||selected) ? 3 : (focused?1:0);
+                rings[2] = st==1 ? RingBorder.Pair(mid,gray) : RingBorder.None;
+                rings[1] = st switch
+                {
+                    0 => RingBorder.Pair(mid,gray),
+                    1 => RingBorder.Pair(white,black),
+                    3 => new RingBorder(null,null,mid,mid),
+                    _ => RingBorder.None
+                };
+                rings[0] = selected
+                    ? new RingBorder(black,black,white,white)
+                    : new RingBorder(focused?black:white,focused?black:white,black,black);
                 break;
             }
             case BackStyle.Windows31:
             {
-                var st = down ? 2 : 1;
+                var st = (down||selected) ? 2 : 1;
                 var t = st==2 ? gray : white;
                 var b = st==2 ? white : gray;
-                rings[2]=(t,b); rings[1]=(t,b); rings[0]=(black,black);
+                rings[2]=RingBorder.Pair(t,b); rings[1]=RingBorder.Pair(t,b); rings[0]=RingBorder.Same(black);
                 break;
             }
             case BackStyle.WindowsXp:
@@ -523,62 +585,97 @@ public class LaVolpeButton : Control, IButtonControl
                 var lColor=selected?GetCheckBack():GetUpBack();
                 if(!Enabled)
                 {
-                    rings[0]=(Shade(lColor,-0x54,true),Shade(lColor,-0x54,true));
+                    rings[0]=RingBorder.Same(Shade(lColor,-0x54,true));
                     break;
                 }
                 int st = (selected||down) ? (focused?1:2) : (hot?3:(focused?1:0));
                 if(st==1 && !ShowFocusRect) st=0;
-                var orange1=Color.FromArgb(181,209,240); var orange2=Color.FromArgb(140,174,231);
-                var blue1=Color.FromArgb(255,203,107); var blue2=Color.FromArgb(255,178,49);
-                var pink=Color.FromArgb(107,130,239);
-                var c1= st switch {0=>Shade(lColor,-0xA,true),1=>orange1,2=>Shade(lColor,-0x16,true),_=>blue1};
-                var c4= st switch {0=>Shade(lColor,-0x20,true),1=>orange2,2=>Shade(lColor,0xA,true),_=>blue2};
-                var c5= st switch {0=>Shade(lColor,-0x5,true),1=>orange2,2=>Shade(lColor,-0x20,true),_=>blue2};
-                var c8= st switch {0=>Shade(lColor,-0x30,true),1=>pink,2=>Shade(lColor,0x10,true),_=>Color.FromArgb(231,150,0)};
-                rings[2]=(c1,c4); rings[1]=(c5,c8);
-                var outer=Color.FromArgb(0,60,115);
-                rings[0]=(outer,outer);
+                Color C(int offset)=>Shade(lColor,offset,true);
+                Color c1,c2,c3,c4,c5,c6,c7,c8;
+                switch(st)
+                {
+                    case 1:   // foco: tonos tostados
+                        c1=Color.FromArgb(181,209,240); c2=Color.FromArgb(189,215,247); c3=Color.FromArgb(181,209,240); c4=Color.FromArgb(140,174,231);
+                        c5=Color.FromArgb(140,174,231); c6=Color.FromArgb(191,223,255); c7=Color.FromArgb(140,174,231); c8=Color.FromArgb(107,130,239);
+                        break;
+                    case 2:   // pulsado / marcado
+                        c1=C(-0x16); c2=C(-0x18); c3=lColor; c4=C(0xA);
+                        c5=C(-0x20); c6=C(-0x20); c7=C(0x5); c8=C(0x10);
+                        break;
+                    case 3:   // hover: tonos azules
+                        c1=Color.FromArgb(255,203,107); c2=Color.FromArgb(255,219,140); c3=Color.FromArgb(255,203,107); c4=Color.FromArgb(255,178,49);
+                        c5=Color.FromArgb(255,178,49); c6=Color.FromArgb(255,233,166); c7=Color.FromArgb(255,178,49); c8=Color.FromArgb(231,150,0);
+                        break;
+                    default:  // normal
+                        c1=C(-0xA); c2=C(0xA); c3=C(-0x18); c4=C(-0x20);
+                        c5=C(-0x5); c6=C(0x10); c7=C(-0x24); c8=C(-0x30);
+                        break;
+                }
+                rings[2]=new RingBorder(c1,c2,c3,c4);
+                rings[1]=new RingBorder(c5,c6,c7,c8);
+                rings[0]=RingBorder.Same(Color.FromArgb(0,60,115));   // lColor = &H733C00
                 break;
             }
             case BackStyle.Macintosh:
             {
-                var st = down ? 2 : 1;
-                var lite=white;
-                var mid=Shade(back,0x1F,true); var dark=Shade(back,-0x40,true);
-                if(st==2) { lite=Shade(back,-0x20); mid=Shade(back,-0x40); dark=Shade(back,-0x10); }
-                rings[2]=(lite,back); rings[1]=(mid,dark); rings[0]=(black,black);
+                var st = (down||selected) ? 2 : 1;
+                Color baseColor, lite, mid, dark;
+                if(st==2)
+                {
+                    // VB6 parte de vbGray cuando no hay degradado, no del fondo pulsado.
+                    baseColor = _gradientMode==GradientMode.None ? gray : GetUpBack();
+                    lite=Shade(baseColor,-0x20);
+                    mid=Shade(baseColor,-0x40);
+                    dark=Shade(baseColor,-0x10);
+                }
+                else
+                {
+                    baseColor=back; lite=white;
+                    mid=Shade(back,0x1F,true);
+                    dark=Shade(back,-0x40,true);
+                }
+                rings[2]=RingBorder.Pair(lite,baseColor);
+                rings[1]=RingBorder.Pair(mid,dark);
+                rings[0]=RingBorder.Same(black);
                 break;
             }
             case BackStyle.Flat:
             {
-                var st = down ? 2 : 1;
-                rings[0]=(st==1?white:gray, st==1?gray:white);
+                var st = (down||selected) ? 2 : 1;
+                rings[0] = st==1 ? RingBorder.Pair(white,gray) : RingBorder.Pair(gray,white);
                 break;
             }
             case BackStyle.Hover:
             {
-                if(!hot && !selected) break;     // sin borde hasta que el ratón entra
-                var st = down ? 2 : 1;
-                rings[0]=(st==1?white:gray, st==1?gray:white);
+                if(!hot && !down && !selected) break;     // sin borde hasta que el ratón entra
+                var st = (down||selected) ? 2 : 1;
+                rings[0] = st==1 ? RingBorder.Pair(white,gray) : RingBorder.Pair(gray,white);
                 break;
             }
             case BackStyle.Netscape:
             {
                 var lite=Color.FromArgb(231,231,231);
-                var st = down ? 1 : 0;
+                var st = (down||selected) ? 1 : 0;
                 var t = st==0 ? lite : gray;
                 var b = st==0 ? gray : lite;
-                rings[1]=(t,b); rings[0]=(t,b);
+                rings[1]=RingBorder.Pair(t,b); rings[0]=RingBorder.Pair(t,b);
                 break;
             }
             case BackStyle.Java:
             {
                 var dark=Shade(gray,-0x1A);
-                int st;
-                if(_mode!=ButtonMode.CommandButton) st = selected ? 2 : 3; else st = down ? 2 : 1;
+                if(!Enabled)
+                {
+                    // VB6 deshabilitado: todo el anillo medio con el fondo y el exterior oscuro.
+                    rings[1]=RingBorder.Same(back);
+                    rings[0]=RingBorder.Same(dark);
+                    break;
+                }
+                int st = _mode!=ButtonMode.CommandButton ? ((selected||_pressed)?2:3) : (down?2:1);
                 if(st<2) st=1;
                 var t = st==2 ? back : white;
-                rings[1]=(t,dark); rings[0]=(dark,white);
+                rings[1]=new RingBorder(t,t,dark,dark);
+                rings[0]=new RingBorder(dark,dark,white,white);
                 break;
             }
         }
@@ -647,71 +744,209 @@ public class LaVolpeButton : Control, IButtonControl
         return p;
     }
     private Brush CreateBrush(Rectangle r,Color back){if(_gradientMode==GradientMode.None)return new SolidBrush(back);var mode=_gradientMode is GradientMode.LeftToRight or GradientMode.RightToLeft?LinearGradientMode.Horizontal:LinearGradientMode.Vertical;var b=new LinearGradientBrush(r,back,_gradientColor,mode);if(_gradientMode is GradientMode.RightToLeft or GradientMode.BottomToTop)b.RotateTransform(180);return b;}
-    private void DrawContent(Graphics g, Rectangle r, Color color, bool selected)
+    private readonly record struct CaptionColors(Color Color, Color? Shadow, Point ShadowOffset);
+    // Offsets de DrawCaptionIcon: pulsado/marcado desplaza 1 px (2 en formas redondas), Java nunca.
+    private Point ContentOffset(bool selected)
+    {
+        if(_style==BackStyle.Java) return Point.Empty;
+        if(_pressed) return CustomClickOffset();
+        if(selected) return new Point(1 + (_shape>ButtonShape.FullDiagonal?1:0), 1);
+        return Point.Empty;
+    }
+    private CaptionColors GetCaptionColors(bool useHoverFore, Color back)
+    {
+        var gray=Color.FromArgb(128,128,128);
+        if(!Enabled)
+        {
+            if(_style==BackStyle.WindowsXp)
+            {
+                // cDisabled = ShadeColor(backShade, -0x68, True), color único.
+                var baseColor = (_mode!=ButtonMode.CommandButton && _value) ? GetCheckBack() : GetUpBack();
+                if(_mode==ButtonMode.CommandButton) baseColor=Shade(baseColor,-0x18,true);
+                return new CaptionColors(Shade(baseColor,-0x68,true),null,Point.Empty);
+            }
+            if(_style==BackStyle.Java) return new CaptionColors(Shade(gray,-0x10),null,Point.Empty);
+            if(_mode!=ButtonMode.CommandButton)
+            {
+                if(_style==BackStyle.Macintosh && _value) return new CaptionColors(Shade(GetCheckBack(),-0x20,true),null,Point.Empty);
+                return new CaptionColors(gray,null,Point.Empty);
+            }
+            // Estilos clásicos: blanco en +1,+1 y luego gris en la posición original.
+            return new CaptionColors(gray,Color.White,new Point(1,1));
+        }
+        if(_style==BackStyle.Java) return new CaptionColors(gray,null,Point.Empty);
+        return new CaptionColors(useHoverFore ? _hoverFore : ForeColor,null,Point.Empty);
+    }
+    private int HorizontalAlignClass() => _captionAlign switch
+    {
+        ContentAlignment.TopLeft or ContentAlignment.MiddleLeft or ContentAlignment.BottomLeft => 0,
+        ContentAlignment.TopRight or ContentAlignment.MiddleRight or ContentAlignment.BottomRight => 1,
+        _ => 2
+    };
+    // Traduce CalculateBoundingRects de lvButtons.ctl (texto e imagen).
+    private (Rectangle Text, Rectangle Image, bool ShowImage) ComputeLayout(Graphics g, Font f, Rectangle client, string text)
+    {
+        int w=client.Width, h=client.Height;
+        int diag=DiagonalEdge(client);
+        int lEdge=0, rEdge=w, adjWidth=w;
+        switch(_shape)
+        {
+            case ButtonShape.LeftDiagonal:
+                lEdge=diag-diag/3+3; rEdge=w; adjWidth=w-lEdge; break;
+            case ButtonShape.RightDiagonal:
+                rEdge=(w-diag)+(diag/3); adjWidth=rEdge; break;
+            case ButtonShape.FullDiagonal:
+                lEdge=diag-diag/3+3; rEdge=(w-diag)+(diag/3); adjWidth=rEdge-lEdge; break;
+            case ButtonShape.CustomFlat:
+            case ButtonShape.Custom3DBorder:
+                adjWidth=w-3; rEdge=w-3; lEdge=3; break;
+        }
+        bool hasImage=_picture is not null;
+        int size = PictureSize switch { ImageSize.Size24x24=>24, ImageSize.Size32x32=>32, _=>16 };
+        bool reserve = hasImage && PictureSize is not (ImageSize.FillStretch or ImageSize.FillScaleUpDown);
+        bool imgLeft=reserve && _pictureAlign is ImagePlacement.LeftEdge or ImagePlacement.LeftOfCaption;
+        bool imgRight=reserve && _pictureAlign is ImagePlacement.RightEdge or ImagePlacement.RightOfCaption;
+        bool imgBottom=reserve && _pictureAlign==ImagePlacement.BottomCenter;
+        bool hasText=text.Length>0;
+        Rectangle trect=Rectangle.Empty;
+        int ch=0;
+        if(hasText)
+        {
+            int maxW=Math.Max(1,adjWidth-8-(imgLeft||imgRight?size:0));
+            var ms=TextRenderer.MeasureText(g,text,f,new Size(maxW,10000),TextFormatFlags.WordBreak|TextFormatFlags.Left);
+            int cw=ms.Width, chh=ms.Height;
+            if(_captionStyle!=CaptionStyle.Default){cw+=2; chh+=2;}
+            ch=chh;
+            int left;
+            switch(HorizontalAlignClass())
+            {
+                case 0: left=(imgLeft?size:0)+lEdge+4+(imgLeft?4:0); break;
+                case 1: left=rEdge-(imgRight?size:0)-4-cw-(imgRight?4:0); break;
+                default:
+                    if(imgLeft && _pictureAlign==ImagePlacement.LeftOfCaption)
+                        left=(adjWidth-(size+cw+4))/2+lEdge+4+size;
+                    else if(imgRight && _pictureAlign==ImagePlacement.RightOfCaption)
+                        left=(adjWidth-(size+cw+4))/2+lEdge;
+                    else
+                        left=((adjWidth-(imgLeft?size:0)-(imgRight?size:0))-cw)/2+lEdge+(imgLeft?size:0);
+                    break;
+            }
+            trect=new Rectangle(left,(h-chh)/2,cw,chh);
+        }
+        Rectangle irect=Rectangle.Empty;
+        bool show=false;
+        if(hasImage)
+        {
+            show=true;
+            if(PictureSize==ImageSize.FillStretch || PictureSize==ImageSize.FillScaleUpDown)
+            {
+                if(PictureSize==ImageSize.FillStretch)
+                    irect=_shape==ButtonShape.RoundFlat ? Rectangle.Inflate(client,-1,-1) : Rectangle.Inflate(client,-3,-3);
+                else
+                {
+                    var availW=Math.Max(1,adjWidth-12); var availH=Math.Max(1,h-12);
+                    var scale=Math.Min((double)availW/_picture!.Width,(double)availH/_picture.Height);
+                    int iw=Math.Max(1,(int)Math.Round(_picture.Width*scale)), ih=Math.Max(1,(int)Math.Round(_picture.Height*scale));
+                    irect=new Rectangle((adjWidth-iw)/2+lEdge,(h-ih)/2,iw,ih);
+                }
+            }
+            else
+            {
+                int ix=lEdge+4, iy=(h-size)/2;
+                switch(_pictureAlign)
+                {
+                    case ImagePlacement.LeftEdge: ix=lEdge+4; break;
+                    case ImagePlacement.LeftOfCaption: ix=hasText ? trect.Left-4-size : lEdge+4; break;
+                    case ImagePlacement.RightOfCaption: ix=hasText ? trect.Right+4 : rEdge-4-size; break;
+                    case ImagePlacement.RightEdge: ix=rEdge-4-size; break;
+                    case ImagePlacement.TopCenter:
+                        iy=(h-(ch+size))/2; ix=(adjWidth-size)/2+lEdge;
+                        if(hasText) trect.Y=iy+2+size;
+                        break;
+                    case ImagePlacement.BottomCenter:
+                        iy=(h-(ch+size))/2+ch+4; ix=(adjWidth-size)/2+lEdge;
+                        if(hasText) trect.Y=iy-2-ch;
+                        break;
+                }
+                if(hasText && _pictureAlign<ImagePlacement.TopCenter) trect.Y=(h-ch)/2;
+                irect=new Rectangle(ix,iy,size,size);
+            }
+        }
+        else if(hasText) trect.Y=(h-ch)/2;
+        // Comprobaciones de sanidad finales de VB6.
+        if(hasText)
+        {
+            if(trect.Top<4) trect.Y=4;
+            if(trect.Left<4+lEdge) trect.X=4+lEdge;
+            if(trect.Right>rEdge-4) trect.X=rEdge-4-trect.Width;
+            if(trect.Bottom>h-5) trect.Y=h-5-trect.Height;
+        }
+        if(show && PictureSize is not (ImageSize.FillStretch or ImageSize.FillScaleUpDown))
+        {
+            if(irect.Top<4) irect.Y=4;
+            if(irect.Left<4+lEdge) irect.X=4+lEdge;
+            if(irect.Right>rEdge-4) irect.X=rEdge-4-irect.Width;
+            if(irect.Bottom>h-5) irect.Y=h-5-irect.Height;
+        }
+        return (trect,irect,show);
+    }
+    private void DrawContent(Graphics g, Rectangle client, CaptionColors colors, bool selected, Color back)
     {
         var fs = _fontStyle switch { FontStyles.Bold => System.Drawing.FontStyle.Bold, FontStyles.Italic => System.Drawing.FontStyle.Italic, FontStyles.Underline => System.Drawing.FontStyle.Underline, FontStyles.BoldItalic => System.Drawing.FontStyle.Bold|System.Drawing.FontStyle.Italic, FontStyles.BoldUnderline => System.Drawing.FontStyle.Bold|System.Drawing.FontStyle.Underline, FontStyles.ItalicUnderline => System.Drawing.FontStyle.Italic|System.Drawing.FontStyle.Underline, FontStyles.BoldItalicUnderline => System.Drawing.FontStyle.Bold|System.Drawing.FontStyle.Italic|System.Drawing.FontStyle.Underline, _ => System.Drawing.FontStyle.Regular };
         using var f = new Font(Font, fs);
-        var flags = CaptionAlign switch { ContentAlignment.TopLeft => TextFormatFlags.Top|TextFormatFlags.Left, ContentAlignment.TopCenter => TextFormatFlags.Top|TextFormatFlags.HorizontalCenter, ContentAlignment.TopRight => TextFormatFlags.Top|TextFormatFlags.Right, ContentAlignment.MiddleLeft => TextFormatFlags.VerticalCenter|TextFormatFlags.Left, ContentAlignment.MiddleRight => TextFormatFlags.VerticalCenter|TextFormatFlags.Right, ContentAlignment.BottomLeft => TextFormatFlags.Bottom|TextFormatFlags.Left, ContentAlignment.BottomRight => TextFormatFlags.Bottom|TextFormatFlags.Right, _ => TextFormatFlags.VerticalCenter|TextFormatFlags.HorizontalCenter } | TextFormatFlags.EndEllipsis;
         var text = Caption.Replace("||", Environment.NewLine);
+        var offset=ContentOffset(selected);
         if (IsCustomShape)
         {
             // VB6: la imagen define la forma; sólo hay caption en modo CheckBox/OptionButton con Value=True.
             if (selected && _mode!=ButtonMode.CommandButton)
             {
-                DrawCaption(g,r,f,flags,color,text);
+                var custom=ComputeLayout(g,f,client,text);
+                var tr=custom.Text; tr.Offset(offset);
+                if(text.Length>0) DrawCaption(g,tr,f,text,colors,back);
                 return;
             }
             if (_picture is null) return;
             try
             {
                 // CustomClick=Default encoge la imagen al presionar; el resto desplaza el contenido.
-                var dest = _pressed && _customClick==CustomClick.Default ? Rectangle.Inflate(r,-1,-1) : r;
+                var dest = _pressed && _customClick==CustomClick.Default ? Rectangle.Inflate(client,-1,-1) : client;
                 g.DrawImage(_picture,dest);
             }
             catch (ArgumentException) { }
             catch (ExternalException) { }
             return;
         }
-        if (_picture is not null)
+        var layout=ComputeLayout(g,f,client,text);
+        var textRect=layout.Text; textRect.Offset(offset);
+        var imageRect=layout.Image; imageRect.Offset(offset);
+        if (layout.ShowImage && _picture is not null)
         {
             // Si el usuario liberó la imagen, se omite el dibujo en vez de tumbar la aplicación.
-            try
-            {
-                int s = PictureSize switch { ImageSize.Size24x24 => 24, ImageSize.Size32x32 => 32, _ => 16 };
-                if (PictureSize == ImageSize.FillStretch) { g.DrawImage(_picture, r); }
-                else
-                {
-                    int iw=s, ih=s;
-                    if (PictureSize == ImageSize.FillScaleUpDown)
-                    {
-                        var scale = Math.Min((double)r.Width / _picture.Width, (double)r.Height / _picture.Height);
-                        iw = Math.Max(1, (int)Math.Round(_picture.Width * scale));
-                        ih = Math.Max(1, (int)Math.Round(_picture.Height * scale));
-                    }
-                    var ir = PictureAlign switch { ImagePlacement.RightEdge => new Rectangle(r.Right-iw-5, r.Y+(r.Height-ih)/2, iw, ih), ImagePlacement.TopCenter => new Rectangle(r.X+(r.Width-iw)/2, r.Y+3, iw, ih), ImagePlacement.BottomCenter => new Rectangle(r.X+(r.Width-iw)/2, r.Bottom-ih-3, iw, ih), _ => new Rectangle(r.X+5, r.Y+(r.Height-ih)/2, iw, ih) };
-                    g.DrawImage(_picture, ir);
-                    if (PictureAlign is ImagePlacement.LeftOfCaption or ImagePlacement.LeftEdge) { r.X += iw+8; r.Width -= iw+8; }
-                    else if (PictureAlign == ImagePlacement.RightOfCaption) r.Width -= iw+8;
-                }
-            }
+            try { g.DrawImage(_picture,imageRect); }
             catch (ArgumentException) { }
             catch (ExternalException) { }
         }
-        DrawCaption(g,r,f,flags,color,text);
+        if(text.Length>0) DrawCaption(g,textRect,f,text,colors,back);
     }
-    private void DrawCaption(Graphics g, Rectangle r, Font f, TextFormatFlags flags, Color color, string text)
+    private void DrawCaption(Graphics g, Rectangle r, Font f, string text, CaptionColors colors, Color back)
     {
-        if (_captionStyle == CaptionStyle.Raised)
+        var flags=TextFormatFlags.Left|TextFormatFlags.Top|TextFormatFlags.WordBreak;
+        if(Enabled && _captionStyle is CaptionStyle.Raised or CaptionStyle.Sunken)
         {
-            var shadow = r; shadow.Offset(1, 1);
-            TextRenderer.DrawText(g, text, f, shadow, Color.White, flags);
+            // VB6: ShadeColor(bColor, +/-40) a -1,0 y +1,+1 antes del texto definitivo.
+            int shadeOffset=_captionStyle==CaptionStyle.Raised?40:-40;
+            var light=r; light.Offset(-1,0);
+            TextRenderer.DrawText(g,text,f,light,Shade(back,shadeOffset),flags);
+            var dark=r; dark.Offset(1,1);
+            TextRenderer.DrawText(g,text,f,dark,Shade(back,-shadeOffset),flags);
         }
-        else if (_captionStyle == CaptionStyle.Sunken)
+        if(colors.Shadow is Color shadow)
         {
-            var shadow = r; shadow.Offset(1, 1);
-            TextRenderer.DrawText(g, text, f, shadow, ControlPaint.Dark(color), flags);
+            var sr=r; sr.Offset(colors.ShadowOffset);
+            TextRenderer.DrawText(g,text,f,sr,shadow,flags);
         }
-        TextRenderer.DrawText(g, text, f, r, color, flags);
+        TextRenderer.DrawText(g,text,f,r,colors.Color,flags);
     }
 
     [StructLayout(LayoutKind.Sequential)]
