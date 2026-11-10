@@ -18,8 +18,14 @@ internal static class Program
     private static string _current = "";
 
     [STAThread]
-    private static int Main()
+    private static int Main(string[] args)
     {
+        if (args.Length == 2 && args[0].Equals("--visual-snapshot", StringComparison.OrdinalIgnoreCase))
+            return GenerateVisualSnapshots(args[1]);
+
+        if (args.Length == 3 && args[0].Equals("--visual-compare", StringComparison.OrdinalIgnoreCase))
+            return CompareVisualSnapshots(args[1], args[2]);
+
         Application.EnableVisualStyles();
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("LaVolpe.Buttons.Tests - pruebas de compatibilidad");
@@ -400,6 +406,76 @@ internal static class Program
         Console.WriteLine(new string('-', 70));
         Console.WriteLine($"{_passed} correctas, {_failed.Count} fallidas");
         return _failed.Count == 0 ? 0 : 1;
+    }
+
+    private static int GenerateVisualSnapshots(string outputDirectory)
+    {
+        Application.EnableVisualStyles();
+        Directory.CreateDirectory(outputDirectory);
+        var styles = Enum.GetValues<BackStyle>().Distinct().ToArray();
+        var states = new[] { (Name: "normal", Value: false, Enabled: true), (Name: "checked", Value: true, Enabled: true), (Name: "disabled", Value: false, Enabled: false) };
+
+        using var form = new Form { ClientSize = new Size(160, 72), ShowInTaskbar = false, StartPosition = FormStartPosition.Manual, Location = new Point(-3000, 0) };
+        using var button = new LaVolpeButton { Caption = "Botón", Size = new Size(120, 40), Location = new Point(20, 16), Mode = ButtonMode.CheckBox };
+        form.Controls.Add(button);
+        form.Show();
+        Application.DoEvents();
+
+        foreach (var style in styles)
+        foreach (var state in states)
+        {
+            button.ButtonStyle = style;
+            button.Value = state.Value;
+            button.Enabled = state.Enabled;
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            button.DrawToBitmap(bitmap, new Rectangle(Point.Empty, bitmap.Size));
+            bitmap.Save(Path.Combine(outputDirectory, $"{style}-{state.Name}.png"), System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        Console.WriteLine($"Snapshots visuales generados: {styles.Length * states.Length}");
+        return 0;
+    }
+
+    private static int CompareVisualSnapshots(string referenceDirectory, string currentDirectory)
+    {
+        var failures = 0;
+        foreach (var referencePath in Directory.EnumerateFiles(referenceDirectory, "*.png"))
+        {
+            var currentPath = Path.Combine(currentDirectory, Path.GetFileName(referencePath));
+            if (!File.Exists(currentPath))
+            {
+                Console.WriteLine($"FALTA {Path.GetFileName(referencePath)}");
+                failures++;
+                continue;
+            }
+
+            using var reference = new Bitmap(referencePath);
+            using var current = new Bitmap(currentPath);
+            if (reference.Size != current.Size)
+            {
+                Console.WriteLine($"TAMAÑO {Path.GetFileName(referencePath)}: VB6={reference.Size}, .NET={current.Size}");
+                failures++;
+                continue;
+            }
+
+            long differentPixels = 0;
+            long totalChannelDelta = 0;
+            for (var y = 0; y < reference.Height; y++)
+            for (var x = 0; x < reference.Width; x++)
+            {
+                var expected = reference.GetPixel(x, y);
+                var actual = current.GetPixel(x, y);
+                var delta = Math.Abs(expected.R - actual.R) + Math.Abs(expected.G - actual.G) + Math.Abs(expected.B - actual.B) + Math.Abs(expected.A - actual.A);
+                if (delta != 0) differentPixels++;
+                totalChannelDelta += delta;
+            }
+
+            var totalPixels = (long)reference.Width * reference.Height;
+            var percentage = totalPixels == 0 ? 0 : differentPixels * 100.0 / totalPixels;
+            Console.WriteLine($"{Path.GetFileName(referencePath)}: {differentPixels}/{totalPixels} píxeles ({percentage:F2}%), delta={totalChannelDelta}");
+        }
+
+        return failures == 0 ? 0 : 1;
     }
 
     private static T Add<T>(Form form, T control) where T : Control
