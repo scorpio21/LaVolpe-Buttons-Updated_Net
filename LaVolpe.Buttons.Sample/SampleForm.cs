@@ -24,6 +24,7 @@ public sealed class SampleForm : Form
     private readonly Panel _samplePanel = new() { Location = new Point(8, 206), Size = new Size(494, 163), BorderStyle = BorderStyle.FixedSingle, BackColor = SystemColors.Control };
     private readonly List<Image?> _images = new();
     private readonly List<Image?> _vb6SampleImages = new();
+    private string _sampleCaption = "Win XP";
 
     public SampleForm()
     {
@@ -142,8 +143,8 @@ public sealed class SampleForm : Form
         Controls.Add(_gradients);
         Controls.Add(_hover);
         _captionAlign.Items.AddRange(new object[] { "Caption Left", "Caption Right", "Caption Center", "Caption Top", "Caption Bottom" });
-        _pictureAlign.Items.AddRange(new object[] { "Image at Left", "Image Left of Caption", "Image at Right", "Image Right of Caption", "Image Top", "Image Bottom" });
-        _pictureSize.Items.AddRange(new object[] { "Image 16 x 16", "Image 24 x 24", "Image 32 x 32", "Fill Stretch", "Fill Scale Up/Down" });
+        _pictureAlign.Items.AddRange(new object[] { "Image at Left", "Image Left of Caption", "Image at Right", "Image Right of Caption", "Image Top Center", "Image Bottom Center" });
+        _pictureSize.Items.AddRange(new object[] { "Image 16 x 16", "Image 24 x 24", "Image 32 x 32", "Image Stretch to Button", "Image Scale to Button" });
         _captionAlign.SelectedIndexChanged += (_, _) => ApplyCaptionAlignment();
         _pictureAlign.SelectedIndexChanged += (_, _) => ApplyPictureAlignment();
         _pictureSize.SelectedIndexChanged += (_, _) => ApplyPictureSize();
@@ -171,8 +172,11 @@ public sealed class SampleForm : Form
     private void SelectSource(int index)
     {
         foreach (var button in _sample.Concat(_custom)) button.ButtonStyle = (BackStyle)index;
-        var caption = _source[index].Caption;
-        foreach (var button in _sample.Take(3)) button.Caption = caption;
+        _sampleCaption = _source[index].Caption.Replace("&", string.Empty);
+        if (_pictureSize.SelectedIndex < 3)
+        {
+            foreach (var button in _sample.Take(3)) button.Caption = _sampleCaption;
+        }
     }
 
     private void ApplyMode(int index)
@@ -198,6 +202,15 @@ public sealed class SampleForm : Form
     {
         var value = (ImageSize)Math.Max(0, _pictureSize.SelectedIndex);
         foreach (var button in _sample) button.PictureSize = value;
+        if (_pictureSize.SelectedIndex > 2)
+        {
+            foreach (var button in _sample) button.Caption = string.Empty;
+        }
+        else
+        {
+            foreach (var button in _sample.Take(3)) button.Caption = _sampleCaption;
+            _sample[3].Caption = "Round";
+        }
     }
 
     private void SetSamplesEnabled(bool enabled)
