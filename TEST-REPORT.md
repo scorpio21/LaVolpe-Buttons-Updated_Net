@@ -10,7 +10,7 @@ Fecha: 2026-11-10. SDK fijado por `global.json` a 8.0.427.
 | `dotnet build .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-restore` | Correcto; 0 warnings, 0 errors |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release --no-restore -m:1` | Correcto; 0 warnings, 0 errors |
 | `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build` | 29 correctas, 0 fallidas |
-| `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 24 capturas generadas; referencia VB6 pendiente por error de arranque de VB6 |
+| `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 29 correctas, 0 fallidas |
 | `dotnet test` en cada `.csproj` | No descubre tests: son proyectos EXE sin Microsoft.NET.Test.Sdk |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` | Puede fallar en este entorno por compilación paralela (`MSB5021`); la variante reproducible `-m:1` sí es correcta |

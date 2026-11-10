@@ -413,7 +413,13 @@ internal static class Program
         Application.EnableVisualStyles();
         Directory.CreateDirectory(outputDirectory);
         var styles = Enum.GetValues<BackStyle>().Distinct().ToArray();
-        var states = new[] { (Name: "normal", Value: false, Enabled: true), (Name: "checked", Value: true, Enabled: true), (Name: "disabled", Value: false, Enabled: false) };
+        var states = new[]
+        {
+            (Name: "normal", Value: false, Enabled: true, Focused: false),
+            (Name: "focused", Value: false, Enabled: true, Focused: true),
+            (Name: "checked", Value: true, Enabled: true, Focused: false),
+            (Name: "disabled", Value: false, Enabled: false, Focused: false)
+        };
 
         using var form = new Form { ClientSize = new Size(160, 72), ShowInTaskbar = false, StartPosition = FormStartPosition.Manual, Location = new Point(-3000, 0) };
         using var button = new LaVolpeButton { Caption = "Botón", Size = new Size(120, 40), Location = new Point(20, 16), Mode = ButtonMode.CheckBox };
@@ -427,6 +433,7 @@ internal static class Program
             button.ButtonStyle = style;
             button.Value = state.Value;
             button.Enabled = state.Enabled;
+            if (state.Focused) button.Focus();
             using var bitmap = new Bitmap(button.Width, button.Height);
             button.DrawToBitmap(bitmap, new Rectangle(Point.Empty, bitmap.Size));
             bitmap.Save(Path.Combine(outputDirectory, $"{style}-{state.Name}.png"), System.Drawing.Imaging.ImageFormat.Png);

@@ -14,7 +14,7 @@ Desde la raíz del repositorio:
 dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build -- --visual-snapshot .\artifacts\visual\net8
 ```
 
-Se generan 24 PNG: los ocho `BackStyle` del control y los estados `normal`, `checked` y `disabled`.
+Se generan 32 PNG: los ocho `BackStyle` del control y los estados `normal`, `focused`, `checked` y `disabled`.
 
 ## Comparar contra capturas VB6
 
