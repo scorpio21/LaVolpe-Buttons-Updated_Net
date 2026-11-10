@@ -12,6 +12,7 @@ Fecha: 2026-11-10. SDK fijado por `global.json` a 8.0.427.
 | `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build` | 29 correctas, 0 fallidas |
 | `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet run ... -- --visual-compare .\artifacts\visual\net8 .\artifacts\visual\net8` | 32/32 capturas idénticas; 0 píxeles diferentes y delta 0 |
+| Validación de archivos en `artifacts\visual\net8` | 32/32 PNG legibles, 120×40 píxeles, tamaño mayor que cero |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 29 correctas, 0 fallidas |
 | `dotnet test` en cada `.csproj` | No descubre tests: son proyectos EXE sin Microsoft.NET.Test.Sdk |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` | Puede fallar en este entorno por compilación paralela (`MSB5021`); la variante reproducible `-m:1` sí es correcta |
