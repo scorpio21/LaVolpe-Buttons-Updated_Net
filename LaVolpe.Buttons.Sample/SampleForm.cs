@@ -13,7 +13,7 @@ public sealed class SampleForm : Form
         Dock = DockStyle.Bottom,
         Height = 46,
         Padding = new Padding(12, 6, 12, 6),
-        BackColor = Color.White,
+        BackColor = SystemColors.Control,
         ForeColor = Color.FromArgb(60, 60, 60),
         Text = "Pase el ratón por un botón o haga clic para ver los eventos."
     };
@@ -21,16 +21,16 @@ public sealed class SampleForm : Form
 
     public SampleForm()
     {
-        Text = "LaVolpe Buttons - .NET sample";
+        Text = "Sample for PSC - Vertical Button Version coming soon.";
         ClientSize = new Size(760, 470);
-        BackColor = Color.WhiteSmoke;
-        Font = new Font("Segoe UI", 9f);
+        BackColor = SystemColors.Control;
+        Font = new Font("Times New Roman", 8.25f);
         StartPosition = FormStartPosition.CenterScreen;
         AutoScroll = true;
 
         Controls.Add(new Label { Text = "ButtonStyle", Location = new Point(20, 12), AutoSize = true, ForeColor = Color.DimGray });
-        var styles = new[] { BackStyle.Windows95, BackStyle.Windows31, BackStyle.WindowsXp, BackStyle.Java, BackStyle.Flat, BackStyle.Hover, BackStyle.Netscape, BackStyle.Macintosh };
-        var styleNames = new[] { "Windows95", "Windows31", "XP", "Java", "Flat", "Hover", "Netscape", "Macintosh" };
+        var styles = new[] { BackStyle.Windows95, BackStyle.WindowsXp, BackStyle.Flat, BackStyle.Netscape, BackStyle.Windows31, BackStyle.Java, BackStyle.Hover, BackStyle.Macintosh };
+        var styleNames = new[] { "Win 9.x", "Win XP", "Flat", "Netscape", "Win 3.x", "Java", "Hover", "Macintosh" };
         for (int i = 0; i < styles.Length; i++)
             Add(Make(styleNames[i], new Point(20 + i % 4 * 185, 32 + i / 4 * 46), new Size(170, 40), BackStyle: styles[i]));
 
@@ -91,7 +91,7 @@ public sealed class SampleForm : Form
     private LaVolpeButton Make(string caption, Point location, Size size, BackStyle? BackStyle = null,
         ButtonShape? ButtonShape = null, ButtonMode? Mode = null)
     {
-        var button = new LaVolpeButton { Caption = caption, Location = location, Size = size, ForeColor = Color.Black, BackColor = Color.FromArgb(250, 250, 250) };
+        var button = new LaVolpeButton { Caption = caption, Location = location, Size = size, ForeColor = Color.Black, BackColor = SystemColors.Control };
         if (BackStyle is not null) button.ButtonStyle = BackStyle.Value;
         if (ButtonShape is not null) button.ButtonShape = ButtonShape.Value;
         if (Mode is not null) button.Mode = Mode.Value;
