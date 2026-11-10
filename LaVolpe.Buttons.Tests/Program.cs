@@ -61,12 +61,31 @@ internal static class Program
         {
             var button = Add(form, new LaVolpeButton());
             var properties = TypeDescriptor.GetProperties(button);
+            var vb6Properties = new[]
+            {
+                "BackColor", "ButtonShape", "ButtonStyle", "Cancel", "Caption", "CaptionAlign", "CaptionStyle",
+                "CustomClick", "Default", "DragIcon", "DragMode", "Enabled", "Font", "FontStyle", "ForeColor",
+                "GradientColor", "GradientMode", "Height", "HelpContextID", "HoverBackColor", "HoverColorLocks",
+                "HoverForeColor", "Index", "Left", "Mode", "MouseIcon", "MousePointer", "Picture", "PictureAlign",
+                "PictureSize", "ResetDefaultColors", "ShowFocusRect", "TabIndex", "TabStop", "Tag", "ToolTipText",
+                "Top", "Value", "Visible", "WhatsThisHelpID", "Width"
+            };
+            foreach (var name in vb6Properties)
+                Check(properties[name] is not null, $"{name} no aparece en PropertyGrid");
             Check(properties[nameof(LaVolpeButton.Caption)] is not null, "Caption no aparece en PropertyGrid");
             Check(properties[nameof(LaVolpeButton.ButtonStyle)] is not null, "ButtonStyle no aparece en PropertyGrid");
             var styleText = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.ConvertTo(BackStyle.WindowsXp, typeof(string));
             var modeText = properties[nameof(LaVolpeButton.Mode)]!.Converter.ConvertTo(ButtonMode.CheckBox, typeof(string));
+            var shapeText = properties[nameof(LaVolpeButton.ButtonShape)]!.Converter.ConvertTo(ButtonShape.Custom3DBorder, typeof(string));
+            var imageAlignText = properties[nameof(LaVolpeButton.PictureAlign)]!.Converter.ConvertTo(ImagePlacement.TopCenter, typeof(string));
+            var imageSizeText = properties[nameof(LaVolpeButton.PictureSize)]!.Converter.ConvertTo(ImageSize.FillScaleUpDown, typeof(string));
+            var pointerText = properties[nameof(LaVolpeButton.MousePointer)]!.Converter.ConvertTo(MousePointerConstants.Custom, typeof(string));
             Check(styleText?.ToString() == "lv_XP", $"BackStyle={styleText}");
             Check(modeText?.ToString() == "lv_CheckBox", $"Mode={modeText}");
+            Check(shapeText?.ToString() == "lv_Custom3DBorder", $"ButtonShape={shapeText}");
+            Check(imageAlignText?.ToString() == "lv_TopCenter", $"PictureAlign={imageAlignText}");
+            Check(imageSizeText?.ToString() == "lv_Fill_ScaleUpDown", $"PictureSize={imageSizeText}");
+            Check(pointerText?.ToString() == "vbCustom", $"MousePointer={pointerText}");
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValuesSupported(), "ButtonStyle no tiene lista desplegable");
             Check(button.DragMode == DragModeConstants.vbManual, $"DragMode={button.DragMode}");
             button.DragMode = DragModeConstants.vbAutomatic;
