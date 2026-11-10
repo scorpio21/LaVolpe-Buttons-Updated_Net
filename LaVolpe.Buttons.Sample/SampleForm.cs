@@ -21,6 +21,7 @@ public sealed class SampleForm : Form
     private readonly CheckBox _disable = CreateCheck("Disable above three buttons?", 316, 302, 166);
     private readonly CheckBox _gradients = CreateCheck("Use gradeint colors?", 358, 324, 124);
     private readonly CheckBox _hover = CreateCheck("Highlight hover with other color?", 303, 347, 179);
+    private readonly Panel _samplePanel = new() { Location = new Point(8, 206), Size = new Size(494, 163), BorderStyle = BorderStyle.FixedSingle, BackColor = SystemColors.Control };
     private readonly List<Image?> _images = new();
     private readonly List<Image?> _vb6SampleImages = new();
 
@@ -133,7 +134,7 @@ public sealed class SampleForm : Form
         Controls.Add(new Label { Text = "Note how gradients on circular button has nice 3D effect", Location = new Point(51, 159), Size = new Size(277, 18), Font = new Font("MS Sans Serif", 8.25f) });
         Controls.Add(new Label { Text = "< Custom Buttons >", Location = new Point(238, 121), Size = new Size(58, 27), ForeColor = Color.FromArgb(192, 0, 0), Font = new Font("Times New Roman", 9f, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter });
         Controls.Add(new Label { Text = "Click above rectangular buttons to see their style as a diagonal shape.", Location = new Point(18, 200), AutoSize = true, Font = new Font("MS Sans Serif", 8.25f) });
-        Controls.Add(new Panel { Location = new Point(8, 206), Size = new Size(494, 163), BorderStyle = BorderStyle.FixedSingle, BackColor = SystemColors.Control });
+        Controls.Add(_samplePanel);
         Controls.Add(_captionAlign);
         Controls.Add(_pictureAlign);
         Controls.Add(_pictureSize);
@@ -149,6 +150,11 @@ public sealed class SampleForm : Form
         _disable.CheckedChanged += (_, _) => SetSamplesEnabled(!_disable.Checked);
         _gradients.CheckedChanged += (_, _) => ApplyGradients();
         _hover.CheckedChanged += (_, _) => ApplyHover();
+
+        // The VB6 frame is a background container. Keep every child control above it.
+        _samplePanel.SendToBack();
+        foreach (var control in _sample.Concat(_custom).Concat<Control>(_mode).Append(_captionAlign).Append(_pictureAlign).Append(_pictureSize).Append(_disable).Append(_gradients).Append(_hover))
+            control.BringToFront();
     }
 
     private void ApplyInitialState()
