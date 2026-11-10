@@ -49,6 +49,6 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | ActiveX/COM identity | `lvButton_H.vbp`, `lvButtons.ctl:27` | `LaVolpe.Buttons.Net.csproj` | ausente | No CLSID/OCX/PropertyBag |
 | Designer/persistence | `lvButtons.ctl:2652-2762` | `LaVolpeButton.cs:23-24`, csproj | parcial | Metadatos WinForms; no persistencia VB6 |
 | Sample controls | `frmSample.frm:810-996` | `SampleForm.cs:1-116` | parcial | No arrays/diseñador VB6 |
-| Visual pixel parity | `lvButtons.ctl:2803-3386` | `LaVolpe.Buttons.Tests/Program.cs` (`--visual-snapshot`, `--visual-compare`) | no verificable | Comparador reproducible añadido; no hay baseline OCX porque VB6 no arranca en este equipo |
+| Visual pixel parity | `lvButtons.ctl:2803-3386` | `LaVolpe.Buttons.Tests/Program.cs` (`--visual-snapshot`, `--visual-compare`) | no verificable | El sample VB6 se observa ejecutándose desde el IDE; falta baseline PNG con el mismo encuadre para medir píxeles |
 
 Conteo: 20 equivalentes, 16 parciales, 7 diferentes, 1 ausente, 1 no verificable; 44/45 filas revisadas.

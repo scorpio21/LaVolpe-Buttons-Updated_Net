@@ -2,9 +2,9 @@
 
 ## Estado
 
-El comparador está implementado, pero la referencia VB6 no se ha podido ejecutar en este equipo. Tanto `VB6.EXE` al abrir `LaVolpe-Buttons-Updated-/prjSampleButtons.vbp` como el ejecutable compilado `LaVolpe-Buttons-Updated-/prjSampleButtons.exe` devuelven el error de Windows `Reasignación no válida del archivo DLL del sistema`.
+El comparador está implementado. La referencia VB6 sí se ejecuta cuando se inicia `prjSampleButtons.vbp` desde el IDE de VB6; la ventana de ejecución muestra los ocho estilos, diagonales, formas circulares, imágenes y controles de configuración. El ejecutable independiente `LaVolpe-Buttons-Updated-/prjSampleButtons.exe` devuelve en este equipo `Reasignación no válida del archivo DLL del sistema`, por lo que la captura automatizada debe hacerse desde el IDE o en otro equipo compatible.
 
-Por tanto, no se afirma paridad pixel a pixel. Las capturas `.NET` sirven como salida reproducible y la matriz mantiene esta diferencia como `no verificable`.
+La referencia visual ya es observable, pero todavía no se afirma paridad pixel a pixel porque no se ha almacenado una captura VB6 con el mismo encuadre, tamaño y estado que cada PNG `.NET`. La matriz mantiene esa parte como `no verificable`.
 
 ## Generar capturas del port
 
