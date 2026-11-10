@@ -142,7 +142,7 @@ public sealed class SampleForm : Form
         Controls.Add(_gradients);
         Controls.Add(_hover);
         _captionAlign.Items.AddRange(new object[] { "Caption Left", "Caption Right", "Caption Center", "Caption Top", "Caption Bottom" });
-        _pictureAlign.Items.AddRange(new object[] { "Image at Left", "Image Left of Caption", "Image Right of Caption", "Image at Right", "Image Top", "Image Bottom" });
+        _pictureAlign.Items.AddRange(new object[] { "Image at Left", "Image Left of Caption", "Image at Right", "Image Right of Caption", "Image Top", "Image Bottom" });
         _pictureSize.Items.AddRange(new object[] { "Image 16 x 16", "Image 24 x 24", "Image 32 x 32", "Fill Stretch", "Fill Scale Up/Down" });
         _captionAlign.SelectedIndexChanged += (_, _) => ApplyCaptionAlignment();
         _pictureAlign.SelectedIndexChanged += (_, _) => ApplyPictureAlignment();
@@ -190,7 +190,7 @@ public sealed class SampleForm : Form
 
     private void ApplyPictureAlignment()
     {
-        var value = _pictureAlign.SelectedIndex switch { 0 => ImagePlacement.LeftEdge, 1 => ImagePlacement.LeftOfCaption, 2 => ImagePlacement.RightOfCaption, 3 => ImagePlacement.RightEdge, 4 => ImagePlacement.TopCenter, _ => ImagePlacement.BottomCenter };
+        var value = (ImagePlacement)Math.Max(0, _pictureAlign.SelectedIndex);
         foreach (var button in _sample) button.PictureAlign = value;
     }
 
