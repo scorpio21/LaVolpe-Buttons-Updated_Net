@@ -369,6 +369,7 @@ public class LaVolpeButton : Control, IButtonControl
     public void NotifyDefault(bool value){ if(_default==value) return; _default=value; InvalidateIfNeeded(); }
     protected override void OnEnabledChanged(EventArgs e){base.OnEnabledChanged(e);UpdateRegion();InvalidateIfNeeded();}
     protected override void OnResize(EventArgs e){base.OnResize(e);UpdateRegion();InvalidateIfNeeded();}
+    protected override void OnDpiChangedAfterParent(EventArgs e){base.OnDpiChangedAfterParent(e);UpdateRegion();InvalidateIfNeeded();}
     protected override void OnHandleCreated(EventArgs e){base.OnHandleCreated(e);UpdateRegion();}
     protected override void OnHandleDestroyed(EventArgs e){_hoverTimer.Stop();ReleaseHdc();base.OnHandleDestroyed(e);}
     protected override void OnParentChanged(EventArgs e)

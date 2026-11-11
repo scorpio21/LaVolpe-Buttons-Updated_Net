@@ -17,4 +17,4 @@ Comando:
 dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build
 ```
 
-Esta matriz verifica escalado geométrico reproducible, no cambia la configuración DPI del monitor de Windows. La comparación visual del OCX VB6 ejecutándose realmente a 120/144/192 DPI sigue pendiente del issue #3.
+El control también reconstruye su región y repinta en `OnDpiChangedAfterParent` (`LaVolpe.Buttons.Net/LaVolpeButton.cs:372`). Esta matriz verifica escalado geométrico reproducible, pero no cambia la configuración DPI del monitor de Windows. La comparación visual del OCX VB6 ejecutándose realmente a 120/144/192 DPI sigue pendiente del issue #3.

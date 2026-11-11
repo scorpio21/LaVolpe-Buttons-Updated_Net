@@ -40,8 +40,8 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | Disabled rendering | `lvButtons.ctl:1966-2146`, `:2938-3035` | `LaVolpeButton.cs:414-477`, `:714-737` | parcial | Sombreado aproximado |
 | Eight style renderers | `lvButtons.ctl:2803-3386` | `LaVolpeButton.cs:508-641` | diferente | Un renderer común, tres anillos aproximados |
 | Custom image mask | `lvButtons.ctl:1548-1656` | `LaVolpeButton.cs:187-216` | parcial | Máscara LockBits, geometría diferente |
-| Resize/region | `lvButtons.ctl:2764-2781` | `LaVolpeButton.cs:124-216`, `:304-305` | parcial | DPI y unidades pendientes |
-| DPI | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:64`, `:738-850` | no verificable | No hay ejecución comparativa 96/120/144/192 |
+| Resize/region | `lvButtons.ctl:2764-2781` | `LaVolpeButton.cs:124-216`, `:370-373` | parcial | La región se reconstruye en resize y cambio DPI; falta validar el monitor real |
+| DPI | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:64`, `:738-850`, `:372` | no verificable | La matriz lógica 96/120/144/192 es correcta, pero no hay ejecución comparativa del OCX en monitores reales 96/120/144/192 |
 | Fonts visuales | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:64`, `:851-908` | diferente | Times New Roman VB6 vs fuente heredada |
 | Error: null caption | VB6 `:396-423` | `LaVolpeButton.cs:68` | equivalente | Normalización probada |
 | Error: released image | VB6 `:509-534` | `LaVolpeButton.cs:851-889` | equivalente | Se omite imagen ante excepción; probado |
