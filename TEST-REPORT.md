@@ -1,6 +1,6 @@
 # Test report
 
-Fecha: 2026-11-10. SDK fijado por `global.json` a 8.0.427.
+Fecha: 2026-11-11. SDK fijado por `global.json` a 8.0.427.
 
 | Comando | Resultado |
 |---|---|
@@ -12,6 +12,8 @@ Fecha: 2026-11-10. SDK fijado por `global.json` a 8.0.427.
 | `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build` | 29 correctas, 0 fallidas; PropertyGrid y reglas de serialización verificadas |
 | `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet run ... -- --visual-compare .\artifacts\visual\net8 .\artifacts\visual\net8` | 32/32 capturas idénticas; 0 píxeles diferentes y delta 0 |
+| `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build -- --snapshot .\artifacts\visual\net8\sample-client.png` | Captura cliente reproducible de 508×374 generada correctamente |
+| Comparación `sample-client.png` VB6/.NET con el comparador | 73.519/189.992 píxeles diferentes (38,70 %); delta de canales 9.414.695; issue #2 permanece abierto |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build` | Sample WinForms iniciado y verificado visualmente contra `artifacts/visual/vb6/sample.png` |
 | Validación de archivos en `artifacts\visual\net8` | 32/32 PNG legibles, 120×40 píxeles, tamaño mayor que cero |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 29 correctas, 0 fallidas |
@@ -24,4 +26,4 @@ Texto/Caption, defaults, opciones del PropertyGrid, colores heredados, Value de 
 
 ## Limitaciones
 
-No se ejecutó el OCX VB6 ni se hizo captura píxel a píxel. No se verificaron DPI 96/120/144/192, diseñador de Visual Studio, drag/drop externo ni persistencia ActiveX.
+La captura VB6 usada procede del formulario ejecutado desde el IDE; el EXE independiente falla con `Reasignación no válida del archivo DLL del sistema`. La comparación cliente ya se ejecutó, pero no alcanza paridad pixel a pixel. No se verificaron DPI 96/120/144/192, diseñador de Visual Studio, drag/drop externo ni persistencia ActiveX.
