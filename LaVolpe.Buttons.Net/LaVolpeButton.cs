@@ -256,7 +256,8 @@ public class LaVolpeButton : Control, IButtonControl
             for(int x=0;x<w;x++)
             {
                 int i=y*data.Stride+x*4;
-                bool transparent=bytes[i+3]<20 || (Math.Abs(bytes[i]-maskB)<=10 && Math.Abs(bytes[i+1]-maskG)<=10 && Math.Abs(bytes[i+2]-maskR)<=10);
+                // VB6 NormalizeImage conserva sólo el color de máscara ±3.
+                bool transparent=bytes[i+3]<20 || (Math.Abs(bytes[i]-maskB)<=3 && Math.Abs(bytes[i+1]-maskG)<=3 && Math.Abs(bytes[i+2]-maskR)<=3);
                 if(!transparent && start<0) start=x;
                 else if(transparent && start>=0){ region.Union(new Rectangle(start, y, x-start, 1)); start=-1; }
             }

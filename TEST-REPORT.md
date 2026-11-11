@@ -13,7 +13,7 @@ Fecha: 2026-11-11. SDK fijado por `global.json` a 8.0.427.
 | `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet run ... -- --visual-compare .\artifacts\visual\net8 .\artifacts\visual\net8` | 32/32 capturas idénticas; 0 píxeles diferentes y delta 0 |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build -- --snapshot .\artifacts\visual\net8\sample-client.png` | Captura cliente reproducible de 508×374 generada correctamente |
-| Comparación `sample-client.png` VB6/.NET con el comparador | 68.414/189.992 píxeles diferentes (36,01 %); delta de canales 7.192.379 tras ajustar altura VB6, recortes, tipografía, sombreado XP por fila, GradientMode por franjas, puntos `polyPts(10..15)`, marco VB6 y rasterización de diagonales dentro del área cliente; issue #2 permanece abierto |
+| Comparación `sample-client.png` VB6/.NET con el comparador | 68.422/189.992 píxeles diferentes (36,01 %); delta de canales 7.193.961 tras ajustar altura VB6, recortes, tipografía, sombreado XP por fila, GradientMode por franjas, puntos `polyPts(10..15)`, máscara `NormalizeImage` ±3, marco VB6 y rasterización de diagonales dentro del área cliente; issue #2 permanece abierto |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build` | Sample WinForms iniciado y verificado visualmente contra `artifacts/visual/vb6/sample.png` |
 | Validación de archivos en `artifacts\visual\net8` | 32/32 PNG legibles, 120×40 píxeles, tamaño mayor que cero |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 35 correctas, 0 fallidas |
@@ -23,7 +23,7 @@ Fecha: 2026-11-11. SDK fijado por `global.json` a 8.0.427.
 
 ## Casos cubiertos por el harness
 
-Texto/Caption, defaults, opciones del PropertyGrid, colores heredados, Value de Command/Check/Option, Click y DialogResult, exclusividad, foco, región de formas, máscara `CustomFlat`, imagen liberada, `MouseIcon`, `DelayDrawing`, HDC, 15 punteros, `DragIcon`, publicación OLE en `DragEnter`, entrega de texto en `DragDrop`, sombreado XP por filas, `GradientMode`, superficie marcada, ocho estilos, cuatro colores XP por anillo, XP disabled, offsets y caption en custom marcado.
+Texto/Caption, defaults, opciones del PropertyGrid, colores heredados, Value de Command/Check/Option, Click y DialogResult, exclusividad, foco, región de formas, máscara `CustomFlat` con tolerancia VB6, imagen liberada, `MouseIcon`, `DelayDrawing`, HDC, 15 punteros, `DragIcon`, publicación OLE en `DragEnter`, entrega de texto en `DragDrop`, sombreado XP por filas, `GradientMode`, superficie marcada, ocho estilos, cuatro colores XP por anillo, XP disabled, offsets y caption en custom marcado.
 
 ## Limitaciones
 

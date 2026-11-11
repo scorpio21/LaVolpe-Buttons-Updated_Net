@@ -258,9 +258,11 @@ internal static class Program
                 using var brush = new SolidBrush(Color.RoyalBlue);
                 graphics.FillEllipse(brush, 0, 0, 60, 40);
             }
+            image.SetPixel(59, 0, Color.FromArgb(255, 0, 250)); // diferencia azul de 5: VB6 lo conserva
             var button = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, Picture = image, Size = new Size(60, 40) });
             Check(button.PictureSize == ImageSize.FillScaleUpDown, $"PictureSize={button.PictureSize}");
             Check(button.Region is not null && !button.Region!.IsVisible(0, 0), button.Region is null ? "Region=null" : "máscara no aplicada");
+            Check(button.Region is not null && button.Region.IsVisible(59, 0), "la tolerancia de máscara no debe superar ±3");
         });
 
         Test("Imagen liberada no derriba el control", form =>
