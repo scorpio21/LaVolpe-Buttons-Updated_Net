@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.Sample", "L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.Tests", "LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj", "{3257E796-3BBB-4965-8375-5F2EB55A089A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaVolpe.Buttons.DesignerSample", "LaVolpe.Buttons.DesignerSample\LaVolpe.Buttons.DesignerSample.csproj", "{95E9F2E6-1FF6-4816-ABCE-F642815A6861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,5 +28,9 @@ Global
 		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3257E796-3BBB-4965-8375-5F2EB55A089A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95E9F2E6-1FF6-4816-ABCE-F642815A6861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95E9F2E6-1FF6-4816-ABCE-F642815A6861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95E9F2E6-1FF6-4816-ABCE-F642815A6861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95E9F2E6-1FF6-4816-ABCE-F642815A6861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
