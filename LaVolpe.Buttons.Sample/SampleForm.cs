@@ -272,10 +272,23 @@ public sealed class SampleForm : Form
             var path = Path.Combine(AppContext.BaseDirectory, "Resources", name);
             if (!File.Exists(path)) { _vb6SampleImages.Add(null); continue; }
             using var source = Image.FromFile(path);
-            var copy = new Bitmap(source);
+            var copy = name.StartsWith("vb6-diagonal-", StringComparison.OrdinalIgnoreCase)
+                ? CropSampleIcon(source)
+                : new Bitmap(source);
             _ownedImages.Add(copy);
             _vb6SampleImages.Add(copy);
         }
+    }
+
+    private static Bitmap CropSampleIcon(Image source)
+    {
+        // Los recortes históricos contienen parte del texto "Win XP" a la derecha.
+        // El icono ocupa la franja superior de 32×32 del recorte original.
+        var crop = new Bitmap(32, 32);
+        using var graphics = Graphics.FromImage(crop);
+        graphics.Clear(Color.White);
+        graphics.DrawImage(source, new Rectangle(0, 0, 32, 32), new Rectangle(0, 6, 32, 32), GraphicsUnit.Pixel);
+        return crop;
     }
 
     private static ComboBox CreateCombo(int x, int y, int width) => new() { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("MS Sans Serif", 8.25f) };

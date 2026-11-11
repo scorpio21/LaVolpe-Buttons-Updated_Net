@@ -527,6 +527,13 @@ public class LaVolpeButton : Control, IButtonControl
             using var path=CreatePath(rr);
             DrawRing(g,path,rr,rings[i]);
         }
+        if (_style == BackStyle.WindowsXp && _shape is ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal)
+        {
+            // VB6 deja una línea exterior azul continua en las diagonales; los anillos
+            // interiores de WinForms pueden suavizarla si se dibuja antes.
+            using var edge = new Pen(Color.FromArgb(0, 60, 115), 1f);
+            g.DrawPath(edge, fillPath);
+        }
     }
     // Cada anillo guarda los cuatro lados por separado (polyColors 1..4, 5..8 y 9..12).
     private readonly struct RingBorder
