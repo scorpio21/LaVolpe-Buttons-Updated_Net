@@ -1,14 +1,14 @@
 # Auditoría end-to-end: lvButtons_H → C# .NET 8
 
-Fecha de ejecución: 2026-11-10. Alcance: `LaVolpe-Buttons-Updated-/lvButtons.ctl`, `modLvTimer.bas`, `frmSample.frm`, fuentes/configuración C# y pruebas del repositorio.
+Fecha de ejecución: 2026-11-11. Alcance: `LaVolpe-Buttons-Updated-/lvButtons.ctl`, `modLvTimer.bas`, `frmSample.frm`, fuentes/configuración C# y pruebas del repositorio.
 
 ## Resultado ejecutivo
 
-El port WinForms compila por proyecto y el harness ejecuta 29 pruebas correctas, pero no es equivalente binario ni visualmente 100% compatible con el OCX ActiveX. La matriz de [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md) contiene 45 filas: 20 equivalentes, 16 parciales, 7 diferentes, 1 ausente y 1 no verificable.
+El port WinForms compila por proyecto y el harness ejecuta 29 pruebas correctas, pero no es equivalente binario ni visualmente 100% compatible con el OCX ActiveX. La matriz de [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md) contiene 45 filas: 12 equivalentes, 25 parciales, 6 diferentes, 1 ausente y 1 no verificable.
 
 - Cobertura revisada: **44/45 = 97,8%** (todo lo que no quedó como no verificable).
-- Equivalencia estricta: **20/45 = 44,4%**.
-- Superficie cubierta parcialmente o con adaptación explícita: **16/45 = 35,6%**.
+- Equivalencia estricta: **12/45 = 26,7%**.
+- Superficie cubierta parcialmente o con adaptación explícita: **25/45 = 55,6%**.
 - No debe interpretarse como equivalencia visual o COM.
 
 ## Inventario
@@ -33,7 +33,7 @@ La arquitectura actual es adecuada para el port: una biblioteca WinForms, un sam
 - `dotnet build` individual de los tres `.csproj`, Release: 0 errores, 0 warnings en cada uno.
 - `dotnet run --project .\\LaVolpe.Buttons.Tests\\LaVolpe.Buttons.Tests.csproj -c Release --no-build`: 29 correctas, 0 fallidas.
 - `dotnet test` no descubre casos porque el proyecto es un EXE de harness, no un proyecto de test SDK.
-- `dotnet build .\\LaVolpe.Buttons.Net.sln -c Release`: código de salida 1; el diagnóstico del SDK muestra `MSB4276` para resolvers de workload y el metaproyecto no llega a ejecutar todos los proyectos. Ver [TEST-REPORT.md](TEST-REPORT.md).
+- `dotnet build .\\LaVolpe.Buttons.Net.sln -c Release --no-restore -m:1`: correcto; 0 warnings y 0 errores. La concurrencia 1 se mantiene como gate reproducible en este entorno.
 
 ## Conclusión
 
