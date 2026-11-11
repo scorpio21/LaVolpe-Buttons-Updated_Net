@@ -24,6 +24,7 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | --- | --- |
 | `LaVolpe.Buttons.Net/` | Biblioteca WinForms con el control `LaVolpeButton`. |
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
+| `LaVolpe.Buttons.DesignerSample/` | Formulario mínimo para probar el control desde el diseñador y verificar arrastre OLE. |
 | `LaVolpe.Buttons.Tests/` | Pruebas de compatibilidad sin dependencias externas. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
 | `LaVolpe-Buttons-Updated-/` | Código VB6 original de referencia (no forma parte de la compilación). |
@@ -89,6 +90,10 @@ dotnet run --project .\LaVolpe.Buttons.Tests --configuration Release
 ```
 
 El ejecutable crea formularios reales en un hilo STA, comprueba la API y las regiones, imprime `PASS`/`FAIL` por caso y devuelve código de salida `1` si algo falla. No requiere xUnit, NUnit ni paquetes externos.
+
+## Verificar el arrastre OLE desde Visual Studio
+
+Abre `LaVolpe.Buttons.DesignerSample/LaVolpe.Buttons.DesignerSample.csproj`, ejecútalo y abre el Bloc de notas. Escribe y selecciona texto, arrástralo sobre el botón `LOAD` y suéltalo. El formulario muestra `OLEDragOver` mientras se arrastra y `OLEDragDrop: <texto>` al recibirlo. Esta prueba debe hacerse en una sesión interactiva de Windows; la suite automática solo verifica la publicación del `DataObject` y no sustituye la interoperabilidad con otra aplicación.
 
 ## Publicar
 
