@@ -11,7 +11,7 @@
 
 ## Evidencia
 
-- El flujo de arrastre se encuentra en `LaVolpe.Buttons.Net/LaVolpeButton.cs:420-448`; `OnDragEnter` publica `OLEDragOver` en `:492` para que el receptor pueda establecer `Copy` antes de soltar. El mismo `DataObject` publica `UnicodeText` y `Text` para `OLEStartDrag` y `DoDragDrop`.
+- El flujo de arrastre se encuentra en `LaVolpe.Buttons.Net/LaVolpeButton.cs:420-448`; `OnDragEnter` publica `OLEDragOver` en `:499-505` y aplica `Copy` por defecto solo sin manejador, para que el receptor pueda aceptar o rechazar el texto. El mismo `DataObject` publica `UnicodeText` y `Text` para `OLEStartDrag` y `DoDragDrop`.
 - `DragIcon` se convierte en un `Cursor` nativo y se libera al cambiar la imagen o destruir el control (`LaVolpeButton.cs:306-333`, `:399`).
 - `OLECompleteDrag` está protegido por `finally`, por lo que el cursor vuelve a `MousePointer` aunque `DoDragDrop` lance una excepción.
 - El harness verifica creación/liberación de `DragIcon` y los formatos del `DataObject` en `LaVolpe.Buttons.Tests/Program.cs:318-347`.
