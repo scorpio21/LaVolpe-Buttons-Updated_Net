@@ -602,11 +602,38 @@ public class LaVolpeButton : Control, IButtonControl
         var p13 = new Point(bounds.Left + width - 1, bounds.Top + height - 1 + offsetY);
         var p14 = new Point(bounds.Left + segX - 1 - offsetX * 2, bounds.Top + height - 1);
         var p15 = new Point(bounds.Left + width - 1, bounds.Top + height - 1);
-        g.DrawLine(pen, p10, p11);
-        g.DrawLine(pen, p11, p12);
-        g.DrawLine(pen, p12, p13);
-        g.DrawLine(pen, p13, p14);
-        g.DrawLine(pen, p14, p15);
+        DrawGdiPolyline(g, pen.Color, p10, p11);
+        DrawGdiPolyline(g, pen.Color, p11, p12);
+        DrawGdiPolyline(g, pen.Color, p12, p13);
+        DrawGdiPolyline(g, pen.Color, p13, p14);
+        DrawGdiPolyline(g, pen.Color, p14, p15);
+    }
+    private static void DrawGdiPolyline(Graphics g, Color color, Point start, Point end)
+    {
+        var hdc = g.GetHdc();
+        IntPtr pen = IntPtr.Zero;
+        IntPtr previous = IntPtr.Zero;
+        try
+        {
+            // VB6 DrawButtonBorder llama a la API GDI Polyline con un pen sólido de 1 px.
+            pen = CreatePen(0, 1, ToColorRef(color));
+            previous = SelectObject(hdc, pen);
+            Polyline(hdc, new[] { new NativePoint(start.X, start.Y), new NativePoint(end.X, end.Y) }, 2);
+            if (previous != IntPtr.Zero) SelectObject(hdc, previous);
+        }
+        finally
+        {
+            if (pen != IntPtr.Zero) DeleteObject(pen);
+            g.ReleaseHdc(hdc);
+        }
+    }
+    private static uint ToColorRef(Color color) => (uint)(color.R | (color.G << 8) | (color.B << 16));
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct NativePoint
+    {
+        public NativePoint(int x, int y) { X=x; Y=y; }
+        public readonly int X;
+        public readonly int Y;
     }
     private static void FillXpBackground(Graphics g, Rectangle bounds, GraphicsPath path, Color back)
     {
@@ -1086,5 +1113,8 @@ public class LaVolpeButton : Control, IButtonControl
     [DllImport("user32.dll", SetLastError=true)] private static extern IntPtr CreateIconIndirect(ref ICONINFO info);
     [DllImport("user32.dll", SetLastError=true)] private static extern bool DestroyIcon(IntPtr hIcon);
     [DllImport("gdi32.dll")] private static extern IntPtr CreateBitmap(int width, int height, uint planes, uint bitsPerPixel, IntPtr bits);
+    [DllImport("gdi32.dll")] private static extern IntPtr CreatePen(int style, int width, uint colorRef);
+    [DllImport("gdi32.dll")] private static extern IntPtr SelectObject(IntPtr hdc, IntPtr objectHandle);
+    [DllImport("gdi32.dll")] private static extern bool Polyline(IntPtr hdc, [In] NativePoint[] points, int count);
     [DllImport("gdi32.dll")] private static extern bool DeleteObject(IntPtr hObject);
 }
