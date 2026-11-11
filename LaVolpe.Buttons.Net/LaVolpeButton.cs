@@ -807,7 +807,9 @@ public class LaVolpeButton : Control, IButtonControl
                 }
                 rings[2]=new RingBorder(c1,c2,c3,c4);
                 rings[1]=new RingBorder(c5,c6,c7,c8);
-                rings[0]=RingBorder.Same(Color.FromArgb(0,60,115));   // lColor = &H733C00
+                rings[0]=_shape is ButtonShape.Round3D or ButtonShape.Round3DFixed or ButtonShape.RoundFlat
+                    ? RingBorder.Same(gray)
+                    : RingBorder.Same(Color.FromArgb(0,60,115));   // lColor = &H733C00
                 break;
             }
             case BackStyle.Macintosh:
@@ -929,7 +931,7 @@ public class LaVolpeButton : Control, IButtonControl
             case ButtonShape.Round3D:
             case ButtonShape.Round3DFixed:
             case ButtonShape.RoundFlat:
-                p.AddEllipse(r);
+                p.AddEllipse(new Rectangle(r.Left, r.Top, Math.Max(1, r.Width - 1), Math.Max(1, r.Height - 1)));
                 break;
             default:
                 p.AddRectangle(r);
