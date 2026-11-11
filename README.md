@@ -92,6 +92,18 @@ El ejecutable crea formularios reales en un hilo STA, comprueba la API y las reg
 
 ## Publicar
 
+Para consumir la biblioteca desde NuGet:
+
+```powershell
+dotnet add package LaVolpe.Buttons.Net --version 1.0.0
+```
+
+Para generar el paquete localmente:
+
+```powershell
+dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj --configuration Release --no-restore --output .\artifacts\nuget
+```
+
 ```powershell
 dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
   --configuration Release `

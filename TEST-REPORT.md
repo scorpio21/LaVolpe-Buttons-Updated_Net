@@ -19,6 +19,7 @@ Fecha: 2026-11-11. SDK fijado por `global.json` a 8.0.427.
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 29 correctas, 0 fallidas |
 | `dotnet test` en cada `.csproj` | No descubre tests: son proyectos EXE sin Microsoft.NET.Test.Sdk |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` | Puede fallar en este entorno por compilación paralela (`MSB5021`); la variante reproducible `-m:1` sí es correcta |
+| `dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj -c Release --no-restore --output .\artifacts\nuget` | Paquete `LaVolpe.Buttons.Net.1.0.0.nupkg` creado sin warnings; contiene DLL/XML, `LICENSE` y `README.md` |
 
 ## Casos cubiertos por el harness
 
