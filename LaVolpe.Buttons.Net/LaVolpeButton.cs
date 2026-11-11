@@ -417,7 +417,28 @@ public class LaVolpeButton : Control, IButtonControl
     protected override void OnMouseLeave(EventArgs e){base.OnMouseLeave(e);_hoverTimer.Stop();if(_hovered){_hovered=false;MouseOnButton?.Invoke(this,false);} _pressed=false;InvalidateIfNeeded();}
     protected override void OnMouseDown(MouseEventArgs e){base.OnMouseDown(e);LvMouseDown?.Invoke(this,e);if(e.Button==MouseButtons.Left&&Enabled){_dragStart=e.Location;_pressed=true;Focus();InvalidateIfNeeded();}}
     protected override void OnMouseUp(MouseEventArgs e){base.OnMouseUp(e);LvMouseUp?.Invoke(this,e);if(e.Button==MouseButtons.Left&&_pressed){_pressed=false;using(var path=CreatePath(ClientRectangle)) if(path.IsVisible(e.Location))PerformClick();InvalidateIfNeeded();}}
-    protected override void OnMouseMove(MouseEventArgs e){base.OnMouseMove(e);LvMouseMove?.Invoke(this,e);if(_dragMode&&e.Button==MouseButtons.Left&&Enabled){var dx=Math.Abs(e.X-_dragStart.X);var dy=Math.Abs(e.Y-_dragStart.Y);if(dx>=SystemInformation.DragSize.Width/2||dy>=SystemInformation.DragSize.Height/2){_pressed=false;OLEStartDrag?.Invoke(this,new DragEventArgs(new DataObject(Caption),0,e.X,e.Y,DragDropEffects.Copy,DragDropEffects.Copy));var effect=DoDragDrop(Caption,DragDropEffects.Copy);OLECompleteDrag?.Invoke(this,EventArgs.Empty);ApplyMousePointer();InvalidateIfNeeded();}}}
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+        base.OnMouseMove(e);
+        LvMouseMove?.Invoke(this, e);
+        if (!_dragMode || e.Button != MouseButtons.Left || !Enabled) return;
+        var dx = Math.Abs(e.X - _dragStart.X);
+        var dy = Math.Abs(e.Y - _dragStart.Y);
+        if (dx < SystemInformation.DragSize.Width / 2 && dy < SystemInformation.DragSize.Height / 2) return;
+
+        _pressed = false;
+        OLEStartDrag?.Invoke(this, new DragEventArgs(new DataObject(Caption), 0, e.X, e.Y, DragDropEffects.Copy, DragDropEffects.Copy));
+        try
+        {
+            DoDragDrop(Caption, DragDropEffects.Copy);
+        }
+        finally
+        {
+            OLECompleteDrag?.Invoke(this, EventArgs.Empty);
+            ApplyMousePointer();
+            InvalidateIfNeeded();
+        }
+    }
     protected override void OnMouseDoubleClick(MouseEventArgs e){base.OnMouseDoubleClick(e);ButtonDoubleClick?.Invoke(this,(int)e.Button);}
     protected override void OnKeyDown(KeyEventArgs e){base.OnKeyDown(e);LvKeyDown?.Invoke(this,e);if(e.KeyCode is Keys.Space or Keys.Enter){_pressed=true;InvalidateIfNeeded();}}
     protected override void OnKeyUp(KeyEventArgs e){base.OnKeyUp(e);LvKeyUp?.Invoke(this,e);if(e.KeyCode is Keys.Space or Keys.Enter){_pressed=false;PerformClick();InvalidateIfNeeded();}}

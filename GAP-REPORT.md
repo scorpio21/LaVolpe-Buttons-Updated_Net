@@ -10,7 +10,7 @@
 ## Prioridad media
 
 - `CustomFlat`/`Custom3DBorder` calcula máscara desde imagen, pero el port estira la imagen al control; VB6 normaliza/redimensiona (`lvButtons.ctl:1548-1656`, `LaVolpeButton.cs:187-216`, `:851-889`).
-- OLE drag/drop mantiene eventos nominales, pero los argumentos son WinForms (`LaVolpeButton.cs:367`, `:385-394`).
+- OLE drag/drop mantiene eventos y ahora restaura cursor/completa el ciclo incluso si `DoDragDrop` falla (`LaVolpe.Buttons.Net/LaVolpeButton.cs:420-448`); las firmas siguen siendo WinForms y la prueba con datos reales desde otra aplicación queda pendiente en [OLE-MAPPING.md](OLE-MAPPING.md).
 - `Default`/`Cancel` implementan `IButtonControl`, pero no conectan automáticamente `Form.AcceptButton` y `Form.CancelButton` (`LaVolpeButton.cs:103-106`, `:302`).
 - `Refresh` se expone como `RedrawButton`, y `ResetDefaultColors` como `ResetDefaultColorsNow`; son cambios de API fuente (`LaVolpeButton.cs:115`, `:288`).
 - Validaciones exhaustivas de enums y errores de setters VB6 no tienen una matriz de excepciones equivalente (`lvButtons.ctl:353-915`).
