@@ -566,47 +566,82 @@ public class LaVolpeButton : Control, IButtonControl
             using var brush=new SolidBrush(back); g.FillPath(brush,fillPath);
         }
         var rings=GetBorders(back,down,hot,selected);
-        for(int i=0;i<rings.Length;i++)
+        if (_style == BackStyle.WindowsXp)
         {
-            if(rings[i].IsEmpty) continue;
-            var rr=Rectangle.Inflate(full,-i,-i);
-            if(rr.Width<=2||rr.Height<=2) continue;
-            using var path=CreatePath(rr);
-            DrawRing(g,path,rr,rings[i]);
+            // VB6 DrawButton_WinXP termina en DrawButtonBorder: 14 polilíneas
+            // con tres niveles de colores, no en rutas GDI+ concéntricas.
+            DrawXpBorderNative(g, full, rings);
         }
-        if (_style == BackStyle.WindowsXp && _shape is ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal)
+        else
         {
-            // VB6 DrawButtonBorder usa polyPts(10..15) para el borde exterior
-            // de las diagonales. Reproducimos esos puntos en vez de usar la
-            // geometría genérica de GraphicsPath para ese anillo.
-            var edgeState = g.Save();
-            g.SmoothingMode = SmoothingMode.None;
-            g.PixelOffsetMode = PixelOffsetMode.Default;
-            using var edge = new Pen(Color.FromArgb(0, 60, 115), 1f);
-            DrawXpDiagonalOuterBorder(g, full, edge, _shape);
-            g.Restore(edgeState);
+            for(int i=0;i<rings.Length;i++)
+            {
+                if(rings[i].IsEmpty) continue;
+                var rr=Rectangle.Inflate(full,-i,-i);
+                if(rr.Width<=2||rr.Height<=2) continue;
+                using var path=CreatePath(rr);
+                DrawRing(g,path,rr,rings[i]);
+            }
         }
     }
-    private static void DrawXpDiagonalOuterBorder(Graphics g, Rectangle bounds, Pen pen, ButtonShape shape)
+    private void DrawXpBorderNative(Graphics g, Rectangle bounds, RingBorder[] rings)
     {
         var width = bounds.Width;
         var height = bounds.Height;
+        var diagonal = _shape is ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal;
         var edge = DiagonalEdge(bounds);
-        var segX = shape is ButtonShape.FullDiagonal or ButtonShape.LeftDiagonal ? edge : 0;
-        var segY = shape is ButtonShape.FullDiagonal or ButtonShape.RightDiagonal ? width - edge : width;
-        var offsetX = shape != ButtonShape.RightDiagonal ? 1 : 0;
-        var offsetY = shape != ButtonShape.LeftDiagonal ? 1 : 0;
-        var p10 = new Point(bounds.Left + segX - offsetX, bounds.Top + height - 1 + offsetX);
-        var p11 = new Point(bounds.Left, bounds.Top);
-        var p12 = new Point(bounds.Left + segY - 1 + offsetY, bounds.Top);
-        var p13 = new Point(bounds.Left + width - 1, bounds.Top + height - 1 + offsetY);
-        var p14 = new Point(bounds.Left + segX - 1 - offsetX * 2, bounds.Top + height - 1);
-        var p15 = new Point(bounds.Left + width - 1, bounds.Top + height - 1);
-        DrawGdiPolyline(g, pen.Color, p10, p11);
-        DrawGdiPolyline(g, pen.Color, p11, p12);
-        DrawGdiPolyline(g, pen.Color, p12, p13);
-        DrawGdiPolyline(g, pen.Color, p13, p14);
-        DrawGdiPolyline(g, pen.Color, p14, p15);
+        var segX = _shape is ButtonShape.LeftDiagonal or ButtonShape.FullDiagonal ? edge : 0;
+        var segY = _shape is ButtonShape.RightDiagonal or ButtonShape.FullDiagonal ? width - edge : width;
+        var offsetX = diagonal && _shape != ButtonShape.RightDiagonal ? 1 : 0;
+        var offsetY = diagonal && _shape != ButtonShape.LeftDiagonal ? 1 : 0;
+        var p = new Point[16];
+        p[0] = new(bounds.Left + 2 + segX - offsetX * 4, bounds.Top + height - 3);
+        p[1] = new(bounds.Left + 2 + offsetX * 2, bounds.Top + 2);
+        p[2] = new(bounds.Left + segY - 3 + offsetY * 3, bounds.Top + 2);
+        p[3] = new(bounds.Left + width - 3 - offsetY * 3, bounds.Top + height - 3);
+        p[4] = new(bounds.Left + 1 + segX - offsetX * 4, bounds.Top + height - 3);
+        for (var i = 5; i <= 9; i++)
+        {
+            var source = p[i - 5];
+            var (dx, dy) = (i - 5) switch
+            {
+                0 => (offsetX - 1, 1),
+                1 => (-1 - offsetX, -1),
+                2 => (1 - offsetY, -1),
+                3 => (1 + offsetY, 1),
+                _ => (-1, 1)
+            };
+            p[i] = new Point(source.X + dx, source.Y + dy);
+        }
+        p[10] = new(bounds.Left + segX - offsetX, bounds.Top + height - 1 + offsetX);
+        p[11] = new(bounds.Left, bounds.Top);
+        p[12] = new(bounds.Left + segY - 1 + offsetY, bounds.Top);
+        p[13] = new(bounds.Left + width - 1, bounds.Top + height - 1 + offsetY);
+        p[14] = new(bounds.Left + segX - 1 - offsetX * 2, bounds.Top + height - 1);
+        p[15] = new(bounds.Left + width - 1, bounds.Top + height - 1);
+
+        Color?[] colors =
+        {
+            null, rings[2].Left, rings[2].Top, rings[2].Right, rings[2].Bottom,
+            rings[1].Left, rings[1].Top, rings[1].Right, rings[1].Bottom,
+            rings[0].Left, rings[0].Top, rings[0].Right, rings[0].Bottom
+        };
+        var state = g.Save();
+        g.SmoothingMode = SmoothingMode.None;
+        g.PixelOffsetMode = PixelOffsetMode.Default;
+        try
+        {
+            for (var i = 0; i <= 13; i++)
+            {
+                if (i is 4 or 9) continue;
+                var colorIndex = i < 4 ? i + 1 : i > 8 ? i - 1 : i;
+                if (colors[colorIndex] is Color color)
+                    DrawGdiPolyline(g, color, p[i], p[i + 1]);
+            }
+            if (colors[12] is Color lastColor)
+                DrawGdiPolyline(g, lastColor, p[14], p[15]);
+        }
+        finally { g.Restore(state); }
     }
     private static void DrawGdiPolyline(Graphics g, Color color, Point start, Point end)
     {
