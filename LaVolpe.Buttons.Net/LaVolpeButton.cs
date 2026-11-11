@@ -442,10 +442,11 @@ public class LaVolpeButton : Control, IButtonControl
         if (dx < SystemInformation.DragSize.Width / 2 && dy < SystemInformation.DragSize.Height / 2) return;
 
         _pressed = false;
-        OLEStartDrag?.Invoke(this, new DragEventArgs(new DataObject(Caption), 0, e.X, e.Y, DragDropEffects.Copy, DragDropEffects.Copy));
+        var data = CreateDragData(Caption);
+        OLEStartDrag?.Invoke(this, new DragEventArgs(data, 0, e.X, e.Y, DragDropEffects.Copy, DragDropEffects.Copy));
         try
         {
-            DoDragDrop(Caption, DragDropEffects.Copy);
+            DoDragDrop(data, DragDropEffects.Copy);
         }
         finally
         {
@@ -453,6 +454,13 @@ public class LaVolpeButton : Control, IButtonControl
             ApplyMousePointer();
             InvalidateIfNeeded();
         }
+    }
+    private static DataObject CreateDragData(string caption)
+    {
+        var data = new DataObject();
+        data.SetData(DataFormats.UnicodeText, caption);
+        data.SetData(DataFormats.Text, caption);
+        return data;
     }
     protected override void OnMouseDoubleClick(MouseEventArgs e){base.OnMouseDoubleClick(e);ButtonDoubleClick?.Invoke(this,(int)e.Button);}
     protected override void OnKeyDown(KeyEventArgs e){base.OnKeyDown(e);LvKeyDown?.Invoke(this,e);if(e.KeyCode is Keys.Space or Keys.Enter){_pressed=true;InvalidateIfNeeded();}}

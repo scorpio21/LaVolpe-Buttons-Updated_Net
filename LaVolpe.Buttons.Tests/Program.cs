@@ -365,6 +365,16 @@ internal static class Program
             Check(field?.GetValue(button) is null, "cursor de arrastre no liberado");
         });
 
+        Test("OLEStartDrag publica texto en el mismo DataObject", form =>
+        {
+            var method = typeof(LaVolpeButton).GetMethod("CreateDragData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var data = (DataObject?)method?.Invoke(null, new object[] { "texto de prueba" });
+            Check(data is not null, "DataObject no creado");
+            Check(data!.GetDataPresent(DataFormats.UnicodeText), "UnicodeText ausente");
+            Check(data.GetDataPresent(DataFormats.Text), "Text ausente");
+            Check((string?)data.GetData(DataFormats.UnicodeText) == "texto de prueba", "texto Unicode incorrecto");
+        });
+
         Test("CheckBox/OptionButton marcan toda la superficie", form =>
         {
             var check = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Size = new Size(100, 40), Value = true });
