@@ -56,6 +56,8 @@ public sealed class SampleForm : Form
         {
             var index = i;
             _source[i] = CreateButton(captions[i], positions[i], new Size(103, 43), styles[i], ButtonShape.Rectangular, "Tahoma", 9.75f, true);
+            if (styles[i] is BackStyle.WindowsXp or BackStyle.Java)
+                _source[i].ForeColor = Color.Navy;
             _source[i].Click += (_, _) => SelectSource(index);
         }
     }
