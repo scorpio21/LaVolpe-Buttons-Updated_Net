@@ -87,6 +87,14 @@ internal static class Program
             Check(imageSizeText?.ToString() == "lv_Fill_ScaleUpDown", $"PictureSize={imageSizeText}");
             Check(pointerText?.ToString() == "vbCustom", $"MousePointer={pointerText}");
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValuesSupported(), "ButtonStyle no tiene lista desplegable");
+            var styleContext = new PropertyContext(button, properties[nameof(LaVolpeButton.ButtonStyle)]!);
+            var styleValues = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValues(styleContext)!.Cast<BackStyle>().ToArray();
+            Check(styleValues.Length == 8, $"ButtonStyle muestra {styleValues.Length} valores en vez de 8");
+            Check(styleValues.Select(value => (int)value).Distinct().Count() == styleValues.Length, "ButtonStyle contiene valores repetidos");
+            var shapeContext = new PropertyContext(button, properties[nameof(LaVolpeButton.ButtonShape)]!);
+            var shapeValues = properties[nameof(LaVolpeButton.ButtonShape)]!.Converter.GetStandardValues(shapeContext)!.Cast<ButtonShape>().ToArray();
+            Check(shapeValues.Length == 9, $"ButtonShape muestra {shapeValues.Length} valores en vez de 9");
+            Check(shapeValues.Select(value => (int)value).Distinct().Count() == shapeValues.Length, "ButtonShape contiene valores repetidos");
             Check(TypeDescriptor.GetDefaultProperty(button)?.Name == nameof(LaVolpeButton.Caption), "DefaultProperty no es Caption");
             Check(TypeDescriptor.GetDefaultEvent(button)?.Name == nameof(LaVolpeButton.Click), "DefaultEvent no es Click");
             Check(properties[nameof(LaVolpeButton.Caption)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "Caption no es serializable");
@@ -565,6 +573,16 @@ internal static class Program
 
     [DllImport("gdi32.dll")]
     private static extern int GetDeviceCaps(IntPtr hdc, int index);
+
+    private sealed class PropertyContext(object instance, PropertyDescriptor property) : ITypeDescriptorContext
+    {
+        public IContainer? Container => null;
+        public object Instance => instance;
+        public PropertyDescriptor PropertyDescriptor => property;
+        public object? GetService(Type serviceType) => null;
+        public bool OnComponentChanging() => true;
+        public void OnComponentChanged() { }
+    }
 
     private sealed class AssertFailedException(string message) : Exception(message);
 }

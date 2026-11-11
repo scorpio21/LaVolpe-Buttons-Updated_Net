@@ -17,9 +17,17 @@ internal sealed class VB6EnumConverter : EnumConverter
     public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context)
     {
         var type = context?.PropertyDescriptor?.PropertyType;
-        return type?.IsEnum == true
-            ? new StandardValuesCollection(Enum.GetValues(type))
-            : new StandardValuesCollection(Array.Empty<object>());
+        if (type?.IsEnum != true)
+            return new StandardValuesCollection(Array.Empty<object>());
+
+        // VB6EnumConverter exposes several aliases for the same numeric value
+        // (WindowsXp, XP and lv_XP). The PropertyGrid must show one item only.
+        var values = Enum.GetValues(type)
+            .Cast<Enum>()
+            .GroupBy(value => Convert.ToInt64(value))
+            .Select(group => group.First())
+            .ToArray();
+        return new StandardValuesCollection(values);
     }
 
     public override object? ConvertTo(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object? value, Type destinationType)
