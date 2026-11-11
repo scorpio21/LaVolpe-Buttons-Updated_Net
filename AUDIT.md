@@ -4,7 +4,7 @@ Fecha de ejecución: 2026-11-11. Alcance: `LaVolpe-Buttons-Updated-/lvButtons.ct
 
 ## Resultado ejecutivo
 
-El port WinForms compila por proyecto y el harness ejecuta 34 pruebas correctas, pero no es equivalente binario ni visualmente 100% compatible con el OCX ActiveX. La matriz de [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md) contiene 46 filas: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente y 1 no verificable.
+El port WinForms compila por proyecto y el harness ejecuta 35 pruebas correctas, pero no es equivalente binario ni visualmente 100% compatible con el OCX ActiveX. La matriz de [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md) contiene 46 filas: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente y 1 no verificable.
 
 - Cobertura revisada: **45/46 = 97,8%** (todo lo que no quedó como no verificable).
 - Equivalencia estricta: **13/46 = 28,3%**.
@@ -31,7 +31,7 @@ La arquitectura actual es adecuada para el port: una biblioteca WinForms, un sam
 
 - `dotnet restore .\\LaVolpe.Buttons.Net.sln`: correcto.
 - `dotnet build` individual de los tres `.csproj`, Release: 0 errores, 0 warnings en cada uno.
-- `dotnet run --project .\\LaVolpe.Buttons.Tests\\LaVolpe.Buttons.Tests.csproj -c Release --no-build`: 34 correctas, 0 fallidas, incluida la aceptación de `Copy` en `DragEnter` y la entrega de texto en `DragDrop`.
+- `dotnet run --project .\\LaVolpe.Buttons.Tests\\LaVolpe.Buttons.Tests.csproj -c Release --no-build`: 35 correctas, 0 fallidas, incluida la aceptación de `Copy` en `DragEnter`, la entrega de texto en `DragDrop` y el sombreado XP por franjas.
 - `dotnet test` no descubre casos porque el proyecto es un EXE de harness, no un proyecto de test SDK.
 - `dotnet build .\\LaVolpe.Buttons.Net.sln -c Release --no-restore -m:1`: correcto; 0 warnings y 0 errores. La concurrencia 1 se mantiene como gate reproducible en este entorno.
 

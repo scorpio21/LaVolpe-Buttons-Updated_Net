@@ -23,7 +23,7 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | Font | `:679-694` | `:90`, `:64`, `:851-853` | parcial | Tipo y métricas distintas |
 | FontStyle | `:696-717` | `:16`, `:852-853` | equivalente | Flags principales |
 | ForeColor/BackColor | `:719-758` | `:76-80` | parcial | OLE_COLOR ≠ Color |
-| GradientColor/Mode | `:760-803` | `:81-82`, `:704` | parcial | Brush equivalente, fórmula no idéntica |
+| GradientColor/Mode | `:760-803` | `:81-82`, `:704`, `:552-590`, `:817-827` | parcial | El XP reproduce ahora el sombreado por fila de VB6; la paridad global de todos los degradados sigue pendiente |
 | ResetDefaultColors | `:805-827` | `:115` | parcial | API renombrada (`ResetDefaultColorsNow`) |
 | HoverColorLocks | `:829-867` | `:12`, `:88`, `:714-737` | parcial | Combinaciones portadas, validación visual pendiente |
 | Hover colors | `:869-915` | `:79-80`, `:431-443` | parcial | Herencia/adaptación WinForms |
@@ -49,6 +49,6 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | ActiveX/COM identity | `lvButton_H.vbp`, `lvButtons.ctl:27` | `LaVolpe.Buttons.Net.csproj` | ausente | No CLSID/OCX/PropertyBag |
 | Designer/persistence | `lvButtons.ctl:2652-2762` | `LaVolpeButton.cs:23-24`, csproj | parcial | Metadatos WinForms; no persistencia VB6 |
 | Sample controls | `frmSample.frm:810-996` | `SampleForm.cs:1-116` | parcial | No arrays/diseñador VB6 |
-| Visual pixel parity | `lvButtons.ctl:2803-3386` | `lvButtons.ctl:2970-2978`, `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Sample/SampleForm.cs:67-70`, `LaVolpe.Buttons.Sample/SampleForm.cs:304-308`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:575-588`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:817-826`, `LaVolpe.Buttons.Tests/Program.cs:484-526` | parcial | Comparación cliente reproducible 508×374: 68.590/189.992 píxeles distintos (36,10%); delta 7.285.485; no hay paridad pixel a pixel |
+| Visual pixel parity | `lvButtons.ctl:2803-3386` | `lvButtons.ctl:1966-2004`, `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Sample/SampleForm.cs:67-70`, `LaVolpe.Buttons.Sample/SampleForm.cs:304-308`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:552-590`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:817-827`, `LaVolpe.Buttons.Tests/Program.cs:484-526` | parcial | Comparación cliente reproducible 508×374: 68.476/189.992 píxeles distintos (36,04%); delta 7.252.554; no hay paridad pixel a pixel |
 
 Conteo: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente, 1 no verificable; 45/46 filas revisadas.

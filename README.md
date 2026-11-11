@@ -14,7 +14,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 34 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 35 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 

@@ -555,9 +555,10 @@ public class LaVolpeButton : Control, IButtonControl
         }
         else if(_style==BackStyle.WindowsXp && (Enabled || _mode!=ButtonMode.CommandButton))
         {
-            // VB6: los botones XP llevan un degradado vertical fijo de 25 tonos.
-            using var xp=new LinearGradientBrush(full,back,Shade(back,-25,true),LinearGradientMode.Vertical);
-            g.FillPath(xp,fillPath);
+            // VB6: DrawButtonBackground pinta una franja de 1 px por fila,
+            // aplicando ShadeColor(-(25 / ScaleHeight) * I, True), no un
+            // LinearGradientBrush continuo.
+            FillXpBackground(g, full, fillPath, back);
         }
         else
         {
@@ -587,6 +588,19 @@ public class LaVolpeButton : Control, IButtonControl
             g.DrawPath(edge, edgePath);
             g.Restore(edgeState);
         }
+    }
+    private static void FillXpBackground(Graphics g, Rectangle bounds, GraphicsPath path, Color back)
+    {
+        var state = g.Save();
+        g.SetClip(path, CombineMode.Intersect);
+        var height = Math.Max(1, bounds.Height);
+        for (var y = 0; y < height; y++)
+        {
+            var offset = (int)Math.Round(-(25.0 * y / height), MidpointRounding.ToEven);
+            using var brush = new SolidBrush(Shade(back, offset, true));
+            g.FillRectangle(brush, bounds.Left, bounds.Top + y, bounds.Width, 1);
+        }
+        g.Restore(state);
     }
     // Cada anillo guarda los cuatro lados por separado (polyColors 1..4, 5..8 y 9..12).
     private readonly struct RingBorder

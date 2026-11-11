@@ -474,6 +474,21 @@ internal static class Program
             Check(cb.GetBrightness() < ca.GetBrightness(), $"deshabilitado={cb} no es más oscuro que {ca}");
         });
 
+        Test("XP reproduce el sombreado por franjas de VB6", form =>
+        {
+            using var bitmap = new Bitmap(20, 40);
+            using var graphics = Graphics.FromImage(bitmap);
+            using var path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddRectangle(new Rectangle(0, 0, 20, 40));
+            var method = typeof(LaVolpeButton).GetMethod("FillXpBackground", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+            method.Invoke(null, new object[] { graphics, new Rectangle(0, 0, 20, 40), path, Color.White });
+            var top = bitmap.GetPixel(10, 0);
+            var bottom = bitmap.GetPixel(10, 39);
+            Check(top.ToArgb() == Color.White.ToArgb(), $"fila superior={top}");
+            Check(bottom.GetBrightness() < top.GetBrightness(), $"fila inferior={bottom} no es más oscura");
+            Check(bitmap.GetPixel(10, 20).ToArgb() != top.ToArgb(), "las franjas intermedias deben aplicar ShadeColor");
+        });
+
         Test("Offset de contenido por estado", form =>
         {
             var method = typeof(LaVolpeButton).GetMethod("ContentOffset", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
