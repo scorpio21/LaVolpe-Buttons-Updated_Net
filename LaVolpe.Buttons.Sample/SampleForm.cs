@@ -135,7 +135,7 @@ public sealed class SampleForm : Form
     {
         Controls.Add(new Label { Text = "Note how gradients on circular button has nice 3D effect", Location = new Point(51, 159), Size = new Size(277, 18), Font = new Font("MS Sans Serif", 8.25f) });
         Controls.Add(new Label { Text = "< Custom Buttons >", Location = new Point(238, 121), Size = new Size(58, 27), ForeColor = Color.FromArgb(192, 0, 0), Font = new Font("Times New Roman", 9f, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter });
-        Controls.Add(new Label { Text = "Click above rectangular buttons to see their style as a diagonal shape.", Location = new Point(18, 200), AutoSize = true, Font = new Font("MS Sans Serif", 8.25f) });
+        Controls.Add(new Label { Text = "Click above rectangular buttons to see their style as a diagonal shape.", Location = new Point(18, 200), Size = new Size(330, 13), AutoSize = false, Font = new Font("MS Sans Serif", 8.25f) });
         Controls.Add(_samplePanel);
         Controls.Add(_captionAlign);
         Controls.Add(_pictureAlign);

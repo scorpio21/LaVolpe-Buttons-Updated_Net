@@ -482,7 +482,13 @@ public class LaVolpeButton : Control, IButtonControl
     }
     public void PerformClick(){if(Enabled)OnClick(EventArgs.Empty);}
     protected override void OnDragDrop(DragEventArgs drgevent){base.OnDragDrop(drgevent);OLEDragDrop?.Invoke(this,drgevent);}
-    protected override void OnDragOver(DragEventArgs drgevent){base.OnDragOver(drgevent);OLEDragOver?.Invoke(this,drgevent);}
+    protected override void OnDragOver(DragEventArgs drgevent)
+    {
+        base.OnDragOver(drgevent);
+        OLEDragOver?.Invoke(this, drgevent);
+        if (drgevent.Effect == DragDropEffects.None && HasTextData(drgevent.Data))
+            drgevent.Effect = DragDropEffects.Copy;
+    }
     protected override void OnGiveFeedback(GiveFeedbackEventArgs e)
     {
         base.OnGiveFeedback(e);
@@ -490,7 +496,16 @@ public class LaVolpeButton : Control, IButtonControl
         // DragIcon de VB6 se muestra mientras se arrastra.
         if(_dragIconCursor is not null) { Cursor=_dragIconCursor; e.UseDefaultCursors=false; }
     }
-    protected override void OnDragEnter(DragEventArgs e){base.OnDragEnter(e);OLEDragOver?.Invoke(this,e);}
+    protected override void OnDragEnter(DragEventArgs e)
+    {
+        base.OnDragEnter(e);
+        OLEDragOver?.Invoke(this, e);
+        if (e.Effect == DragDropEffects.None && HasTextData(e.Data))
+            e.Effect = DragDropEffects.Copy;
+    }
+
+    private static bool HasTextData(IDataObject? data) =>
+        data is not null && (data.GetDataPresent(DataFormats.UnicodeText) || data.GetDataPresent(DataFormats.Text));
 
     protected override void OnPaint(PaintEventArgs e)
     {

@@ -424,6 +424,17 @@ internal static class Program
             Check(args.Effect == DragDropEffects.Copy, $"Effect={args.Effect}");
         });
 
+        Test("OLEDragEnter acepta texto sin manejador", form =>
+        {
+            var button = Add(form, new LaVolpeButton { AllowDrop = true });
+            var data = new DataObject();
+            data.SetData(DataFormats.UnicodeText, "texto externo");
+            var args = new DragEventArgs(data, 0, 1, 1, DragDropEffects.Copy, DragDropEffects.None);
+            var method = typeof(LaVolpeButton).GetMethod("OnDragEnter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method?.Invoke(button, new object[] { args });
+            Check(args.Effect == DragDropEffects.Copy, $"Effect={args.Effect}");
+        });
+
         Test("OLEDragDrop entrega el texto externo", form =>
         {
             var button = Add(form, new LaVolpeButton { AllowDrop = true });
