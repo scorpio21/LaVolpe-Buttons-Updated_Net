@@ -814,7 +814,18 @@ public class LaVolpeButton : Control, IButtonControl
         }
         return p;
     }
-    private Brush CreateBrush(Rectangle r,Color back){if(_gradientMode==GradientMode.None)return new SolidBrush(back);var mode=_gradientMode is GradientMode.LeftToRight or GradientMode.RightToLeft?LinearGradientMode.Horizontal:LinearGradientMode.Vertical;var b=new LinearGradientBrush(r,back,_gradientColor,mode);if(_gradientMode is GradientMode.RightToLeft or GradientMode.BottomToTop)b.RotateTransform(180);return b;}
+    private Brush CreateBrush(Rectangle r,Color back)
+    {
+        if(_gradientMode==GradientMode.None)return new SolidBrush(back);
+        // lvButtons.ctl shades the XP gradient endpoint by +&H30 before drawing it.
+        var gradientColor = _style == BackStyle.WindowsXp && _shape < ButtonShape.CustomFlat
+            ? Shade(_gradientColor, 0x30, true)
+            : _gradientColor;
+        var mode=_gradientMode is GradientMode.LeftToRight or GradientMode.RightToLeft?LinearGradientMode.Horizontal:LinearGradientMode.Vertical;
+        var b=new LinearGradientBrush(r,back,gradientColor,mode);
+        if(_gradientMode is GradientMode.RightToLeft or GradientMode.BottomToTop)b.RotateTransform(180);
+        return b;
+    }
     private readonly record struct CaptionColors(Color Color, Color? Shadow, Point ShadowOffset);
     // Offsets de DrawCaptionIcon: pulsado/marcado desplaza 1 px (2 en formas redondas), Java nunca.
     private Point ContentOffset(bool selected)
