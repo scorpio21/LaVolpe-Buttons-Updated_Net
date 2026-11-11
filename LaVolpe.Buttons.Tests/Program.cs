@@ -375,6 +375,26 @@ internal static class Program
             Check((string?)data.GetData(DataFormats.UnicodeText) == "texto de prueba", "texto Unicode incorrecto");
         });
 
+        Test("OLEDragEnter permite soltar texto externo", form =>
+        {
+            var button = Add(form, new LaVolpeButton { AllowDrop = true });
+            var data = new DataObject();
+            data.SetData(DataFormats.UnicodeText, "texto externo");
+            var fired = false;
+            button.OLEDragOver += (_, e) =>
+            {
+                fired = true;
+                e.Effect = e.Data?.GetDataPresent(DataFormats.UnicodeText) == true
+                    ? DragDropEffects.Copy
+                    : DragDropEffects.None;
+            };
+            var args = new DragEventArgs(data, 0, 1, 1, DragDropEffects.Copy, DragDropEffects.Copy);
+            var method = typeof(LaVolpeButton).GetMethod("OnDragEnter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method?.Invoke(button, new object[] { args });
+            Check(fired, "OLEDragOver no se notificó en DragEnter");
+            Check(args.Effect == DragDropEffects.Copy, $"Effect={args.Effect}");
+        });
+
         Test("CheckBox/OptionButton marcan toda la superficie", form =>
         {
             var check = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Size = new Size(100, 40), Value = true });

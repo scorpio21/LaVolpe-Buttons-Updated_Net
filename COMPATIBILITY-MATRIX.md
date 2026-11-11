@@ -34,7 +34,7 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | Keyboard events | `:2397-2477` | `:320-344`, `:369-371` | parcial | KeyAscii y navegación no son idénticos |
 | MouseOnButton/timer | `modLvTimer.bas:11-40` | `LaVolpeButton.cs:289`, `:363-364` | diferente | Timer por control vs callback global |
 | Click/DoubleClick | `lvButtons.ctl:2563-2598` | `LaVolpeButton.cs:368`, `:372-384` | parcial | Orden/firma adaptados |
-| OLE drag events | `lvButtons.ctl:2613-2641` | `LaVolpeButton.cs:367`, `:385-394` | parcial | `DataObject` y efectos no son VB6 |
+| OLE drag events | `lvButtons.ctl:2613-2641` | `LaVolpeButton.cs:367`, `:385-394`, `:484-492` | parcial | `DragEnter` permite establecer `Copy`; `DataObject` y firmas siguen sin ser los tipos COM de VB6 |
 | DefaultCancel | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:154-155`, `:356-371` | equivalente | Enlaza automáticamente `AcceptButton`/`CancelButton`; probado |
 | Focus/selection | `lvButtons.ctl:2600-2611` | `LaVolpeButton.cs:313-319`, `:279-286` | equivalente | Selección y foco probados |
 | Disabled rendering | `lvButtons.ctl:1966-2146`, `:2938-3035` | `LaVolpeButton.cs:414-477`, `:714-737` | parcial | Sombreado aproximado |

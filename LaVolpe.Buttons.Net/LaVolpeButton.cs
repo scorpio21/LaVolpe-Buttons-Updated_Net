@@ -489,7 +489,7 @@ public class LaVolpeButton : Control, IButtonControl
         // DragIcon de VB6 se muestra mientras se arrastra.
         if(_dragIconCursor is not null) { Cursor=_dragIconCursor; e.UseDefaultCursors=false; }
     }
-    protected override void OnDragEnter(DragEventArgs e){base.OnDragEnter(e);}
+    protected override void OnDragEnter(DragEventArgs e){base.OnDragEnter(e);OLEDragOver?.Invoke(this,e);}
 
     protected override void OnPaint(PaintEventArgs e)
     {
