@@ -287,7 +287,7 @@ public sealed class SampleForm : Form
         var crop = new Bitmap(32, 32);
         using var graphics = Graphics.FromImage(crop);
         graphics.Clear(Color.White);
-        graphics.DrawImage(source, new Rectangle(0, 0, 32, 32), new Rectangle(0, 6, 32, 32), GraphicsUnit.Pixel);
+        graphics.DrawImage(source, new Rectangle(0, 0, 32, 32), new Rectangle(4, 6, 32, 32), GraphicsUnit.Pixel);
         return crop;
     }
 
