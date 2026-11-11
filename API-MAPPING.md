@@ -18,7 +18,7 @@
 | `DelayDrawing` | `DelayDrawing(bool)` / Begin/End | Compatible funcionalmente |
 | `MouseOnButton` | `EventHandler<bool>` | Firma .NET |
 | `OLE*` | DragDrop/GiveFeedback events | Firma y `DataObject` adaptados |
-| `DefaultCancel` | `Default`, `Cancel`, `IButtonControl` | Falta wiring automático a Form |
+| `DefaultCancel` | `Default`, `Cancel`, `IButtonControl` | Enlaza automáticamente `Form.AcceptButton`/`CancelButton` |
 | `Font` | `System.Drawing.Font` | Tipo diferente |
 | `OLE_COLOR` | `System.Drawing.Color` | Conversión conceptual |
 | `PropertyBag` | Propiedades WinForms | No hay persistencia ActiveX |

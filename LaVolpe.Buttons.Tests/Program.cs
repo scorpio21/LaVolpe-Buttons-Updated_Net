@@ -192,6 +192,19 @@ internal static class Program
             Check(!button.Default, "Default no se desactivó");
         });
 
+        Test("Default y Cancel enlazan el formulario", form =>
+        {
+            var button = Add(form, new LaVolpeButton { DialogResult = DialogResult.OK });
+            button.Default = true;
+            button.Cancel = true;
+            Check(ReferenceEquals(form.AcceptButton, button), "AcceptButton no enlazado");
+            Check(ReferenceEquals(form.CancelButton, button), "CancelButton no enlazado");
+            button.Default = false;
+            button.Cancel = false;
+            Check(form.AcceptButton is null, "AcceptButton no desenlazado");
+            Check(form.CancelButton is null, "CancelButton no desenlazado");
+        });
+
         Test("Región para formas no rectangulares", form =>
         {
             var shapes = new[]

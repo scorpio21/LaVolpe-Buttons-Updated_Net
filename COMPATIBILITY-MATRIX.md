@@ -35,7 +35,7 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | MouseOnButton/timer | `modLvTimer.bas:11-40` | `LaVolpeButton.cs:289`, `:363-364` | diferente | Timer por control vs callback global |
 | Click/DoubleClick | `lvButtons.ctl:2563-2598` | `LaVolpeButton.cs:368`, `:372-384` | parcial | Orden/firma adaptados |
 | OLE drag events | `lvButtons.ctl:2613-2641` | `LaVolpeButton.cs:367`, `:385-394` | parcial | `DataObject` y efectos no son VB6 |
-| DefaultCancel | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:103-106`, `:302` | parcial | No conecta automáticamente Accept/CancelButton |
+| DefaultCancel | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:154-155`, `:356-371` | equivalente | Enlaza automáticamente `AcceptButton`/`CancelButton`; probado |
 | Focus/selection | `lvButtons.ctl:2600-2611` | `LaVolpeButton.cs:313-319`, `:279-286` | equivalente | Selección y foco probados |
 | Disabled rendering | `lvButtons.ctl:1966-2146`, `:2938-3035` | `LaVolpeButton.cs:414-477`, `:714-737` | parcial | Sombreado aproximado |
 | Eight style renderers | `lvButtons.ctl:2803-3386` | `LaVolpeButton.cs:508-641` | diferente | Un renderer común, tres anillos aproximados |
@@ -51,4 +51,4 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | Sample controls | `frmSample.frm:810-996` | `SampleForm.cs:1-116` | parcial | No arrays/diseñador VB6 |
 | Visual pixel parity | `lvButtons.ctl:2803-3386` | `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Tests/Program.cs:484-526` | parcial | Comparación cliente reproducible 508×374: 70.689/189.992 píxeles distintos (37,21%); no hay paridad pixel a pixel |
 
-Conteo: 12 equivalentes, 25 parciales, 6 diferentes, 1 ausente, 1 no verificable; 44/45 filas revisadas.
+Conteo: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente, 1 no verificable; 45/46 filas revisadas.

@@ -151,8 +151,8 @@ public class LaVolpeButton : Control, IButtonControl
     public bool DelayDrawingEnabled { get=>_delayDrawing; set{_delayDrawing=value; if(!value) Invalidate();} }
     // VB6: DelayDrawing True / DelayDrawing False
     public void DelayDrawing(bool delay){ _delayDrawing=delay; if(!delay) RedrawButton(); }
-    [Category("Behavior"), DefaultValue(false)] public bool Cancel { get=>_cancel; set=>_cancel=value; }
-    [Category("Behavior"), DefaultValue(false)] public bool Default { get=>_default; set=>_default=value; }
+    [Category("Behavior"), DefaultValue(false)] public bool Cancel { get=>_cancel; set{if(_cancel==value)return;_cancel=value;UpdateFormButtonBindings();} }
+    [Category("Behavior"), DefaultValue(false)] public bool Default { get=>_default; set{if(_default==value)return;_default=value;UpdateFormButtonBindings();InvalidateIfNeeded();} }
     [Category("Behavior"), DefaultValue(DragModeConstants.vbManual)] public DragModeConstants DragMode { get=>_dragMode ? DragModeConstants.vbAutomatic : DragModeConstants.vbManual; set=>_dragMode=value==DragModeConstants.vbAutomatic; }
     [Category("Behavior"), DefaultValue(DialogResult.None)] public DialogResult DialogResult { get=>_dialogResult; set=>_dialogResult=value; }
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
@@ -352,6 +352,20 @@ public class LaVolpeButton : Control, IButtonControl
     public void RaiseOLECompleteDrag(){OLECompleteDrag?.Invoke(this, EventArgs.Empty);}
     public void RaiseOLESetData(){OLESetData?.Invoke(this, EventArgs.Empty);}
 
+    private Form? _boundForm;
+    private void UpdateFormButtonBindings()
+    {
+        if (_boundForm is not null)
+        {
+            if (!_default && ReferenceEquals(_boundForm.AcceptButton, this)) _boundForm.AcceptButton = null;
+            if (!_cancel && ReferenceEquals(_boundForm.CancelButton, this)) _boundForm.CancelButton = null;
+        }
+        var form = FindForm();
+        if (form is null) return;
+        if (_default) form.AcceptButton = this;
+        if (_cancel) form.CancelButton = this;
+        if (_default || _cancel) _boundForm = form;
+    }
     public void NotifyDefault(bool value){ if(_default==value) return; _default=value; InvalidateIfNeeded(); }
     protected override void OnEnabledChanged(EventArgs e){base.OnEnabledChanged(e);UpdateRegion();InvalidateIfNeeded();}
     protected override void OnResize(EventArgs e){base.OnResize(e);UpdateRegion();InvalidateIfNeeded();}
@@ -362,6 +376,7 @@ public class LaVolpeButton : Control, IButtonControl
         base.OnParentChanged(e);
         // VB6 toma el BackColor del contenedor al crear el control.
         if(!_explicitBackColor && Parent is not null){ _normalBack=Parent.BackColor; base.BackColor=_normalBack; InvalidateIfNeeded(); }
+        UpdateFormButtonBindings();
     }
     protected override void OnGotFocus(EventArgs e)
     {
