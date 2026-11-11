@@ -45,10 +45,10 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | Fonts visuales | `lvButtons.ctl:2-23` | `LaVolpeButton.cs:64`, `:851-908` | diferente | Times New Roman VB6 vs fuente heredada |
 | Error: null caption | VB6 `:396-423` | `LaVolpeButton.cs:68` | equivalente | Normalización probada |
 | Error: released image | VB6 `:509-534` | `LaVolpeButton.cs:851-889` | equivalente | Se omite imagen ante excepción; probado |
-| Error: invalid enum | VB6 setters `:353-915` | C# enum setters varios | diferente | C# no replica todas las validaciones VB6 |
+| Error: invalid enum | VB6 setters `:353-915` | `LaVolpeButton.cs:119-144` | equivalente | Los setters ignoran valores fuera del rango, cubierto por prueba |
 | ActiveX/COM identity | `lvButton_H.vbp`, `lvButtons.ctl:27` | `LaVolpe.Buttons.Net.csproj` | ausente | No CLSID/OCX/PropertyBag |
 | Designer/persistence | `lvButtons.ctl:2652-2762` | `LaVolpeButton.cs:23-24`, csproj | parcial | Metadatos WinForms; no persistencia VB6 |
 | Sample controls | `frmSample.frm:810-996` | `SampleForm.cs:1-116` | parcial | No arrays/diseñador VB6 |
 | Visual pixel parity | `lvButtons.ctl:2803-3386` | `lvButtons.ctl:1966-2004`, `lvButtons.ctl:2107-2144`, `lvButtons.ctl:2292-2370`, `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Sample/SampleForm.cs:67-70`, `LaVolpe.Buttons.Sample/SampleForm.cs:304-308`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:550-649`, `LaVolpe.Buttons.Tests/Program.cs:593-633` | parcial | Comparación cliente reproducible 508×374: 68.422/189.992 píxeles distintos (36,01%); delta 7.193.961; no hay paridad pixel a pixel |
 
-Conteo: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente, 1 no verificable; 45/46 filas revisadas.
+Conteo: 14 equivalentes, 24 parciales, 6 diferentes, 1 ausente, 1 no verificable; 45/46 filas revisadas.

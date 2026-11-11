@@ -116,9 +116,9 @@ public class LaVolpeButton : Control, IButtonControl
     // VB6: Caption es el miembro por defecto; Text debe reflejarlo para accesibilidad y diseñador.
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text { get=>_caption; set=>Caption=value??string.Empty; }
-    [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(!Enum.IsDefined(value)||_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{if(!Enum.IsDefined(value))return;_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{if(!Enum.IsDefined(value))return;_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
     [Category("LaVolpe"), DefaultValue(false)] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public bool Checked { get=>_value; set=>Value=value; }
@@ -129,19 +129,19 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{_gradientMode=value; InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value; if(value is not null&&IsCustomShape) _pictureSize=ImageSize.FillScaleUpDown; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{_pictureAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{_pictureSize=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;_pictureSize=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{_captionAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{_captionStyle=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{_hoverColorLocks=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(CustomClick.Default)] public CustomClick CustomClick { get=>_customClick; set{_customClick=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle)] public FontStyles FontStyle { get=>_fontStyle; set{_fontStyle=value; InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(CustomClick.Default)] public CustomClick CustomClick { get=>_customClick; set{if(!Enum.IsDefined(value))return;_customClick=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle)] public FontStyles FontStyle { get=>_fontStyle; set{if(!Enum.IsDefined(value))return;_fontStyle=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? MouseIcon { get=>_mouseIcon; set{_mouseIcon=value;if(value is not null)_mousePointer=MousePointerConstants.Custom;ApplyMouseIcon();InvalidateIfNeeded();} }
     // VB6: MousePointerConstants, no un Cursor arbitrario. Custom usa MouseIcon.
     [Category("LaVolpe"), DefaultValue(MousePointerConstants.Default)]
-    public MousePointerConstants MousePointer { get=>_mousePointer; set{_mousePointer=value;ApplyMousePointer();} }
+    public MousePointerConstants MousePointer { get=>_mousePointer; set{if(!Enum.IsDefined(value))return;_mousePointer=value;ApplyMousePointer();} }
     // VB6/UserControl: imagen de arrastre usada durante OLEDrag.
     [Category("LaVolpe")] public Image? DragIcon { get=>_dragIcon; set{_dragIcon=value;BuildDragCursor();} }
     [Category("LaVolpe"), DefaultValue("")] public string ToolTipText { get=>_toolTipText; set{_toolTipText=value??"";(_toolTip ??= new ToolTip()).SetToolTip(this,_toolTipText); }}

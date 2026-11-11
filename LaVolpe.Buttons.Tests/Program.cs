@@ -111,6 +111,33 @@ internal static class Program
             Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
         });
 
+        Test("Setters ignoran enums fuera del rango VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.Mode = (ButtonMode)99;
+            button.ButtonShape = (ButtonShape)99;
+            button.ButtonStyle = (BackStyle)99;
+            button.GradientMode = (GradientMode)99;
+            button.PictureAlign = (ImagePlacement)99;
+            button.PictureSize = (ImageSize)99;
+            button.CaptionStyle = (CaptionStyle)99;
+            button.HoverColorLocks = (HoverColorLocks)99;
+            button.CustomClick = (CustomClick)99;
+            button.FontStyle = (FontStyles)1;
+            button.MousePointer = (MousePointerConstants)4;
+            Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
+            Check(button.ButtonShape == ButtonShape.Rectangular, $"Shape={button.ButtonShape}");
+            Check(button.ButtonStyle == BackStyle.Windows95, $"Style={button.ButtonStyle}");
+            Check(button.GradientMode == GradientMode.None, $"Gradient={button.GradientMode}");
+            Check(button.PictureAlign == ImagePlacement.LeftOfCaption, $"Align={button.PictureAlign}");
+            Check(button.PictureSize == ImageSize.Size16x16, $"Size={button.PictureSize}");
+            Check(button.CaptionStyle == CaptionStyle.Default, $"CaptionStyle={button.CaptionStyle}");
+            Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"Locks={button.HoverColorLocks}");
+            Check(button.CustomClick == CustomClick.Default, $"Click={button.CustomClick}");
+            Check(button.FontStyle == FontStyles.PlainStyle, $"FontStyle={button.FontStyle}");
+            Check(button.MousePointer == MousePointerConstants.Default, $"Pointer={button.MousePointer}");
+        });
+
         Test("BackColor hereda del contenedor", form =>
         {
             form.BackColor = Color.FromArgb(230, 230, 230);
