@@ -32,7 +32,7 @@ Coloca las capturas del mismo escenario y tamaño en `artifacts\visual\vb6` usan
 dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Release --no-build -- --visual-compare .\artifacts\visual\vb6 .\artifacts\visual\net8
 ```
 
-El comando informa píxeles diferentes, porcentaje y delta total por imagen, y devuelve código 1 si falta una captura o tiene tamaño distinto. Tras limpiar los píxeles residuales de los recortes de laptop y disquete, ajustar el recorte interno de los iconos, reforzar el borde exterior de las diagonales con rasterización no suavizada, ajustar el marco azul, el botón redondo, los textos azules de Win XP/Java y eliminar el padding implícito de `TextRenderer`, `sample-client.png` produce 70.087/189.992 píxeles diferentes (36,89 %) y delta de canales 7.713.822; el issue #2 sigue abierto y no se declara paridad pixel a pixel.
+El comando informa píxeles diferentes, porcentaje y delta total por imagen, y devuelve código 1 si falta una captura o tiene tamaño distinto. Tras limpiar los píxeles residuales de los recortes de laptop y disquete, ajustar el recorte interno de los iconos, reforzar el borde exterior de las diagonales con rasterización no suavizada, ajustar el marco azul al `BorderColor` VB6 RGB(0,0,192), el botón redondo, los textos azules de Win XP/Java y eliminar el padding implícito de `TextRenderer`, `sample-client.png` produce 68.587/189.992 píxeles diferentes (36,10 %) y delta de canales 7.519.775; el issue #2 sigue abierto y no se declara paridad pixel a pixel.
 
 ## Escenario de referencia
 

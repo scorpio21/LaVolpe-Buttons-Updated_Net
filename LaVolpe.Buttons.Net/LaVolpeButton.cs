@@ -580,7 +580,11 @@ public class LaVolpeButton : Control, IButtonControl
             g.SmoothingMode = SmoothingMode.None;
             g.PixelOffsetMode = PixelOffsetMode.Default;
             using var edge = new Pen(Color.FromArgb(0, 60, 115), 1f);
-            g.DrawPath(edge, fillPath);
+            var edgeRect = full;
+            edgeRect.Width--;
+            edgeRect.Height--;
+            using var edgePath = CreatePath(edgeRect);
+            g.DrawPath(edge, edgePath);
             g.Restore(edgeState);
         }
     }

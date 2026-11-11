@@ -304,7 +304,8 @@ public sealed class SampleForm : Form
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            using var border = new Pen(Color.Blue);
+            // VB6 Shape1.BorderColor = &H00C00000& = RGB(0, 0, 192).
+            using var border = new Pen(Color.FromArgb(0, 0, 192));
             e.Graphics.DrawRectangle(border, 0, 0, Width - 1, Height - 1);
         }
     }
