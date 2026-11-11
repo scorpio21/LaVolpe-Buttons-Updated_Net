@@ -494,7 +494,7 @@ public class LaVolpeButton : Control, IButtonControl
 
     protected override void OnPaint(PaintEventArgs e)
     {
-        base.OnPaint(e); var g=e.Graphics; g.SmoothingMode=SmoothingMode.None; g.InterpolationMode=InterpolationMode.HighQualityBicubic; g.PixelOffsetMode=PixelOffsetMode.HighQuality;
+        base.OnPaint(e); var g=e.Graphics; g.SmoothingMode=SmoothingMode.None; g.InterpolationMode=InterpolationMode.NearestNeighbor; g.PixelOffsetMode=PixelOffsetMode.HighQuality;
         var full=ClientRectangle; var r=full; r.Width--; r.Height--;
         using var fillPath=CreatePath(full);      // área completa: se recorta con la Region de la ventana
         var selected = _mode!=ButtonMode.CommandButton && _value;
