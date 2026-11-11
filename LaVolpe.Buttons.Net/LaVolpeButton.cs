@@ -121,11 +121,11 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
     [Category("LaVolpe"), DefaultValue(false)] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
-    [Browsable(false)] public bool Checked { get=>_value; set=>Value=value; }
-    [Browsable(false)] public bool Selected { get=>_value; set=>Value=value; }
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public bool Checked { get=>_value; set=>Value=value; }
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public bool Selected { get=>_value; set=>Value=value; }
     [Category("Appearance")]
     public override Color BackColor { get => _normalBack; set { _normalBack = value; _explicitBackColor = true; base.BackColor = value; InvalidateIfNeeded(); } }
-    [Browsable(false)] public Color BackColorButton { get => BackColor; set => BackColor = value; }
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public Color BackColorButton { get => BackColor; set => BackColor = value; }
     [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value; InvalidateIfNeeded();} }
@@ -147,6 +147,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe"), DefaultValue("")] public string ToolTipText { get=>_toolTipText; set{_toolTipText=value??"";(_toolTip ??= new ToolTip()).SetToolTip(this,_toolTipText); }}
     [Category("LaVolpe")] public bool ShowFocusRect { get=>_showFocusRect; set{_showFocusRect=value;InvalidateIfNeeded();} }
     [Browsable(false), Obsolete("Use DelayDrawing(bool) como en VB6.")]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool DelayDrawingEnabled { get=>_delayDrawing; set{_delayDrawing=value; if(!value) Invalidate();} }
     // VB6: DelayDrawing True / DelayDrawing False
     public void DelayDrawing(bool delay){ _delayDrawing=delay; if(!delay) RedrawButton(); }
@@ -157,8 +158,8 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
     [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set=>_helpContextId=value; }
     [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
-    private bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
-    private bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
+    public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
+    public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.
