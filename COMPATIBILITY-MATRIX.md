@@ -49,6 +49,6 @@ Estados: `equivalente`, `parcial`, `diferente`, `ausente`, `no verificable`.
 | ActiveX/COM identity | `lvButton_H.vbp`, `lvButtons.ctl:27` | `LaVolpe.Buttons.Net.csproj` | ausente | No CLSID/OCX/PropertyBag |
 | Designer/persistence | `lvButtons.ctl:2652-2762` | `LaVolpeButton.cs:23-24`, csproj | parcial | Metadatos WinForms; no persistencia VB6 |
 | Sample controls | `frmSample.frm:810-996` | `SampleForm.cs:1-116` | parcial | No arrays/diseñador VB6 |
-| Visual pixel parity | `lvButtons.ctl:2803-3386` | `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Tests/Program.cs:484-526` | parcial | Comparación cliente reproducible 508×374: 70.689/189.992 píxeles distintos (37,21%); no hay paridad pixel a pixel |
+| Visual pixel parity | `lvButtons.ctl:2803-3386` | `LaVolpe.Buttons.Sample/Program.cs:18-92`, `LaVolpe.Buttons.Net/LaVolpeButton.cs:574-583`, `LaVolpe.Buttons.Tests/Program.cs:484-526` | parcial | Comparación cliente reproducible 508×374: 70.087/189.992 píxeles distintos (36,89%); no hay paridad pixel a pixel |
 
 Conteo: 13 equivalentes, 25 parciales, 6 diferentes, 1 ausente, 1 no verificable; 45/46 filas revisadas.

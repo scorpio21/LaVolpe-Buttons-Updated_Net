@@ -575,8 +575,12 @@ public class LaVolpeButton : Control, IButtonControl
         {
             // VB6 deja una línea exterior azul continua en las diagonales; los anillos
             // interiores de WinForms pueden suavizarla si se dibuja antes.
+            var edgeState = g.Save();
+            g.SmoothingMode = SmoothingMode.None;
+            g.PixelOffsetMode = PixelOffsetMode.Default;
             using var edge = new Pen(Color.FromArgb(0, 60, 115), 1f);
             g.DrawPath(edge, fillPath);
+            g.Restore(edgeState);
         }
     }
     // Cada anillo guarda los cuatro lados por separado (polyColors 1..4, 5..8 y 9..12).
