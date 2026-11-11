@@ -292,7 +292,7 @@ public sealed class SampleForm : Form
         return crop;
     }
 
-    private static ComboBox CreateCombo(int x, int y, int width) => new() { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("MS Sans Serif", 8.25f) };
+    private static ComboBox CreateCombo(int x, int y, int width) => new() { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Flat, Font = new Font("MS Sans Serif", 8.25f) };
     private static CheckBox CreateCheck(string text, int x, int y, int width) => new() { Text = text, Location = new Point(x, y), Size = new Size(width, 17), AutoSize = false, CheckAlign = ContentAlignment.MiddleRight, Font = new Font("MS Sans Serif", 8.25f) };
 
     private sealed class ReferenceFrame : Panel
