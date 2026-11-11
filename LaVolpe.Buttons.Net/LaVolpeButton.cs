@@ -117,8 +117,8 @@ public class LaVolpeButton : Control, IButtonControl
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text { get=>_caption; set=>Caption=value??string.Empty; }
     [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular)] public ButtonShape ButtonShape { get=>_shape; set{_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(BackStyle.Windows95)] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
     [Category("LaVolpe"), DefaultValue(false)] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
     [Browsable(false)] public bool Checked { get=>_value; set=>Value=value; }
@@ -157,6 +157,8 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
     [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set=>_helpContextId=value; }
     [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
+    private bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
+    private bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.

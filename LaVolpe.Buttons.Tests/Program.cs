@@ -104,6 +104,8 @@ internal static class Program
             Check(!properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle predeterminado debe omitirse");
             button.ButtonStyle = BackStyle.WindowsXp;
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle modificado no se serializa");
+            button.ButtonShape = ButtonShape.LeftDiagonal;
+            Check(properties[nameof(LaVolpeButton.ButtonShape)]!.ShouldSerializeValue(button), "ButtonShape modificado no se serializa");
             Check(button.DragMode == DragModeConstants.vbManual, $"DragMode={button.DragMode}");
             button.DragMode = DragModeConstants.vbAutomatic;
             Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
