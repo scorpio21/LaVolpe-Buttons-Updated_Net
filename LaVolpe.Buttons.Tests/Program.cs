@@ -489,6 +489,21 @@ internal static class Program
             Check(bitmap.GetPixel(10, 20).ToArgb() != top.ToArgb(), "las franjas intermedias deben aplicar ShadeColor");
         });
 
+        Test("GradientMode reproduce extremos inclusivos de VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton
+            {
+                ButtonStyle = BackStyle.Windows95,
+                GradientMode = GradientMode.LeftToRight,
+                BackColor = Color.Black,
+                GradientColor = Color.White,
+                Size = new Size(40, 20)
+            });
+            using var bitmap = new Bitmap(40, 20);
+            button.DrawToBitmap(bitmap, new Rectangle(0, 0, 40, 20));
+            Check(bitmap.GetPixel(8, 10).R < bitmap.GetPixel(31, 10).R, "el extremo derecho debe ser más claro");
+        });
+
         Test("Offset de contenido por estado", form =>
         {
             var method = typeof(LaVolpeButton).GetMethod("ContentOffset", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;

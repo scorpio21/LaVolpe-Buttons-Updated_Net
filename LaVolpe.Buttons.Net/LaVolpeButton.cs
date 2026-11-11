@@ -551,7 +551,7 @@ public class LaVolpeButton : Control, IButtonControl
     {
         if(_gradientMode!=GradientMode.None && !selected && _shape<ButtonShape.CustomFlat)
         {
-            using var brush=CreateBrush(full,back); g.FillPath(brush,fillPath);
+            FillConfiguredGradient(g, full, fillPath, back);
         }
         else if(_style==BackStyle.WindowsXp && (Enabled || _mode!=ButtonMode.CommandButton))
         {
@@ -617,6 +617,34 @@ public class LaVolpeButton : Control, IButtonControl
             var offset = (int)Math.Round(-(25.0 * y / height), MidpointRounding.ToEven);
             using var brush = new SolidBrush(Shade(back, offset, true));
             g.FillRectangle(brush, bounds.Left, bounds.Top + y, bounds.Width, 1);
+        }
+        g.Restore(state);
+    }
+    private void FillConfiguredGradient(Graphics g, Rectangle bounds, GraphicsPath path, Color start)
+    {
+        // VB6 DrawGradient/LoadGradientColors genera un color por píxel,
+        // usando el primer y último color como extremos inclusive.
+        var end = _style == BackStyle.WindowsXp
+            ? Shade(_gradientColor, 0x30, true)
+            : _gradientColor;
+        var horizontal = _gradientMode is GradientMode.LeftToRight or GradientMode.RightToLeft;
+        var reverse = _gradientMode is GradientMode.RightToLeft or GradientMode.BottomToTop;
+        var steps = Math.Max(1, horizontal ? bounds.Width : bounds.Height);
+        var state = g.Save();
+        g.SetClip(path, CombineMode.Intersect);
+        for (var i = 0; i < steps; i++)
+        {
+            var index = reverse ? steps - 1 - i : i;
+            var ratio = steps == 1 ? 0d : (double)index / (steps - 1);
+            var color = Color.FromArgb(
+                (int)Math.Floor(start.R + (end.R - start.R) * ratio),
+                (int)Math.Floor(start.G + (end.G - start.G) * ratio),
+                (int)Math.Floor(start.B + (end.B - start.B) * ratio));
+            using var brush = new SolidBrush(color);
+            if (horizontal)
+                g.FillRectangle(brush, bounds.Left + i, bounds.Top, 1, bounds.Height);
+            else
+                g.FillRectangle(brush, bounds.Left, bounds.Top + i, bounds.Width, 1);
         }
         g.Restore(state);
     }
@@ -845,18 +873,6 @@ public class LaVolpeButton : Control, IButtonControl
                 break;
         }
         return p;
-    }
-    private Brush CreateBrush(Rectangle r,Color back)
-    {
-        if(_gradientMode==GradientMode.None)return new SolidBrush(back);
-        // lvButtons.ctl shades the XP gradient endpoint by +&H30 before drawing it.
-        var gradientColor = _style == BackStyle.WindowsXp && _shape < ButtonShape.CustomFlat
-            ? Shade(_gradientColor, 0x30, true)
-            : _gradientColor;
-        var mode=_gradientMode is GradientMode.LeftToRight or GradientMode.RightToLeft?LinearGradientMode.Horizontal:LinearGradientMode.Vertical;
-        var b=new LinearGradientBrush(r,back,gradientColor,mode);
-        if(_gradientMode is GradientMode.RightToLeft or GradientMode.BottomToTop)b.RotateTransform(180);
-        return b;
     }
     private readonly record struct CaptionColors(Color Color, Color? Shadow, Point ShadowOffset);
     // Offsets de DrawCaptionIcon: pulsado/marcado desplaza 1 px (2 en formas redondas), Java nunca.

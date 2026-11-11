@@ -26,6 +26,6 @@
 3. Arrastrar la selección encima de `LOAD`.
 4. Soltar y comprobar que el estado muestra `OLEDragDrop: <texto>`.
 
-Esta prueba confirma la interoperabilidad con una aplicación externa y permite cerrar el issue #6 únicamente después de realizarla en Windows. La compilación y los 35 tests automáticos no sustituyen esta comprobación interactiva.
+Esta prueba confirma la interoperabilidad con una aplicación externa y permite cerrar el issue #6 únicamente después de realizarla en Windows. La compilación y los 36 tests automáticos no sustituyen esta comprobación interactiva.
 
 No se declara equivalencia binaria OLE: WinForms usa `DragEventArgs`/`GiveFeedbackEventArgs`, no los tipos COM de VB6. La prueba con datos arrastrados desde otra aplicación debe ejecutarse manualmente en una sesión interactiva de Windows; queda como pendiente del issue #6.
