@@ -292,8 +292,27 @@ public sealed class SampleForm : Form
         return crop;
     }
 
-    private static ComboBox CreateCombo(int x, int y, int width) => new() { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Flat, Font = new Font("MS Sans Serif", 8.25f) };
+    private static ComboBox CreateCombo(int x, int y, int width) => new Vb6ComboBox { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Flat, Font = new Font("MS Sans Serif", 8.25f) };
     private static CheckBox CreateCheck(string text, int x, int y, int width) => new() { Text = text, Location = new Point(x, y), Size = new Size(width, 17), AutoSize = false, CheckAlign = ContentAlignment.MiddleRight, Font = new Font("MS Sans Serif", 8.25f) };
+
+    private sealed class Vb6ComboBox : ComboBox
+    {
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            if (m.Msg != 0x000F || ClientSize.Width < 4 || ClientSize.Height < 4) return;
+            using var graphics = CreateGraphics();
+            using var dark = new Pen(Color.FromArgb(160, 160, 160));
+            using var mid = new Pen(Color.FromArgb(105, 105, 105));
+            using var light = new Pen(Color.FromArgb(227, 227, 227));
+            graphics.DrawLine(dark, 0, 0, Width - 2, 0);
+            graphics.DrawLine(dark, 0, 0, 0, Height - 2);
+            graphics.DrawLine(mid, 1, 1, Width - 3, 1);
+            graphics.DrawLine(mid, 1, 1, 1, Height - 3);
+            graphics.DrawLine(light, Width - 1, 1, Width - 1, Height - 1);
+            graphics.DrawLine(light, 1, Height - 1, Width - 1, Height - 1);
+        }
+    }
 
     private sealed class ReferenceFrame : Panel
     {
