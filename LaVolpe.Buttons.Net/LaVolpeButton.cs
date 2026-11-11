@@ -831,7 +831,8 @@ public class LaVolpeButton : Control, IButtonControl
         if(hasText)
         {
             int maxW=Math.Max(1,adjWidth-8-(imgLeft||imgRight?size:0));
-            var ms=TextRenderer.MeasureText(g,text,f,new Size(maxW,10000),TextFormatFlags.WordBreak|TextFormatFlags.Left);
+            var textFlags = TextFormatFlags.WordBreak | TextFormatFlags.Left | TextFormatFlags.NoPadding;
+            var ms=TextRenderer.MeasureText(g,text,f,new Size(maxW,10000),textFlags);
             int cw=ms.Width, chh=ms.Height;
             if(_captionStyle!=CaptionStyle.Default){cw+=2; chh+=2;}
             ch=chh;
@@ -949,7 +950,7 @@ public class LaVolpeButton : Control, IButtonControl
     }
     private void DrawCaption(Graphics g, Rectangle r, Font f, string text, CaptionColors colors, Color back)
     {
-        var flags=TextFormatFlags.Left|TextFormatFlags.Top|TextFormatFlags.WordBreak;
+        var flags=TextFormatFlags.Left|TextFormatFlags.Top|TextFormatFlags.WordBreak|TextFormatFlags.NoPadding;
         if(Enabled && _captionStyle is CaptionStyle.Raised or CaptionStyle.Sunken)
         {
             // VB6: ShadeColor(bColor, +/-40) a -1,0 y +1,+1 antes del texto definitivo.
