@@ -575,19 +575,37 @@ public class LaVolpeButton : Control, IButtonControl
         }
         if (_style == BackStyle.WindowsXp && _shape is ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal)
         {
-            // VB6 deja una línea exterior azul continua en las diagonales; los anillos
-            // interiores de WinForms pueden suavizarla si se dibuja antes.
+            // VB6 DrawButtonBorder usa polyPts(10..15) para el borde exterior
+            // de las diagonales. Reproducimos esos puntos en vez de usar la
+            // geometría genérica de GraphicsPath para ese anillo.
             var edgeState = g.Save();
             g.SmoothingMode = SmoothingMode.None;
             g.PixelOffsetMode = PixelOffsetMode.Default;
             using var edge = new Pen(Color.FromArgb(0, 60, 115), 1f);
-            var edgeRect = full;
-            edgeRect.Width--;
-            edgeRect.Height--;
-            using var edgePath = CreatePath(edgeRect);
-            g.DrawPath(edge, edgePath);
+            DrawXpDiagonalOuterBorder(g, full, edge, _shape);
             g.Restore(edgeState);
         }
+    }
+    private static void DrawXpDiagonalOuterBorder(Graphics g, Rectangle bounds, Pen pen, ButtonShape shape)
+    {
+        var width = bounds.Width;
+        var height = bounds.Height;
+        var edge = DiagonalEdge(bounds);
+        var segX = shape is ButtonShape.FullDiagonal or ButtonShape.LeftDiagonal ? edge : 0;
+        var segY = shape is ButtonShape.FullDiagonal or ButtonShape.RightDiagonal ? width - edge : width;
+        var offsetX = shape != ButtonShape.RightDiagonal ? 1 : 0;
+        var offsetY = shape != ButtonShape.LeftDiagonal ? 1 : 0;
+        var p10 = new Point(bounds.Left + segX - offsetX, bounds.Top + height - 1 + offsetX);
+        var p11 = new Point(bounds.Left, bounds.Top);
+        var p12 = new Point(bounds.Left + segY - 1 + offsetY, bounds.Top);
+        var p13 = new Point(bounds.Left + width - 1, bounds.Top + height - 1 + offsetY);
+        var p14 = new Point(bounds.Left + segX - 1 - offsetX * 2, bounds.Top + height - 1);
+        var p15 = new Point(bounds.Left + width - 1, bounds.Top + height - 1);
+        g.DrawLine(pen, p10, p11);
+        g.DrawLine(pen, p11, p12);
+        g.DrawLine(pen, p12, p13);
+        g.DrawLine(pen, p13, p14);
+        g.DrawLine(pen, p14, p15);
     }
     private static void FillXpBackground(Graphics g, Rectangle bounds, GraphicsPath path, Color back)
     {
