@@ -395,6 +395,19 @@ internal static class Program
             Check(args.Effect == DragDropEffects.Copy, $"Effect={args.Effect}");
         });
 
+        Test("OLEDragDrop entrega el texto externo", form =>
+        {
+            var button = Add(form, new LaVolpeButton { AllowDrop = true });
+            var data = new DataObject();
+            data.SetData(DataFormats.UnicodeText, "texto recibido");
+            string? received = null;
+            button.OLEDragDrop += (_, e) => received = e.Data?.GetData(DataFormats.UnicodeText) as string;
+            var args = new DragEventArgs(data, 0, 2, 2, DragDropEffects.Copy, DragDropEffects.Copy);
+            var method = typeof(LaVolpeButton).GetMethod("OnDragDrop", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method?.Invoke(button, new object[] { args });
+            Check(received == "texto recibido", $"texto={received ?? "<null>"}");
+        });
+
         Test("CheckBox/OptionButton marcan toda la superficie", form =>
         {
             var check = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Size = new Size(100, 40), Value = true });
