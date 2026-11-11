@@ -13,7 +13,7 @@ Fecha: 2026-11-11. SDK fijado por `global.json` a 8.0.427.
 | `dotnet run ... -- --visual-snapshot .\artifacts\visual\net8` | 32 capturas generadas; referencia VB6 observable desde el IDE |
 | `dotnet run ... -- --visual-compare .\artifacts\visual\net8 .\artifacts\visual\net8` | 32/32 capturas idénticas; 0 píxeles diferentes y delta 0 |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build -- --snapshot .\artifacts\visual\net8\sample-client.png` | Captura cliente reproducible de 508×374 generada correctamente |
-| Comparación `sample-client.png` VB6/.NET con el comparador | 68.587/189.992 píxeles diferentes (36,10 %); delta de canales 7.450.890 tras ajustar recortes, tipografía, degradado XP, marco VB6 y rasterización de diagonales dentro del área cliente; issue #2 permanece abierto |
+| Comparación `sample-client.png` VB6/.NET con el comparador | 68.590/189.992 píxeles diferentes (36,10 %); delta de canales 7.285.485 tras ajustar altura VB6, recortes, tipografía, degradado XP, marco VB6 y rasterización de diagonales dentro del área cliente; issue #2 permanece abierto |
 | `dotnet run --project .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj -c Release --no-build` | Sample WinForms iniciado y verificado visualmente contra `artifacts/visual/vb6/sample.png` |
 | Validación de archivos en `artifacts\visual\net8` | 32/32 PNG legibles, 120×40 píxeles, tamaño mayor que cero |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 32 correctas, 0 fallidas |

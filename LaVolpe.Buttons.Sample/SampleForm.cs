@@ -64,7 +64,7 @@ public sealed class SampleForm : Form
 
     private void BuildCustomButtons()
     {
-        _custom[0] = CreateButton("Yes?", new Point(44, 106), new Size(52, 43), BackStyle.WindowsXp, ButtonShape.Round3D, "Tahoma", 8.25f, true);
+        _custom[0] = CreateButton("Yes?", new Point(44, 106), new Size(52, 52), BackStyle.WindowsXp, ButtonShape.Round3D, "Tahoma", 8.25f, true);
         _custom[0].BackColor = Color.FromArgb(192, 255, 255);
         _custom[0].GradientColor = Color.FromArgb(0, 128, 128);
         _custom[0].GradientMode = GradientMode.TopToBottom;
