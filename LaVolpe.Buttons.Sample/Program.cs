@@ -31,6 +31,8 @@ internal static class Program
         };
 
         form.CreateControl();
+        // Keep the reference state deterministic: the VB6 capture was taken without hovering a custom button.
+        Cursor.Position = new Point(0, 0);
         form.Show();
         Application.DoEvents();
 
