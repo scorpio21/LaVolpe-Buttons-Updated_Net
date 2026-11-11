@@ -21,7 +21,7 @@ public sealed class SampleForm : Form
     private readonly CheckBox _disable = CreateCheck("Disable above three buttons?", 316, 302, 166);
     private readonly CheckBox _gradients = CreateCheck("Use gradeint colors?", 358, 324, 124);
     private readonly CheckBox _hover = CreateCheck("Highlight hover with other color?", 303, 347, 179);
-    private readonly Panel _samplePanel = new() { Location = new Point(8, 206), Size = new Size(494, 163), BorderStyle = BorderStyle.FixedSingle, BackColor = SystemColors.Control };
+    private readonly Panel _samplePanel = new ReferenceFrame { Location = new Point(8, 206), Size = new Size(494, 163), BackColor = SystemColors.Control };
     private readonly List<Image?> _images = new();
     private readonly List<Image?> _vb6SampleImages = new();
     private string _sampleCaption = "Win XP";
@@ -126,8 +126,6 @@ public sealed class SampleForm : Form
         _sample[3].Picture = _vb6SampleImages[3];
         _sample[3].PictureSize = ImageSize.Size32x32;
         _sample[3].PictureAlign = ImagePlacement.LeftOfCaption;
-        _sample[3].GradientColor = Color.FromArgb(0, 128, 128);
-        _sample[3].GradientMode = GradientMode.TopToBottom;
     }
 
     private void BuildOptions()
@@ -293,4 +291,19 @@ public sealed class SampleForm : Form
 
     private static ComboBox CreateCombo(int x, int y, int width) => new() { Location = new Point(x, y), Size = new Size(width, 21), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("MS Sans Serif", 8.25f) };
     private static CheckBox CreateCheck(string text, int x, int y, int width) => new() { Text = text, Location = new Point(x, y), Size = new Size(width, 17), AutoSize = false, CheckAlign = ContentAlignment.MiddleRight, Font = new Font("MS Sans Serif", 8.25f) };
+
+    private sealed class ReferenceFrame : Panel
+    {
+        public ReferenceFrame()
+        {
+            SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            using var border = new Pen(Color.Blue);
+            e.Graphics.DrawRectangle(border, 0, 0, Width - 1, Height - 1);
+        }
+    }
 }
