@@ -566,11 +566,11 @@ public class LaVolpeButton : Control, IButtonControl
             using var brush=new SolidBrush(back); g.FillPath(brush,fillPath);
         }
         var rings=GetBorders(back,down,hot,selected);
-        if (_style == BackStyle.WindowsXp)
+        if (_shape is ButtonShape.Rectangular or ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal)
         {
-            // VB6 DrawButton_WinXP termina en DrawButtonBorder: 14 polilíneas
-            // con tres niveles de colores, no en rutas GDI+ concéntricas.
-            DrawXpBorderNative(g, full, rings);
+            // Todos los estilos rectangulares de VB6 terminan en DrawButtonBorder:
+            // 14 polilíneas con tres niveles de colores, no rutas GDI+ concéntricas.
+            DrawVb6BorderNative(g, full, rings);
         }
         else
         {
@@ -584,7 +584,7 @@ public class LaVolpeButton : Control, IButtonControl
             }
         }
     }
-    private void DrawXpBorderNative(Graphics g, Rectangle bounds, RingBorder[] rings)
+    private void DrawVb6BorderNative(Graphics g, Rectangle bounds, RingBorder[] rings)
     {
         var width = bounds.Width;
         var height = bounds.Height;
