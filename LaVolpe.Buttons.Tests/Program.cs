@@ -206,6 +206,29 @@ internal static class Program
             }
         });
 
+        Test("Regiones conservadas en escalas equivalentes a DPI", form =>
+        {
+            foreach (var dpi in new[] { 96, 120, 144, 192 })
+            {
+                var scale = dpi / 96f;
+                foreach (var shape in new[] { ButtonShape.LeftDiagonal, ButtonShape.RightDiagonal, ButtonShape.FullDiagonal, ButtonShape.Round3D })
+                {
+                    var size = new Size((int)Math.Round(120 * scale), (int)Math.Round(40 * scale));
+                    var button = Add(form, new LaVolpeButton
+                    {
+                        ButtonShape = shape,
+                        Size = size,
+                        Font = new Font("Arial", 9.75f * scale),
+                        Caption = $"DPI {dpi}"
+                    });
+                    using var bitmap = new Bitmap(size.Width, size.Height);
+                    button.DrawToBitmap(bitmap, new Rectangle(Point.Empty, size));
+                    Check(button.Region is not null, $"DPI={dpi} {shape}: Region=null");
+                    Check(button.Region!.IsVisible(size.Width / 2, size.Height / 2), $"DPI={dpi} {shape}: centro fuera de región");
+                }
+            }
+        });
+
         Test("Rectangular XP recorta las esquinas", form =>
         {
             var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, Size = new Size(120, 40) });
