@@ -68,15 +68,16 @@ public sealed class SampleForm : Form
         _custom[0].BackColor = Color.FromArgb(192, 255, 255);
         _custom[0].GradientColor = Color.FromArgb(0, 128, 128);
         _custom[0].GradientMode = GradientMode.TopToBottom;
+        _custom[0].HoverBackColor = Color.FromArgb(0, 128, 128);
 
         _custom[1] = CreateButton("Pats  ||", new Point(128, 107), new Size(100, 52), BackStyle.WindowsXp, ButtonShape.CustomFlat, "Tahoma", 9f, false);
         _custom[1].Picture = _images[0];
         _custom[1].PictureSize = ImageSize.FillScaleUpDown;
         _custom[1].CaptionAlign = ContentAlignment.MiddleRight;
-        _custom[1].HoverBackColor = Color.Yellow;
+        _custom[1].HoverBackColor = Color.Cyan;
         _custom[1].HoverForeColor = Color.FromArgb(0, 0, 192);
 
-        _custom[2] = CreateButton("La ||Volpe", new Point(316, 106), new Size(59, 59), BackStyle.WindowsXp, ButtonShape.Custom3DBorder, "Times New Roman", 9f, false);
+        _custom[2] = CreateButton("La ||Volpe ", new Point(316, 106), new Size(59, 59), BackStyle.WindowsXp, ButtonShape.Custom3DBorder, "Times New Roman", 9f, false);
         _custom[2].Picture = _images[1];
         _custom[2].PictureSize = ImageSize.Size32x32;
         _custom[2].CustomClick = CustomClick.SouthEast;
@@ -90,7 +91,7 @@ public sealed class SampleForm : Form
         _custom[3].MouseOnButton += (_, inside) =>
         {
             _custom[3].DelayDrawing(true);
-            _custom[3].BackColor = inside ? Color.Cyan : Color.Magenta;
+            _custom[3].BackColor = inside ? Color.Yellow : Color.Magenta;
             _custom[3].Picture = inside ? _images[2] : _images[1];
             _custom[3].DelayDrawing(false);
         };
