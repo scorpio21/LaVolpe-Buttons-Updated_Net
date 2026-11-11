@@ -486,7 +486,7 @@ public class LaVolpeButton : Control, IButtonControl
     {
         base.OnDragOver(drgevent);
         OLEDragOver?.Invoke(this, drgevent);
-        if (drgevent.Effect == DragDropEffects.None && HasTextData(drgevent.Data))
+        if (OLEDragOver is null && drgevent.Effect == DragDropEffects.None && HasTextData(drgevent.Data))
             drgevent.Effect = DragDropEffects.Copy;
     }
     protected override void OnGiveFeedback(GiveFeedbackEventArgs e)
@@ -500,7 +500,7 @@ public class LaVolpeButton : Control, IButtonControl
     {
         base.OnDragEnter(e);
         OLEDragOver?.Invoke(this, e);
-        if (e.Effect == DragDropEffects.None && HasTextData(e.Data))
+        if (OLEDragOver is null && e.Effect == DragDropEffects.None && HasTextData(e.Data))
             e.Effect = DragDropEffects.Copy;
     }
 

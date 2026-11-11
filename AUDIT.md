@@ -31,8 +31,8 @@ La arquitectura actual es adecuada para el port: una biblioteca WinForms, un sam
 
 - `dotnet restore .\\LaVolpe.Buttons.Net.sln`: correcto.
 - `dotnet build` individual de los tres `.csproj`, Release: 0 errores, 0 warnings en cada uno.
-- `dotnet run --project .\\LaVolpe.Buttons.Tests\\LaVolpe.Buttons.Tests.csproj -c Release --no-build`: 38 correctas, 0 fallidas, incluida la aceptación de `Copy` en `DragEnter` con y sin manejador, la entrega de texto en `DragDrop`, el sombreado XP por franjas, `GradientMode` y la validación de enums.
-- `dotnet test .\\LaVolpe.Buttons.Net.sln -c Release --no-build` termina con código 1 sin descubrir casos, porque los proyectos son EXE/harness y no proyectos `Microsoft.NET.Test.Sdk`; el resultado funcional reproducible es el harness `dotnet run`, con 38/38.
+- `dotnet run --project .\\LaVolpe.Buttons.Tests\\LaVolpe.Buttons.Tests.csproj -c Release --no-build`: 39 correctas, 0 fallidas, incluida la aceptación de `Copy` en `DragEnter` sin manejador, el respeto del rechazo explícito del manejador, la entrega de texto en `DragDrop`, el sombreado XP por franjas, `GradientMode` y la validación de enums.
+- `dotnet test .\\LaVolpe.Buttons.Net.sln -c Release --no-build` termina con código 1 sin descubrir casos, porque los proyectos son EXE/harness y no proyectos `Microsoft.NET.Test.Sdk`; el resultado funcional reproducible es el harness `dotnet run`, con 39/39.
 - `dotnet build .\\LaVolpe.Buttons.Net.sln -c Release --no-restore -m:1`: correcto; 0 warnings y 0 errores. La concurrencia 1 se mantiene como gate reproducible en este entorno.
 
 ## Conclusión

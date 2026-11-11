@@ -435,6 +435,18 @@ internal static class Program
             Check(args.Effect == DragDropEffects.Copy, $"Effect={args.Effect}");
         });
 
+        Test("OLEDragEnter respeta rechazo explícito", form =>
+        {
+            var button = Add(form, new LaVolpeButton { AllowDrop = true });
+            button.OLEDragOver += (_, e) => e.Effect = DragDropEffects.None;
+            var data = new DataObject();
+            data.SetData(DataFormats.UnicodeText, "texto rechazado");
+            var args = new DragEventArgs(data, 0, 1, 1, DragDropEffects.Copy, DragDropEffects.None);
+            var method = typeof(LaVolpeButton).GetMethod("OnDragEnter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method?.Invoke(button, new object[] { args });
+            Check(args.Effect == DragDropEffects.None, $"Effect={args.Effect}");
+        });
+
         Test("OLEDragDrop entrega el texto externo", form =>
         {
             var button = Add(form, new LaVolpeButton { AllowDrop = true });
