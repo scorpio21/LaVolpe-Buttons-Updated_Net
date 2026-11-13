@@ -194,3 +194,6 @@ relicencia del código VB6 original ni de las imágenes. Los comentarios de
 `lvButtons.ctl` acreditan la inspiración de Gonchuki y la fórmula de colores
 XP de Gonchuki y Ghuran Kartal. Verifique los términos originales antes de
 redistribuir el port o sus recursos.
+La evidencia revisada y la decisión de alcance están detalladas en
+[NOTICE.md](NOTICE.md); el MIT del port no relicencia el código VB6, el OCX ni
+las imágenes originales.
