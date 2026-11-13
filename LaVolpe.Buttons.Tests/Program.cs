@@ -1058,10 +1058,18 @@ public static class Program
 
     private static int CompareVisualSnapshots(string referenceDirectory, string currentDirectory)
     {
-        var failures = 0;
-        foreach (var referencePath in Directory.EnumerateFiles(referenceDirectory, "*.png"))
+        var referenceFullPath = Path.GetFullPath(referenceDirectory);
+        var currentFullPath = Path.GetFullPath(currentDirectory);
+        if (string.Equals(referenceFullPath, currentFullPath, StringComparison.OrdinalIgnoreCase))
         {
-            var currentPath = Path.Combine(currentDirectory, Path.GetFileName(referencePath));
+            Console.Error.WriteLine("ERROR: la referencia VB6 y la salida .NET deben estar en carpetas distintas.");
+            return 2;
+        }
+
+        var failures = 0;
+        foreach (var referencePath in Directory.EnumerateFiles(referenceFullPath, "*.png"))
+        {
+            var currentPath = Path.Combine(currentFullPath, Path.GetFileName(referencePath));
             if (!File.Exists(currentPath))
             {
                 Console.WriteLine($"FALTA {Path.GetFileName(referencePath)}");
