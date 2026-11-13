@@ -1,5 +1,7 @@
 # Evidencia y diferencias conocidas
 
+Actualización 2026-11-13: la suite actual ejecuta 56 pruebas correctas y 0 fallidas; incluye comprobaciones de clic físico Win32, teclado `Space`/`Enter`, Escape, flechas, ciclo de hover, `ResetDefaultColors`, `Refresh`, desplazamiento/restauración de `CustomClick`, layout de captions con textos largos y saltos `||`, anillo degradado de `Custom3DBorder`, notificación de eventos OLE públicos, `HoverColorLocks`, límites de `ShadeColor` y redimensionado proporcional de `Custom*`.
+
 ## Evidencia observada
 
 - `lvButtons.ctl` contiene la API pública, ocho familias de estilo, regiones geométricas, imágenes, estados, eventos de teclado/mouse y eventos OLE.
@@ -15,7 +17,7 @@
 - CheckBox/OptionButton marcan toda la superficie con `cCheckBox`; se eliminó el glifo de 14 px del port.
 - `MousePointerConstants` mapea los 15 valores VB6 a `Cursor` y `MouseIcon` implica `Custom`.
 - `DragIcon` crea un cursor/HICON propio y lo libera al asignar `null`.
-- `LaVolpe.Buttons.Tests` ejecuta 25 casos sobre formularios STA: 25 correctas, 0 fallidas.
+- `LaVolpe.Buttons.Tests` ejecuta 56 casos sobre formularios STA: 56 correctas, 0 fallidas.
 - El timer WinForms usa 50 ms por control, activo solo durante el hover, y consulta `GraphicsPath.IsVisible`.
 - La publicación Release contiene DLL, EXE, runtimeconfig, dependencias, símbolos y recursos.
 
@@ -30,14 +32,14 @@
 | Control arrays | `Index` y array VB6 | Controles independientes | No se recrea la semántica del array |
 | Persistencia | PropertyBag/OCX | Serialización WinForms | No hay carga directa de propiedades VB6 |
 | Ayuda | IDs integrados al host VB6 | IDs almacenados | Falta HelpProvider/WhatsThis completo |
-| Regiones custom | Máscara/NormalizeImage y redimensionado del control | Región desde `LockBits` con la imagen estirada | La forma se aproxima, pero no se redimensiona el control como VB6 |
+| Regiones custom | Máscara/NormalizeImage y redimensionado del control | Región desde `LockBits` y redimensionado proporcional según `ScaleImage` | La forma y el tamaño se aproximan; la normalización GDI exacta aún difiere |
 | Fuentes | `StdFont`/OLE | `System.Drawing.Font` | Conversión de métricas y persistencia distinta |
 
 ## Evidencia no disponible todavía
 
 - Capturas comparativas ejecutando simultáneamente VB6 y .NET.
 - Medición píxel a píxel de cada estilo y estado.
-- Ejecución del Designer real de Visual Studio.
+- Reapertura del diseñador y serialización de imágenes/recursos tras editar desde Visual Studio.
 - Prueba de instalación en otro equipo con Desktop Runtime.
 - Verificación visual de transparencia y escala de `MouseIcon` (el hotspot centrado y la liberación del `HICON` ya se comprueban).
 - Prueba real de DragDrop externo y de todos los efectos OLE.

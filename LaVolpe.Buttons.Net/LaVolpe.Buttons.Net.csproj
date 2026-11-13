@@ -12,6 +12,7 @@
     <PackageTags>winforms;button;vb6;lavolpe</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Port derivado de LaVolpe Buttons (Updated), Planet Source Code code ID 45279; consulte NOTICE.md y LICENSE para la atribución y el alcance de la licencia.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/scorpio21/LaVolpe-Buttons-Updated_Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,5 +21,6 @@
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
     <None Include="..\README.md" Pack="true" PackagePath="" />
+    <None Include="..\NOTICE.md" Pack="true" PackagePath="NOTICE.md" />
   </ItemGroup>
 </Project>

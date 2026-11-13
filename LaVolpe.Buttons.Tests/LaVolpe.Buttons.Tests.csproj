@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <IsPackable>false</IsPackable>
     <AssemblyName>LaVolpe.Buttons.Tests</AssemblyName>
   </PropertyGroup>

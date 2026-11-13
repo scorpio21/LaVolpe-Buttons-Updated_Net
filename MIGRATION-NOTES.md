@@ -20,8 +20,9 @@
 - No se conserva CLSID/OCX ni carga de formularios VB6.
 - `StdPicture`, `StdFont`, `OLE_COLOR`, `PropertyBag` y persistencia binaria no son tipos públicos del port.
 - `hDC` y `hwnd` siguen el ciclo de vida de `Control` WinForms.
-- `Refresh` y `ResetDefaultColors` tienen nombres .NET (`RedrawButton`, `ResetDefaultColorsNow`).
-- `Default`/`Cancel` requieren configuración explícita del formulario si se necesita `AcceptButton`/`CancelButton`.
+- `Refresh` conserva el método público heredado de WinForms y `RedrawButton` ofrece el repintado explícito del port; `ResetDefaultColors` conserva la propiedad pública VB6 y `ResetDefaultColorsNow` es solo su helper interno.
+- `Default`/`Cancel` enlazan automáticamente `Form.AcceptButton`/`Form.CancelButton`; el formulario no necesita cableado adicional para esa función.
+- La fuente se hereda del contenedor WinForms, como es habitual en controles administrados; el sample fija explícitamente las fuentes observadas en `frmSample.frm` (Tahoma, Arial, MS Sans Serif y Times New Roman). `TextRenderer` con `NoPadding` aproxima `DrawText` de VB6, pero las métricas y la rasterización no son idénticas y la comparación visual debe tratarse como una diferencia conocida.
 
 ## Próximos pasos para mayor fidelidad
 

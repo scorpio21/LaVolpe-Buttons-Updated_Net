@@ -38,6 +38,7 @@ partial class Form1
         //
         this.laVolpeButton1.Caption = "LOAD";
         this.laVolpeButton1.AllowDrop = true;
+        this.laVolpeButton1.DragMode = LaVolpe.Buttons.Net.DragModeConstants.Automatic;
         this.laVolpeButton1.Location = new System.Drawing.Point(315, 179);
         this.laVolpeButton1.Name = "laVolpeButton1";
         this.laVolpeButton1.Size = new System.Drawing.Size(121, 43);

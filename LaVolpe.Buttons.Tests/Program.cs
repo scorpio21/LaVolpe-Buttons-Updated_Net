@@ -2,6 +2,7 @@ using LaVolpe.Buttons.Net;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace LaVolpe.Buttons.Tests;
@@ -10,16 +11,29 @@ namespace LaVolpe.Buttons.Tests;
 /// Pruebas de compatibilidad ejecutables, sin dependencias externas.
 /// Se ejecutan sobre WinForms real (STA) y devuelven código de salida 1 si algo falla.
 /// </summary>
-internal static class Program
+public static class Program
 {
     private static int _passed;
     private static readonly List<string> _failed = new();
     private static readonly List<IDisposable> _attached = new();
+    private static readonly List<string> _discovered = new();
+    private static readonly object _runGate = new();
     private static string _current = "";
+    private static string? _onlyTest;
+    private static bool _discoverTests;
 
     [STAThread]
     private static int Main(string[] args)
     {
+        _passed = 0;
+        _failed.Clear();
+        _attached.Clear();
+        _current = "";
+        _onlyTest = args.Length == 2 && args[0].Equals("--run-test", StringComparison.OrdinalIgnoreCase) ? args[1] : null;
+        _discoverTests = args.Length == 1 && args[0].Equals("--list-tests", StringComparison.OrdinalIgnoreCase);
+        if (_discoverTests)
+            _discovered.Clear();
+
         if (args.Length == 2 && args[0].Equals("--visual-snapshot", StringComparison.OrdinalIgnoreCase))
             return GenerateVisualSnapshots(args[1]);
 
@@ -97,6 +111,11 @@ internal static class Program
             Check(shapeValues.Select(value => (int)value).Distinct().Count() == shapeValues.Length, "ButtonShape contiene valores repetidos");
             Check(TypeDescriptor.GetDefaultProperty(button)?.Name == nameof(LaVolpeButton.Caption), "DefaultProperty no es Caption");
             Check(TypeDescriptor.GetDefaultEvent(button)?.Name == nameof(LaVolpeButton.Click), "DefaultEvent no es Click");
+            Check(!button.ShouldSerializeButtonShape() && !button.ShouldSerializeButtonStyle(), "ShouldSerialize no respeta los valores por defecto");
+            button.ButtonStyle = BackStyle.Java;
+            Check(button.ShouldSerializeButtonStyle(), "ShouldSerializeButtonStyle no detecta un estilo cambiado");
+            button.ButtonStyle = BackStyle.Windows95;
+            Check(!button.AllowDrop, "AllowDrop debe ser opt-in como OLEDropMode=Manual");
             Check(properties[nameof(LaVolpeButton.Caption)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "Caption no es serializable");
             Check(!properties[nameof(LaVolpeButton.Caption)]!.ShouldSerializeValue(button), "Caption predeterminado debe omitirse");
             button.Caption = "Designer button";
@@ -123,6 +142,9 @@ internal static class Program
             button.CaptionStyle = (CaptionStyle)99;
             button.HoverColorLocks = (HoverColorLocks)99;
             button.CustomClick = (CustomClick)99;
+            button.DragMode = DragModeConstants.vbAutomatic;
+            button.DragMode = (DragModeConstants)99;
+            button.CaptionAlign = (ContentAlignment)999;
             button.FontStyle = (FontStyles)1;
             button.MousePointer = (MousePointerConstants)4;
             Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
@@ -134,8 +156,60 @@ internal static class Program
             Check(button.CaptionStyle == CaptionStyle.Default, $"CaptionStyle={button.CaptionStyle}");
             Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"Locks={button.HoverColorLocks}");
             Check(button.CustomClick == CustomClick.Default, $"Click={button.CustomClick}");
+            Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
+            Check(button.CaptionAlign == ContentAlignment.MiddleCenter, $"CaptionAlign={button.CaptionAlign}");
             Check(button.FontStyle == FontStyles.PlainStyle, $"FontStyle={button.FontStyle}");
             Check(button.MousePointer == MousePointerConstants.Default, $"Pointer={button.MousePointer}");
+        });
+
+        Test("PictureAlign vertical centra el caption como VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.CaptionAlign = ContentAlignment.MiddleRight;
+            button.PictureAlign = ImagePlacement.TopCenter;
+            Check(button.CaptionAlign == ContentAlignment.MiddleCenter, "TopCenter no centra CaptionAlign");
+            button.CaptionAlign = ContentAlignment.MiddleLeft;
+            Check(button.CaptionAlign == ContentAlignment.MiddleCenter, "TopCenter acepta alineación no centrada");
+            button.PictureAlign = ImagePlacement.LeftOfCaption;
+            button.CaptionAlign = ContentAlignment.MiddleLeft;
+            Check(button.CaptionAlign == ContentAlignment.MiddleLeft, "alineación horizontal no se puede restaurar");
+            using var image = new Bitmap(16, 16);
+            button.Picture = image;
+            button.Caption = "A";
+            button.Size = new Size(100, 60);
+            var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            foreach (var alignment in Enum.GetValues<ImagePlacement>())
+            {
+                button.PictureAlign = alignment;
+                var result = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+                var textRect = (Rectangle)(result.GetType().GetField("Text") ?? result.GetType().GetField("Item1")!).GetValue(result)!;
+                var imageRect = (Rectangle)(result.GetType().GetField("Image") ?? result.GetType().GetField("Item2")!).GetValue(result)!;
+                Check(button.ClientRectangle.Contains(imageRect), $"imagen fuera de cliente en {alignment}: {imageRect}");
+                Check(button.ClientRectangle.Contains(textRect), $"caption fuera de cliente en {alignment}: {textRect}");
+            }
+        });
+
+        Test("Caption layout admite longitudes y saltos VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Size = new Size(160, 60), Font = new Font("Tahoma", 9.75f, FontStyle.Bold) });
+            var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            foreach (var alignment in new[] { ContentAlignment.MiddleLeft, ContentAlignment.MiddleCenter, ContentAlignment.MiddleRight })
+            {
+                button.CaptionAlign = alignment;
+                foreach (var caption in new[] { "A", "Texto suficientemente largo para envolver", "Línea 1||Línea 2" })
+                {
+                    var result = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, caption })!;
+                    var textField = result.GetType().GetField("Text") ?? result.GetType().GetField("Item1")!;
+                    var textRect = (Rectangle)textField!.GetValue(result)!;
+                    Check(textRect.Width > 0 && textRect.Height > 0, $"layout vacío para {alignment}/{caption}");
+                    button.Caption = caption;
+                    button.DrawToBitmap(bitmap, button.ClientRectangle);
+                }
+            }
         });
 
         Test("BackColor hereda del contenedor", form =>
@@ -143,6 +217,42 @@ internal static class Program
             form.BackColor = Color.FromArgb(230, 230, 230);
             var button = Add(form, new LaVolpeButton());
             Check(button.BackColor == form.BackColor, $"{button.BackColor} != {form.BackColor}");
+        });
+
+        Test("ResetDefaultColors restaura colores y gradiente", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.BackColor = Color.Red;
+            button.ForeColor = Color.Blue;
+            button.GradientColor = Color.Green;
+            button.GradientMode = GradientMode.TopToBottom;
+            button.HoverColorLocks = HoverColorLocks.NoLocks;
+            button.ResetDefaultColors = true;
+            Check(button.BackColor == SystemColors.Control, $"BackColor={button.BackColor}");
+            Check(button.ForeColor == SystemColors.ControlText, $"ForeColor={button.ForeColor}");
+            Check(button.GradientMode == GradientMode.None, $"GradientMode={button.GradientMode}");
+            Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
+        });
+
+        Test("HoverColorLocks sincroniza colores como VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton
+            {
+                BackColor = Color.Cyan,
+                ForeColor = Color.Navy,
+                GradientColor = Color.Blue,
+                GradientMode = GradientMode.TopToBottom
+            });
+            button.HoverColorLocks = HoverColorLocks.TextAndBackColor;
+            Check(button.HoverBackColor == Color.Blue, $"HoverBackColor con gradiente={button.HoverBackColor}");
+            Check(button.HoverForeColor == Color.Navy, $"HoverForeColor={button.HoverForeColor}");
+            button.HoverBackColor = Color.Red;
+            Check(button.HoverColorLocks == HoverColorLocks.TextColorOnly, $"lock tras HoverBackColor={button.HoverColorLocks}");
+            button.HoverForeColor = Color.Green;
+            Check(button.HoverColorLocks == HoverColorLocks.NoLocks, $"lock tras HoverForeColor={button.HoverColorLocks}");
+            button.HoverColorLocks = HoverColorLocks.BackColorOnly;
+            button.BackColor = Color.Yellow;
+            Check(button.HoverBackColor == Color.Blue, $"BackColor no sincronizó gradiente={button.HoverBackColor}");
         });
 
         Test("CommandButton rechaza Value", form =>
@@ -209,6 +319,56 @@ internal static class Program
             Check(!button.Value, "segundo clic");
         });
 
+        Test("Clic físico no duplica Click ni Value", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox, Location = new Point(10, 10) });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
+            var point = MakeLParam(10, 10);
+            SendMessage(button.Handle, 0x0201, (IntPtr)1, point); // WM_LBUTTONDOWN / MK_LBUTTON
+            SendMessage(button.Handle, 0x0202, IntPtr.Zero, point); // WM_LBUTTONUP
+            Check(clicks == 1, $"Click={clicks}");
+            Check(button.Value, $"Value={button.Value}");
+        });
+
+        Test("Teclas Space/Enter notifican y activan el botón", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox });
+            var clicks = 0;
+            var keyDown = 0;
+            var keyUp = 0;
+            button.Click += (_, _) => clicks++;
+            button.LvKeyDown += (_, e) => { if (e.KeyCode is Keys.Space or Keys.Enter) keyDown++; };
+            button.LvKeyUp += (_, e) => { if (e.KeyCode is Keys.Space or Keys.Enter) keyUp++; };
+            var keyDownMethod = typeof(LaVolpeButton).GetMethod("OnKeyDown", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var keyUpMethod = typeof(LaVolpeButton).GetMethod("OnKeyUp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            keyDownMethod.Invoke(button, new object[] { new KeyEventArgs(Keys.Space) });
+            keyUpMethod.Invoke(button, new object[] { new KeyEventArgs(Keys.Space) });
+            keyDownMethod.Invoke(button, new object[] { new KeyEventArgs(Keys.Enter) });
+            keyUpMethod.Invoke(button, new object[] { new KeyEventArgs(Keys.Enter) });
+            Check(clicks == 2, $"Click={clicks}");
+            Check(!button.Value, $"Value={button.Value}");
+            Check(keyDown == 2 && keyUp == 2, $"LvKeyDown={keyDown}, LvKeyUp={keyUp}");
+        });
+
+        Test("Escape y flechas reproducen la navegación VB6", form =>
+        {
+            var cancel = Add(form, new LaVolpeButton { Cancel = true });
+            var clicks = 0;
+            cancel.Click += (_, _) => clicks++;
+            var process = typeof(LaVolpeButton).GetMethod("ProcessDialogKey", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            Check((bool)process.Invoke(cancel, new object[] { Keys.Escape })!, "Escape no activó Cancel");
+            Check(clicks == 1, $"Escape clicks={clicks}");
+
+            var first = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            var second = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            first.Value = true;
+            Check((bool)process.Invoke(first, new object[] { Keys.Right })!, "flecha derecha no se consumió");
+            Check(!first.Value && second.Value, $"derecha: first={first.Value} second={second.Value}");
+            Check((bool)process.Invoke(second, new object[] { Keys.Left })!, "flecha izquierda no se consumió");
+            Check(first.Value && !second.Value, $"izquierda: first={first.Value} second={second.Value}");
+        });
+
         Test("IButtonControl y NotifyDefault", form =>
         {
             var button = Add(form, new LaVolpeButton { DialogResult = DialogResult.Yes });
@@ -222,14 +382,29 @@ internal static class Program
         Test("Default y Cancel enlazan el formulario", form =>
         {
             var button = Add(form, new LaVolpeButton { DialogResult = DialogResult.OK });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
             button.Default = true;
             button.Cancel = true;
             Check(ReferenceEquals(form.AcceptButton, button), "AcceptButton no enlazado");
             Check(ReferenceEquals(form.CancelButton, button), "CancelButton no enlazado");
+            var processDialogKey = typeof(Control).GetMethod("ProcessDialogKey", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            processDialogKey.Invoke(form, new object[] { Keys.Enter });
+            Check(clicks == 1, $"Enter sin foco no activó AcceptButton: {clicks}");
+            processDialogKey.Invoke(form, new object[] { Keys.Escape });
+            Check(clicks == 2, $"Escape sin foco no activó CancelButton: {clicks}");
             button.Default = false;
             button.Cancel = false;
             Check(form.AcceptButton is null, "AcceptButton no desenlazado");
             Check(form.CancelButton is null, "CancelButton no desenlazado");
+
+            using var secondForm = new Form();
+            form.Controls.Remove(button);
+            secondForm.Controls.Add(button);
+            button.Default = true;
+            button.Cancel = true;
+            Check(form.AcceptButton is null && form.CancelButton is null, "el formulario anterior conserva el enlace");
+            Check(ReferenceEquals(secondForm.AcceptButton, button) && ReferenceEquals(secondForm.CancelButton, button), "el formulario nuevo no recibió los enlaces");
         });
 
         Test("Región para formas no rectangulares", form =>
@@ -248,6 +423,8 @@ internal static class Program
 
         Test("Regiones conservadas en escalas equivalentes a DPI", form =>
         {
+            using var dpiImage = new Bitmap(32, 32);
+            var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", BindingFlags.NonPublic | BindingFlags.Instance)!;
             foreach (var dpi in new[] { 96, 120, 144, 192 })
             {
                 var scale = dpi / 96f;
@@ -259,14 +436,28 @@ internal static class Program
                         ButtonShape = shape,
                         Size = size,
                         Font = new Font("Arial", 9.75f * scale),
-                        Caption = $"DPI {dpi}"
+                        Caption = $"DPI {dpi}",
+                        Picture = dpiImage,
+                        PictureSize = ImageSize.Size32x32,
+                        PictureAlign = ImagePlacement.LeftOfCaption
                     });
                     using var bitmap = new Bitmap(size.Width, size.Height);
                     button.DrawToBitmap(bitmap, new Rectangle(Point.Empty, size));
                     Check(button.Region is not null, $"DPI={dpi} {shape}: Region=null");
                     Check(button.Region!.IsVisible(size.Width / 2, size.Height / 2), $"DPI={dpi} {shape}: centro fuera de región");
+                    using var graphics = Graphics.FromImage(bitmap);
+                    var result = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+                    var textRect = (Rectangle)(result.GetType().GetField("Text") ?? result.GetType().GetField("Item1")!).GetValue(result)!;
+                    var imageRect = (Rectangle)(result.GetType().GetField("Image") ?? result.GetType().GetField("Item2")!).GetValue(result)!;
+                    Check(button.ClientRectangle.Contains(textRect), $"DPI={dpi} {shape}: caption fuera del cliente");
+                    Check(button.ClientRectangle.Contains(imageRect), $"DPI={dpi} {shape}: imagen fuera del cliente");
                 }
             }
+            var hookButton = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.Round3D, Size = new Size(120, 40) });
+            var before = hookButton.Region;
+            var dpiHook = typeof(LaVolpeButton).GetMethod("OnDpiChangedAfterParent", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            dpiHook?.Invoke(hookButton, new object[] { EventArgs.Empty });
+            Check(hookButton.Region is not null && !ReferenceEquals(before, hookButton.Region), "OnDpiChangedAfterParent no reconstruyó la región");
         });
 
         Test("Rectangular XP recorta las esquinas", form =>
@@ -277,6 +468,9 @@ internal static class Program
 
         Test("CustomFlat usa la imagen como máscara", form =>
         {
+            var empty = Add(form, new LaVolpeButton());
+            empty.ButtonShape = ButtonShape.CustomFlat;
+            Check(empty.ButtonShape == ButtonShape.Rectangular, "CustomFlat sin Picture no se rechaza");
             var image = new Bitmap(60, 40);
             _attached.Add(image);
             using (var graphics = Graphics.FromImage(image))
@@ -286,10 +480,62 @@ internal static class Program
                 graphics.FillEllipse(brush, 0, 0, 60, 40);
             }
             image.SetPixel(59, 0, Color.FromArgb(255, 0, 250)); // diferencia azul de 5: VB6 lo conserva
-            var button = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, Picture = image, Size = new Size(60, 40) });
+            image.SetPixel(58, 0, Color.FromArgb(255, 0, 253)); // diferencia azul de 2: VB6 lo elimina
+            var button = Add(form, new LaVolpeButton { Size = new Size(60, 40) });
+            button.Picture = image;
+            button.ButtonShape = ButtonShape.CustomFlat;
             Check(button.PictureSize == ImageSize.FillScaleUpDown, $"PictureSize={button.PictureSize}");
+            button.PictureSize = ImageSize.Size32x32;
+            Check(button.PictureSize == ImageSize.FillScaleUpDown, "PictureSize permite cambiar el tamaño en CustomFlat");
             Check(button.Region is not null && !button.Region!.IsVisible(0, 0), button.Region is null ? "Region=null" : "máscara no aplicada");
             Check(button.Region is not null && button.Region.IsVisible(59, 0), "la tolerancia de máscara no debe superar ±3");
+            using var rendered = new Bitmap(60, 40, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var renderGraphics = Graphics.FromImage(rendered))
+            {
+                renderGraphics.Clear(Color.Transparent);
+                var drawImageWithMask = typeof(LaVolpeButton).GetMethod("DrawImageWithMask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+                drawImageWithMask.Invoke(null, new object[] { renderGraphics, image, new Rectangle(0, 0, rendered.Width, rendered.Height) });
+            }
+            Check(rendered.GetPixel(58, 0).A == 0, "el dibujo custom debe limpiar también la máscara ±3");
+            Check(rendered.GetPixel(59, 0).A > 0, "el dibujo custom no debe eliminar colores fuera de ±3");
+            button.Picture = null;
+            Check(button.ButtonShape == ButtonShape.Rectangular, "Picture=null no devuelve CustomFlat a Rectangular");
+
+            var regular = Add(form, new LaVolpeButton { Size = new Size(60, 40), BackColor = Color.White });
+            regular.Picture = image;
+            regular.PictureSize = ImageSize.FillStretch;
+            using var regularRendered = new Bitmap(60, 40, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            regular.DrawToBitmap(regularRendered, regular.ClientRectangle);
+            var maskPixels = 0;
+            for (var y = 0; y < regularRendered.Height; y++)
+                for (var x = 0; x < regularRendered.Width; x++)
+                    if (regularRendered.GetPixel(x, y).ToArgb() == Color.Magenta.ToArgb()) maskPixels++;
+            Check(maskPixels == 0, $"la imagen normal conserva {maskPixels} píxeles del color máscara");
+        });
+
+        Test("Custom* redimensiona proporcionalmente como VB6", form =>
+        {
+            using var image = new Bitmap(83, 96);
+            var button = Add(form, new LaVolpeButton { Size = new Size(59, 59) });
+            button.Picture = image;
+            button.ButtonShape = ButtonShape.Custom3DBorder;
+            Check(button.ClientSize == new Size(51, 59), $"ClientSize={button.ClientSize.Width}x{button.ClientSize.Height}");
+        });
+
+        Test("Custom3DBorder dibuja el anillo blanco a gris de VB6", form =>
+        {
+            using var image = new Bitmap(40, 30);
+            using (var imageGraphics = Graphics.FromImage(image))
+            {
+                imageGraphics.Clear(Color.Magenta);
+                imageGraphics.FillEllipse(Brushes.RoyalBlue, 1, 1, 38, 28);
+            }
+            var button = Add(form, new LaVolpeButton { Picture = image, ButtonShape = ButtonShape.Custom3DBorder, Size = new Size(40, 30) });
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            button.DrawToBitmap(bitmap, button.ClientRectangle);
+            var top = bitmap.GetPixel(button.Width / 2, 0);
+            var bottom = bitmap.GetPixel(button.Width / 2, button.Height - 1);
+            Check(top.GetBrightness() > bottom.GetBrightness(), $"marco custom no degrada: top={top}, bottom={bottom}");
         });
 
         Test("Imagen liberada no derriba el control", form =>
@@ -300,7 +546,9 @@ internal static class Program
                 graphics.Clear(Color.Magenta);
                 graphics.FillEllipse(Brushes.RoyalBlue, 0, 0, 40, 40);
             }
-            var button = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, Picture = image, Size = new Size(40, 40) });
+            var button = Add(form, new LaVolpeButton { Size = new Size(40, 40) });
+            button.Picture = image;
+            button.ButtonShape = ButtonShape.CustomFlat;
             Application.DoEvents();
             image.Dispose();
             button.ButtonShape = ButtonShape.CustomFlat;   // fuerza a recalcular la región con la imagen liberada
@@ -308,6 +556,19 @@ internal static class Program
             form.Refresh();
             Application.DoEvents();
             Check(true);
+        });
+
+        Test("Timer de hover solo vive mientras el puntero está dentro", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            var timerField = typeof(LaVolpeButton).GetField("_hoverTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            var timer = (System.Windows.Forms.Timer)timerField.GetValue(button)!;
+            var enter = typeof(LaVolpeButton).GetMethod("OnMouseEnter", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            var leave = typeof(LaVolpeButton).GetMethod("OnMouseLeave", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            enter.Invoke(button, new object[] { EventArgs.Empty });
+            Check(timer.Enabled, "el timer no arranca al entrar");
+            leave.Invoke(button, new object[] { EventArgs.Empty });
+            Check(!timer.Enabled, "el timer no se detiene al salir");
         });
 
         Test("MouseIcon crea y libera el cursor", form =>
@@ -333,6 +594,21 @@ internal static class Program
             button.BackColor = Color.Red;
             button.DelayDrawing(false);
             Check(button.BackColor == Color.Red, $"BackColor={button.BackColor}");
+            button.BeginDelayDrawing();
+            var delayEnabled = (bool)typeof(LaVolpeButton).GetProperty("DelayDrawingEnabled")!.GetValue(button)!;
+            Check(delayEnabled, "BeginDelayDrawing no activa DelayDrawingEnabled");
+            button.EndDelayDrawing();
+            delayEnabled = (bool)typeof(LaVolpeButton).GetProperty("DelayDrawingEnabled")!.GetValue(button)!;
+            Check(!delayEnabled, "EndDelayDrawing no desactiva DelayDrawingEnabled");
+            button.RedrawButton();
+            Check(true);
+        });
+
+        Test("Refresh público redibuja el control", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.Refresh();
+            Check(true);
         });
 
         Test("hDC válido a 32 bpp", form =>
@@ -402,6 +678,31 @@ internal static class Program
             Check(data!.GetDataPresent(DataFormats.UnicodeText), "UnicodeText ausente");
             Check(data.GetDataPresent(DataFormats.Text), "Text ausente");
             Check((string?)data.GetData(DataFormats.UnicodeText) == "texto de prueba", "texto Unicode incorrecto");
+
+            var button = Add(form, new LaVolpeButton { DragMode = DragModeConstants.vbAutomatic });
+            var started = false;
+            var completed = false;
+            button.OLEStartDrag += (_, args) => { started = true; args.Effect = DragDropEffects.None; };
+            button.OLECompleteDrag += (_, _) => completed = true;
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            typeof(LaVolpeButton).GetMethod("OnMouseDown", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0) });
+            typeof(LaVolpeButton).GetMethod("OnMouseMove", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 20, 1, 0) });
+            Check(started, "OLEStartDrag no se notificó");
+            Check(completed, "OLECompleteDrag no se notificó al rechazar el efecto");
+        });
+
+        Test("OLECompleteDrag y OLESetData siguen notificándose", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            var complete = 0;
+            var setData = 0;
+            button.OLECompleteDrag += (_, _) => complete++;
+            button.OLESetData += (_, _) => setData++;
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(LaVolpeButton).GetMethod("RaiseOLECompleteDrag", flags)!.Invoke(button, null);
+            typeof(LaVolpeButton).GetMethod("RaiseOLESetData", flags)!.Invoke(button, null);
+            Check(complete == 1, $"OLECompleteDrag={complete}");
+            Check(setData == 1, $"OLESetData={setData}");
         });
 
         Test("OLEDragEnter permite soltar texto externo", form =>
@@ -497,6 +798,40 @@ internal static class Program
             Check(true);
         });
 
+        Test("Java conserva ForeColor", form =>
+        {
+            var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.Java, ForeColor = Color.Navy });
+            var method = typeof(LaVolpeButton).GetMethod("GetCaptionColors", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var result = method?.Invoke(button, new object[] { false, Color.White });
+            var color = (Color?)result?.GetType().GetProperty("Color")?.GetValue(result);
+            Check(color == Color.Navy, $"Java ForeColor={color}");
+        });
+
+        Test("ShadeColor reproduce la conversión VB6 de G y B", form =>
+        {
+            var method = typeof(LaVolpeButton).GetMethod("Shade", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+            var source = Color.FromArgb(100, 150, 200);
+            var lessBlue = (Color)method.Invoke(null, new object[] { source, -30, true })!;
+            var normalBlue = (Color)method.Invoke(null, new object[] { source, -30, false })!;
+            Check(lessBlue == Color.FromArgb(70, 121, 170), $"lessBlue={lessBlue}");
+            Check(normalBlue == Color.FromArgb(70, 121, 171), $"normalBlue={normalBlue}");
+        });
+
+        Test("ShadeColor respeta los límites VB6 de los canales", form =>
+        {
+            var method = typeof(LaVolpeButton).GetMethod("Shade", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+            var values = new[] { 0, 1, 127, 254, 255 };
+            var expectedGreenBlue = new[] { 0, 1, 127, 255, 255 };
+            for (var i = 0; i < values.Length; i++)
+            {
+                var source = Color.FromArgb(values[i], values[i], values[i]);
+                var shaded = (Color)method.Invoke(null, new object[] { source, 0, false })!;
+                Check(shaded.R == values[i], $"R[{values[i]}]={shaded.R}");
+                Check(shaded.G == expectedGreenBlue[i], $"G[{values[i]}]={shaded.G}");
+                Check(shaded.B == expectedGreenBlue[i], $"B[{values[i]}]={shaded.B}");
+            }
+        });
+
         Test("XP usa cuatro colores por anillo", form =>
         {
             var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.WindowsXp, BackColor = Color.FromArgb(180,180,180), Size = new Size(120, 40) });
@@ -556,6 +891,32 @@ internal static class Program
             Check(bitmap.GetPixel(8, 10).R < bitmap.GetPixel(31, 10).R, "el extremo derecho debe ser más claro");
         });
 
+        Test("GradientMode no genera canales fuera de rango", form =>
+        {
+            var button = Add(form, new LaVolpeButton
+            {
+                ButtonStyle = BackStyle.Windows95,
+                GradientMode = GradientMode.TopToBottom,
+                BackColor = Color.Green,
+                GradientColor = Color.Green,
+                Size = new Size(40, 40)
+            });
+            using var bitmap = new Bitmap(40, 40);
+            button.DrawToBitmap(bitmap, new Rectangle(0, 0, 40, 40));
+            var pixel = bitmap.GetPixel(20, 20);
+            Check(pixel.ToArgb() != Color.Empty.ToArgb(), $"píxel inesperadamente vacío={pixel}");
+
+            var round = Add(form, new LaVolpeButton
+            {
+                ButtonShape = ButtonShape.Round3D,
+                BackColor = Color.Green,
+                Size = new Size(40, 40)
+            });
+            using var roundBitmap = new Bitmap(40, 40);
+            round.DrawToBitmap(roundBitmap, new Rectangle(0, 0, 40, 40));
+            Check(roundBitmap.GetPixel(20, 2).G <= 255, "Round3D no debe generar verde=256");
+        });
+
         Test("Offset de contenido por estado", form =>
         {
             var method = typeof(LaVolpeButton).GetMethod("ContentOffset", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
@@ -569,6 +930,25 @@ internal static class Program
             Check(Offset(java, true) == Point.Empty, $"Java marcado={Offset(java, true)}");
         });
 
+        Test("CustomClick desplaza y restaura el control VB6", form =>
+        {
+            using var image = new Bitmap(32, 32);
+            _attached.Add(image);
+            var button = Add(form, new LaVolpeButton
+            {
+                Location = new Point(100, 100), Size = new Size(40, 40),
+                Picture = image, ButtonShape = ButtonShape.CustomFlat,
+                CustomClick = CustomClick.East
+            });
+            var down = typeof(LaVolpeButton).GetMethod("OnMouseDown", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var up = typeof(LaVolpeButton).GetMethod("OnMouseUp", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            var origin = button.Location;
+            down.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 10, 10, 0) });
+            Check(button.Location == origin + new Size(1, 0), $"posición pulsada={button.Location}");
+            up.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 10, 10, 0) });
+            Check(button.Location == origin, $"posición restaurada={button.Location}");
+        });
+
         Test("Custom marcado pinta el caption", form =>
         {
             var image = new Bitmap(48, 48);
@@ -580,13 +960,13 @@ internal static class Program
             }
             var button = Add(form, new LaVolpeButton
             {
-                ButtonShape = ButtonShape.CustomFlat,
                 Mode = ButtonMode.CheckBox,
                 Caption = "OK",
                 Picture = image,
                 Size = new Size(48, 48),
                 Value = true
             });
+            button.ButtonShape = ButtonShape.CustomFlat;
             using var bitmap = new Bitmap(48, 48);
             button.DrawToBitmap(bitmap, new Rectangle(0, 0, 48, 48));
             Check(button.Value, "Value no activado");
@@ -604,7 +984,41 @@ internal static class Program
             Console.WriteLine($"FAIL  {failure}");
         Console.WriteLine(new string('-', 70));
         Console.WriteLine($"{_passed} correctas, {_failed.Count} fallidas");
-        return _failed.Count == 0 ? 0 : 1;
+        var exitCode = _failed.Count == 0 ? 0 : 1;
+        _discoverTests = false;
+        _onlyTest = null;
+        return exitCode;
+    }
+
+    internal static IReadOnlyList<string> DiscoverTestNames()
+    {
+        lock (_runGate)
+        {
+            RunOnSta(() => Main(new[] { "--list-tests" }));
+            return _discovered.ToArray();
+        }
+    }
+
+    public static int RunSingleTest(string name)
+    {
+        lock (_runGate)
+            return RunOnSta(() => Main(new[] { "--run-test", name }));
+    }
+
+    private static int RunOnSta(Func<int> action)
+    {
+        var result = -1;
+        Exception? error = null;
+        var thread = new Thread(() =>
+        {
+            try { result = action(); }
+            catch (Exception ex) { error = ex; }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+        if (error is not null) throw new InvalidOperationException("La suite WinForms no pudo ejecutarse en STA.", error);
+        return result;
     }
 
     private static int GenerateVisualSnapshots(string outputDirectory)
@@ -692,6 +1106,13 @@ internal static class Program
 
     private static void Test(string name, Action<Form> body)
     {
+        if (_discoverTests)
+        {
+            _discovered.Add(name);
+            return;
+        }
+        if (_onlyTest is not null && !string.Equals(_onlyTest, name, StringComparison.Ordinal))
+            return;
         _current = name;
         var form = new Form
         {
@@ -736,6 +1157,11 @@ internal static class Program
 
     [DllImport("gdi32.dll")]
     private static extern int GetDeviceCaps(IntPtr hdc, int index);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
+    private static IntPtr MakeLParam(int x, int y) => (IntPtr)((y << 16) | (x & 0xFFFF));
 
     private sealed class PropertyContext(object instance, PropertyDescriptor property) : ITypeDescriptorContext
     {

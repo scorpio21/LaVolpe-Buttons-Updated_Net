@@ -1,8 +1,13 @@
 # Estado del port de LaVolpe Buttons a .NET
 
-**Fecha de esta revisión:** 2026-11-06 (tercera ronda)
+## Estado verificado 2026-11-13
+
+La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 56/56 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la validación OLE externa.
+
+**Fecha de esta revisión:** 2026-11-13 (verificación de cierre de la ronda actual)
+**Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
 **Revisión anterior:** 2026-11-05 (segunda ronda) - 70 %
-**Estado general estimado:** **76 %**
+**Estado general estimado:** **≈70 %** (rango 65–75 %; la equivalencia visual no está ponderada en la cifra histórica)
 
 Archivos originales: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe-Buttons-Updated-\`
 Archivos .NET: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Net\`
@@ -27,22 +32,43 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Estados visuales | 80 % | 50 % | 55 % | 66 % | 82 % | Estados normal/foco/pulsado/marcado con colores por estilo |
 | Formas gráficas | 70 % | 30 % | 55 % | 80 % | 82 % | Imagen encogida al pulsar y reglas de caption para `Custom*` |
 | Estilos visuales | 65 % | 25 % | 32 % | 42 % | 72 % | Tres anillos concéntricos y parejas de color por estilo |
-| Imágenes y escalado | 80 % | 55 % | 55 % | 70 % | 72 % | Reglas de forma personalizada; falta redimensionar el control |
+| Imágenes y escalado | 80 % | 55 % | 55 % | 70 % | 78 % | Reglas `Custom*`, máscara y redimensionado proporcional; paridad GDI pendiente |
 | Recursos `.frx` | 85 % | 75 % | 75 % | 80 % | 80 % | Sin cambios |
 | Formulario de ejemplo | 85 % | 35 % | 35 % | 58 % | 58 % | Sin cambios: la demo sigue siendo un subconjunto |
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | Sin cambios |
 | Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 50 % | Sin validación real en el diseñador |
-| Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | Sin NuGet ni instalador |
-| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 62 % | 25 casos: puntero, `DragIcon` y superficie marcada |
+| Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
+| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 62 % | 50 casos: paleta, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI, clic físico y superficie marcada |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
 | **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología) |
 
-### Metodología
+### Metodología vigente (2026-11-13)
 
-El porcentaje global es la media ponderada de las filas anteriores con estos pesos aproximados:
-control funcional 20, propiedades 12, checkbox/option 10, eventos mouse/teclado 8, estados 8,
-formas 8, estilos 8, OLE 5, imágenes 5, formulario 5, recursos 3, diseñador 3, proyecto 2,
-distribución 2, pruebas 1. Resultado 2026-11-06 (ronda 3): **76,0 %**.
+El porcentaje global es una media ponderada de 16 áreas. Los pesos suman exactamente 100 e incluyen
+la equivalencia visual; no se presenta como equivalencia binaria del OCX. El valor actual es **73,15 %**,
+redondeado a **73 %**, calculado con los porcentajes de la última columna de la tabla anterior:
+
+| Área | Peso | Porcentaje usado | Evidencia |
+|---|---:|---:|---|
+| Control WinForms funcional | 14 | 88 % | [AUDIT.md](AUDIT.md), [COMPATIBILIDAD.md](COMPATIBILIDAD.md) |
+| Propiedades y enums | 8 | 90 % | [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md), [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
+| Eventos de mouse y teclado | 6 | 70 % | [AUDITORIA_VB6_NET8.md](AUDITORIA_VB6_NET8.md), [TEST-REPORT.md](TEST-REPORT.md) |
+| CheckBox y OptionButton | 7 | 90 % | [TEST-REPORT.md](TEST-REPORT.md) |
+| Eventos OLE | 5 | 40 % | [OLE-MAPPING.md](OLE-MAPPING.md) |
+| Estados visuales | 7 | 82 % | [COMPATIBILIDAD.md](COMPATIBILIDAD.md), [TEST-REPORT.md](TEST-REPORT.md) |
+| Formas gráficas | 6 | 82 % | [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md) |
+| Estilos visuales | 10 | 72 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [GAP-REPORT.md](GAP-REPORT.md) |
+| Imágenes y escalado | 7 | 78 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [TEST-REPORT.md](TEST-REPORT.md) |
+| Recursos `.frx` | 3 | 80 % | [EVIDENCIA_Y_DIFERENCIAS.md](EVIDENCIA_Y_DIFERENCIAS.md) |
+| Formulario de ejemplo | 5 | 58 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [SampleForm.cs](LaVolpe.Buttons.Sample/SampleForm.cs) |
+| Proyecto de ejemplo | 3 | 65 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
+| Diseñador de Visual Studio | 4 | 50 % | [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
+| Instalación/distribución | 2 | 35 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
+| Pruebas automatizadas | 3 | 62 % | [TEST-REPORT.md](TEST-REPORT.md) |
+| Equivalencia visual con VB6 | 10 | 60 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [GAP-REPORT.md](GAP-REPORT.md) |
+
+La cifra histórica del 76 % queda conservada únicamente como referencia de rondas anteriores; no se usa
+para describir el estado actual.
 
 ## Evidencia de la revisión 2026-11-04 (detección)
 
@@ -60,7 +86,7 @@ Todo lo siguiente se ejecutó el 2026-11-04 sobre el repositorio, antes de las c
 | `Value = true` en modo CommandButton | Aceptado (VB6 lo rechaza) |
 | Mover/recuperar el foco | **0** eventos `Invalidated`: el rectángulo de foco no se repinta |
 | `Caption = "Hola"` | `Text` sigue vacío |
-| `ButtonShape = CustomFlat` + `PictureSize = Size16x16` | No se fuerza `Fill_ScaleUpDown` |
+| `ButtonShape = CustomFlat` + `PictureSize = Size16x16` | **Corregido**: `Custom*` fuerza `Fill_ScaleUpDown` y rechaza tamaños fijos |
 | `Region` de los controles | `null` en las 8 formas (VB6 usa `SetWindowRgn`) |
 | `hDC` | Devuelve un HDC de un `Graphics` ya liberado por el `using` |
 | `PerformClick()` con `Enabled = false` | 0 clics (correcto) |
@@ -87,7 +113,7 @@ Todo lo siguiente se ejecutó el 2026-11-04 sobre el repositorio, antes de las c
 ## Evidencia de la revisión 2026-11-05 (ronda 2)
 
 Sonda integral ejecutada fuera del repositorio y, después, **portada al proyecto
-`LaVolpe.Buttons.Tests`** (19 casos, todos en verde):
+`LaVolpe.Buttons.Tests`** (45 casos, todos en verde):
 
 | Comprobación | Resultado |
 |---|---|
@@ -132,15 +158,15 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 |---|---:|---:|---|
 | `Name` | 100 % | 100 % | Heredada de `Control` |
 | `BackColor` | 100 % | 92 % | Se aplica en los 8 estilos; los tonos se derivan con `Shade()` |
-| `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` estira en vez de redimensionar |
+| `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
-| `Cancel` | 65 % | 60 % | `Escape` con foco; no se conecta solo a `Form.CancelButton` |
+| `Cancel` | 65 % | 60 % | `Escape` y enlace automático a `Form.CancelButton`, con limpieza al cambiar de formulario |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
 | `CaptionStyle` | 100 % | 65 % | Sombra aproximada, sin offsets/colores por estilo |
 | `CausesValidation` | 100 % | 100 % | Heredada |
 | `CustomClick` | 100 % | 65 % | Desplazamiento implementado; no se restringe a formas custom |
-| `Default` | 65 % | 60 % | `Enter` con foco y `NotifyDefault`; falta uso automático del `AcceptButton` |
+| `Default` | 65 % | 60 % | `Enter`, `NotifyDefault` y enlace automático a `Form.AcceptButton`, con limpieza al cambiar de formulario |
 | `DragIcon` | 50 % | 85 % | `Image` propia, cursor/HICON creado y liberado; usada en `OnGiveFeedback` |
 | `DragMode` | 65 % | 45 % | `DoDragDrop`; efectos y datos OLE distintos |
 | `Enabled` | 100 % | 95 % | Heredada y con pintura deshabilitada |
@@ -161,7 +187,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `MousePointer` | 100 % | 100 % | `MousePointerConstants` con mapa a `Cursor`; `MouseIcon` implica `vbCustom` |
 | `Picture` | 100 % | 82 % | Máscara por color/alfa y escalado; falta transparencia exacta |
 | `PictureAlign` | 100 % | 82 % | Cálculo aproximado en casos extremos |
-| `PictureSize` | 100 % | 85 % | `Fill_ScaleUpDown`, `FillStretch` y encogido al pulsar en `Custom*`; falta redimensionar el control |
+| `PictureSize` | 100 % | 88 % | `Fill_ScaleUpDown`, `FillStretch`, bloqueo de tamaños fijos en `Custom*` y redimensionado proporcional; interpolación aún distinta |
 | `ResetDefaultColors` | 100 % | 75 % | Restaura colores y vuelve a heredar del contenedor al cambiar de padre |
 | `ShowFocusRect` | 100 % | 92 % | Anillo por familia de estilo; las formas `Custom*` no lo dibujan |
 | `TabIndex` / `TabStop` | 100 % | 100 % | Heredadas |
@@ -206,7 +232,7 @@ primera ronda y ~79 % en la segunda ronda del 2026-11-05).
 * Eventos `MouseOnButton`, `ValueChanged`, `CheckedChanged`, `SelectedChanged`, `ButtonDoubleClick`,
   `LvMouseDown/Up/Move`, `LvKeyDown/Up`, `LvKeyPress` y OLE adaptados.
 * Timer administrado de 50 ms por control, activo solo mientras el puntero está encima.
-* Proyecto de pruebas `LaVolpe.Buttons.Tests` sin dependencias externas (25 casos, STA real).
+* Proyecto de pruebas `LaVolpe.Buttons.Tests` sin dependencias externas (50 casos, STA real).
 * Ejemplo ampliado con los 8 estilos, 7 formas, 3 modos, `Default`/`Cancel`, gradiente, imagen y
   `CustomFlat`.
 * Recursos del `.frx` extraídos con script de rutas relativas y copiados al output del ejemplo.
@@ -225,9 +251,9 @@ Diferencias concretas (estado 2026-11-06, ronda 3):
 * **Formas:** implementadas. `Round*` es elipse (`AddEllipse`, equivalente a
   `CreateEllipticRgn`, `lvButtons.ctl:1394`), las diagonales usan
   `lEdge = 4 * ((Height + 1) / 4)` (`:1433`) y las esquinas se recortan con `LopOffCorners1..4`.
-* **Región de ventana:** implementada para formas y máscaras. En `Custom*`, VB6 redimensiona el
-  control para ajustarlo a la imagen; el port estira la imagen al control actual.
-* **Transparencia:** el port usa el píxel superior izquierdo (±10 por canal) o alpha < 20, con el
+* **Región de ventana:** implementada para formas y máscaras. En `Custom*`, el port redimensiona
+  proporcionalmente el control según `ScaleImage`; la normalización GDI completa aún difiere.
+* **Transparencia:** el port usa el píxel superior izquierdo (±3 por canal) o alpha < 20, con el
   mismo espíritu que `NormalizeImage`, pero sin la alineación exacta de regiones del OCX.
 * **Texto:** VB6 calcula `CalculateBoundingRects` y aplica offsets/colores por estilo y por efecto
   raised/sunken; el port hace una sola pasada de `TextRenderer.DrawText`.
@@ -247,14 +273,14 @@ alias, `DelayDrawing`, máscaras, recorte de esquinas, anillos de borde y degrad
 
 1. **Pintado fino de los 8 estilos**: colores independientes por lado y anillo, `FrameRgn`,
    offsets de texto y sombreado deshabilitado exacto.
-2. **Formas personalizadas**: VB6 redimensiona el control a la imagen; decidir si se replica ese
-   comportamiento (hoy se estira la imagen).
+2. **Formas personalizadas**: redimensionado proporcional implementado; queda replicar la normalización
+   GDI completa y validar todos los casos extremos de imágenes/transparencia.
 3. **OLE real**: los eventos `OLEDragDrop`, `OLEStartDrag`, etc. son adaptaciones WinForms.
 4. **Diseñador de Visual Studio**: validar Toolbox, serialización, reapertura y edición.
 5. **DPI**: probar 96/120/144/192 y el redimensionado de formas.
 6. **Formulario VB6 completo**: la demo .NET sigue siendo un subconjunto de los 16 botones de
    `frmSample.frm`.
-7. **Distribución**: no hay paquete NuGet ni instalador.
+7. **Distribución**: existe un paquete NuGet local verificable; todavía no hay publicación ni instalador.
 
 ## Pendiente para llegar al 100 %
 
@@ -282,7 +308,7 @@ alias, `DelayDrawing`, máscaras, recorte de esquinas, anillos de borde y degrad
 
 * Validar en Visual Studio: Toolbox, inserción, edición, reapertura y serialización.
 * Completar `[Description]` y `[DefaultValue]` en las propiedades restantes.
-* Paquete NuGet o instalador con DLL, docs y ejemplo.
+* Publicar el paquete NuGet o crear instalador con DLL, docs y ejemplo.
 
 ### 5. Pruebas
 
@@ -297,7 +323,7 @@ dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release
 dotnet run --project .\LaVolpe.Buttons.Tests --configuration Release
 ```
 
-Resultado (2026-11-06, ronda 3):
+Resultado actual (2026-11-12):
 
 ```text
 Compilación correcta.
@@ -305,7 +331,7 @@ Compilación correcta.
     0 Errores
 
 LaVolpe.Buttons.Tests - pruebas de compatibilidad
-25 correctas, 0 fallidas
+56 correctas, 0 fallidas
 ```
 
 También se renderizó el ejemplo fuera de pantalla (`sample.png`) y una matriz de estilos

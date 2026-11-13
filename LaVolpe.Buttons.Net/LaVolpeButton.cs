@@ -73,7 +73,7 @@ public delegate void LvKeyEventHandler(object sender, KeyEventArgs e);
 [ToolboxItem(true), DesignTimeVisible(true), DesignerCategory("Component"), DefaultEvent(nameof(Click)), DefaultProperty(nameof(Caption))]
 public class LaVolpeButton : Control, IButtonControl
 {
-    private bool _hovered, _pressed, _value, _delayDrawing, _resetDefaultColors, _explicitBackColor;
+    private bool _hovered, _pressed, _value, _delayDrawing, _resetDefaultColors, _explicitBackColor, _resizingCustom, _customClickMoved;
     private string _caption = "";
     private Color _normalBack = SystemColors.Control, _hoverBack = Color.Empty, _gradientColor = SystemColors.ControlLight, _hoverFore = SystemColors.ControlText;
     private Image? _picture, _mouseIcon, _dragIcon;
@@ -90,6 +90,7 @@ public class LaVolpeButton : Control, IButtonControl
     private DialogResult _dialogResult = DialogResult.None;
     private Point _dragStart;
     private int _helpContextId, _index, _whatsThisHelpId;
+    private Point _customClickOrigin;
     private string _toolTipText = "";
     private ToolTip? _toolTip;
     private Cursor? _mouseIconCursor, _dragIconCursor;
@@ -111,31 +112,33 @@ public class LaVolpeButton : Control, IButtonControl
     public event GiveFeedbackEventHandler? OLEGiveFeedback;
     public event EventHandler? OLECompleteDrag, OLESetData;
 
-    public LaVolpeButton() { SetStyle(ControlStyles.UserPaint|ControlStyles.AllPaintingInWmPaint|ControlStyles.OptimizedDoubleBuffer|ControlStyles.ResizeRedraw|ControlStyles.Selectable,true); Size=new Size(90,33); TabStop=true; AllowDrop=true; AccessibleRole=AccessibleRole.PushButton; _hoverTimer=new System.Windows.Forms.Timer { Interval=50 }; _hoverTimer.Tick += (_,_) => TimerUpdate(0); }
+    public LaVolpeButton() { SetStyle(ControlStyles.UserPaint|ControlStyles.AllPaintingInWmPaint|ControlStyles.OptimizedDoubleBuffer|ControlStyles.ResizeRedraw|ControlStyles.Selectable,true); SetStyle(ControlStyles.StandardClick,false); Size=new Size(90,33); TabStop=true; AllowDrop=false; AccessibleRole=AccessibleRole.PushButton; _hoverTimer=new System.Windows.Forms.Timer { Interval=50 }; _hoverTimer.Tick += (_,_) => UpdateHoverState(); }
     [Category("LaVolpe"), DefaultValue(""), Description("Texto visible del botón; admite && para aceleradores y || para salto de línea.")] public string Caption { get=>_caption; set{ if(_caption==(value??""))return; _caption=value??""; base.Text=_caption; if(string.IsNullOrWhiteSpace(AccessibleName))AccessibleName=_caption.Replace("&",""); InvalidateIfNeeded();} }
     // VB6: Caption es el miembro por defecto; Text debe reflejarlo para accesibilidad y diseñador.
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text { get=>_caption; set=>Caption=value??string.Empty; }
     [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(!Enum.IsDefined(value)||_mode==value)return; _mode=value; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{if(!Enum.IsDefined(value))return;_shape=value; UpdateRegion(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{if(!Enum.IsDefined(value))return;var custom=value is ButtonShape.CustomFlat or ButtonShape.Custom3DBorder;if(custom&&_picture is null)return;if(custom)_pictureSize=ImageSize.FillScaleUpDown;_shape=value; ResizeCustomToImage(); UpdateRegion(); InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{if(!Enum.IsDefined(value))return;_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
     [Category("LaVolpe"), DefaultValue(false)] public bool Value { get=>_value; set{ if(_mode==ButtonMode.CommandButton)return; if(value)SelectThis(); else SetValue(false); } }
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public bool Checked { get=>_value; set=>Value=value; }
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public bool Selected { get=>_value; set=>Value=value; }
     [Category("Appearance")]
-    public override Color BackColor { get => _normalBack; set { _normalBack = value; _explicitBackColor = true; base.BackColor = value; InvalidateIfNeeded(); } }
+    public override Color BackColor { get => _normalBack; set { _normalBack = value; _explicitBackColor = true; base.BackColor = value; SyncHoverColorsFromLocks(); InvalidateIfNeeded(); } }
+    [Category("Appearance")]
+    public override Color ForeColor { get => base.ForeColor; set { base.ForeColor = value; if (LocksText) _hoverFore = value; InvalidateIfNeeded(); } }
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] public Color BackColorButton { get => BackColor; set => BackColor = value; }
-    [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value; InvalidateIfNeeded();} }
-    [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value; if(value is not null&&IsCustomShape) _pictureSize=ImageSize.FillScaleUpDown; UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;_pictureSize=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{_captionAlign=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value;if(value!=_normalBack&&LocksBack)_hoverColorLocks=LocksText?HoverColorLocks.TextColorOnly:HoverColorLocks.NoLocks;InvalidateIfNeeded();} }
+    [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value;if(value!=ForeColor&&LocksText)_hoverColorLocks=LocksBack?HoverColorLocks.BackColorOnly:HoverColorLocks.NoLocks;InvalidateIfNeeded();} }
+    [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value;if(_gradientMode!=GradientMode.None&&LocksBack)_hoverBack=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value;SyncHoverColorsFromLocks(); InvalidateIfNeeded();} }
+    [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value;if(value is null&&IsCustomShape)_shape=ButtonShape.Rectangular;else if(value is not null&&IsCustomShape)_pictureSize=ImageSize.FillScaleUpDown; ResizeCustomToImage(); UpdateRegion(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;if(value is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)_captionAlign=ContentAlignment.MiddleCenter;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;if(IsCustomShape&&value!=ImageSize.FillScaleUpDown)return;_pictureSize=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{if(!Enum.IsDefined(value)||(_pictureAlign is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)&&value!=ContentAlignment.MiddleCenter)return;_captionAlign=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;SyncHoverColorsFromLocks();InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(CustomClick.Default)] public CustomClick CustomClick { get=>_customClick; set{if(!Enum.IsDefined(value))return;_customClick=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle)] public FontStyles FontStyle { get=>_fontStyle; set{if(!Enum.IsDefined(value))return;_fontStyle=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? MouseIcon { get=>_mouseIcon; set{_mouseIcon=value;if(value is not null)_mousePointer=MousePointerConstants.Custom;ApplyMouseIcon();InvalidateIfNeeded();} }
@@ -153,7 +156,7 @@ public class LaVolpeButton : Control, IButtonControl
     public void DelayDrawing(bool delay){ _delayDrawing=delay; if(!delay) RedrawButton(); }
     [Category("Behavior"), DefaultValue(false)] public bool Cancel { get=>_cancel; set{if(_cancel==value)return;_cancel=value;UpdateFormButtonBindings();} }
     [Category("Behavior"), DefaultValue(false)] public bool Default { get=>_default; set{if(_default==value)return;_default=value;UpdateFormButtonBindings();InvalidateIfNeeded();} }
-    [Category("Behavior"), DefaultValue(DragModeConstants.vbManual)] public DragModeConstants DragMode { get=>_dragMode ? DragModeConstants.vbAutomatic : DragModeConstants.vbManual; set=>_dragMode=value==DragModeConstants.vbAutomatic; }
+    [Category("Behavior"), DefaultValue(DragModeConstants.vbManual)] public DragModeConstants DragMode { get=>_dragMode ? DragModeConstants.vbAutomatic : DragModeConstants.vbManual; set{if(!Enum.IsDefined(value))return;_dragMode=value==DragModeConstants.vbAutomatic;} }
     [Category("Behavior"), DefaultValue(DialogResult.None)] public DialogResult DialogResult { get=>_dialogResult; set=>_dialogResult=value; }
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
     [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set=>_helpContextId=value; }
@@ -165,9 +168,34 @@ public class LaVolpeButton : Control, IButtonControl
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.
     [Browsable(false)] public IntPtr hDC { get { if(_hdc==IntPtr.Zero){ _hdcGraphics=Graphics.FromHwnd(Handle); _hdc=_hdcGraphics.GetHdc(); } return _hdc; } }
     [Category("LaVolpe")] public bool ResetDefaultColors { get => _resetDefaultColors; set { _resetDefaultColors = value; if (value) ResetDefaultColorsNow(); } }
-    public void ResetDefaultColorsNow(){_normalBack=SystemColors.Control;_hoverBack=Color.Empty;_gradientColor=SystemColors.ControlLight;_hoverFore=SystemColors.ControlText;_explicitBackColor=false;base.BackColor=_normalBack;_resetDefaultColors=false;InvalidateIfNeeded();}
-    private Color HoverBackEffective => _hoverBack.IsEmpty ? _normalBack : _hoverBack;
+    public void ResetDefaultColorsNow(){_normalBack=SystemColors.Control;_hoverBack=Color.Empty;_gradientColor=SystemColors.ControlLight;_hoverFore=SystemColors.ControlText;_hoverColorLocks=HoverColorLocks.TextAndBackColor;_gradientMode=GradientMode.None;_explicitBackColor=false;base.BackColor=_normalBack;base.ForeColor=SystemColors.ControlText;_resetDefaultColors=false;InvalidateIfNeeded();}
+    private bool LocksText => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.TextColorOnly;
+    private bool LocksBack => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.BackColorOnly;
+    private Color HoverBackEffective => _hoverBack.IsEmpty ? (_gradientMode == GradientMode.None ? _normalBack : _gradientColor) : _hoverBack;
+    private void SyncHoverColorsFromLocks()
+    {
+        if (LocksBack) _hoverBack = _gradientMode == GradientMode.None ? _normalBack : _gradientColor;
+        if (LocksText) _hoverFore = ForeColor;
+    }
     private bool IsCustomShape => _shape is ButtonShape.CustomFlat or ButtonShape.Custom3DBorder;
+    // VB6 ScaleImage/CreateButtonRegion: Custom* adopts the largest
+    // proportional image size that fits its current client dimensions.
+    private void ResizeCustomToImage()
+    {
+        if(_resizingCustom || !IsCustomShape || _picture is null || ClientSize.Width<=0 || ClientSize.Height<=0) return;
+        try
+        {
+            var scale=Math.Min((double)ClientSize.Width/_picture.Width, (double)ClientSize.Height/_picture.Height);
+            if(double.IsNaN(scale) || double.IsInfinity(scale) || scale<=0) return;
+            var target=new Size(Math.Max(1,(int)(_picture.Width*scale)), Math.Max(1,(int)(_picture.Height*scale)));
+            if(target==ClientSize) return;
+            _resizingCustom=true;
+            try { Size=target; }
+            finally { _resizingCustom=false; }
+        }
+        catch(ArgumentException) { }
+        catch(ExternalException) { }
+    }
     private void ReleaseHdc()
     {
         if(_hdcGraphics is null) return;
@@ -242,7 +270,7 @@ public class LaVolpeButton : Control, IButtonControl
         var w=Math.Max(1, bounds.Width); var h=Math.Max(1, bounds.Height);
         if((long)w*h>250_000) return new Region(bounds);
         using var scaled=new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-        using(var g=Graphics.FromImage(scaled)){ g.InterpolationMode=InterpolationMode.HighQualityBicubic; g.PixelOffsetMode=PixelOffsetMode.HighQuality; g.DrawImage(image, 0, 0, w, h); }
+        using(var g=Graphics.FromImage(scaled)){ g.InterpolationMode=InterpolationMode.NearestNeighbor; g.PixelOffsetMode=PixelOffsetMode.Default; g.DrawImage(image, 0, 0, w, h); }
         var data=scaled.LockBits(new Rectangle(0,0,w,h), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         var bytes=new byte[data.Stride*h];
         try { System.Runtime.InteropServices.Marshal.Copy(data.Scan0, bytes, 0, bytes.Length); }
@@ -340,7 +368,7 @@ public class LaVolpeButton : Control, IButtonControl
     }
     private void InvalidateIfNeeded(){if(!_delayDrawing) Invalidate();}
     public void RedrawButton(){Invalidate(); Update();}
-    public void TimerUpdate(long timerId)
+    private void UpdateHoverState()
     {
         if (!IsHandleCreated || !Visible) return;
         var point = PointToClient(Cursor.Position);
@@ -350,18 +378,26 @@ public class LaVolpeButton : Control, IButtonControl
     }
     public void BeginDelayDrawing(){_delayDrawing=true;}
     public void EndDelayDrawing(){_delayDrawing=false; RedrawButton();}
-    public void RaiseOLECompleteDrag(){OLECompleteDrag?.Invoke(this, EventArgs.Empty);}
-    public void RaiseOLESetData(){OLESetData?.Invoke(this, EventArgs.Empty);}
+    // Hooks internos para hosts/adaptadores que necesitan reenviar los callbacks
+    // OLE del UserControl; no forman parte de la API pública de lvButtons.ctl.
+    internal void RaiseOLECompleteDrag(){OLECompleteDrag?.Invoke(this, EventArgs.Empty);}
+    internal void RaiseOLESetData(){OLESetData?.Invoke(this, EventArgs.Empty);}
 
     private Form? _boundForm;
     private void UpdateFormButtonBindings()
     {
+        var form = FindForm();
+        if (_boundForm is not null && !ReferenceEquals(_boundForm, form))
+        {
+            if (ReferenceEquals(_boundForm.AcceptButton, this)) _boundForm.AcceptButton = null;
+            if (ReferenceEquals(_boundForm.CancelButton, this)) _boundForm.CancelButton = null;
+            _boundForm = null;
+        }
         if (_boundForm is not null)
         {
             if (!_default && ReferenceEquals(_boundForm.AcceptButton, this)) _boundForm.AcceptButton = null;
             if (!_cancel && ReferenceEquals(_boundForm.CancelButton, this)) _boundForm.CancelButton = null;
         }
-        var form = FindForm();
         if (form is null) return;
         if (_default) form.AcceptButton = this;
         if (_cancel) form.CancelButton = this;
@@ -430,10 +466,11 @@ public class LaVolpeButton : Control, IButtonControl
         }
         base.Dispose(disposing);
     }
-    protected override void OnMouseEnter(EventArgs e){base.OnMouseEnter(e);_hoverTimer.Start();TimerUpdate(0);}
-    protected override void OnMouseLeave(EventArgs e){base.OnMouseLeave(e);_hoverTimer.Stop();if(_hovered){_hovered=false;MouseOnButton?.Invoke(this,false);} _pressed=false;InvalidateIfNeeded();}
-    protected override void OnMouseDown(MouseEventArgs e){base.OnMouseDown(e);LvMouseDown?.Invoke(this,e);if(e.Button==MouseButtons.Left&&Enabled){_dragStart=e.Location;_pressed=true;Focus();InvalidateIfNeeded();}}
-    protected override void OnMouseUp(MouseEventArgs e){base.OnMouseUp(e);LvMouseUp?.Invoke(this,e);if(e.Button==MouseButtons.Left&&_pressed){_pressed=false;using(var path=CreatePath(ClientRectangle)) if(path.IsVisible(e.Location))PerformClick();InvalidateIfNeeded();}}
+    protected override void OnMouseEnter(EventArgs e){base.OnMouseEnter(e);_hoverTimer.Start();UpdateHoverState();}
+    protected override void OnMouseLeave(EventArgs e){base.OnMouseLeave(e);_hoverTimer.Stop();if(_hovered){_hovered=false;MouseOnButton?.Invoke(this,false);} _pressed=false;SetCustomClickMove(false);InvalidateIfNeeded();}
+    protected override void OnMouseDown(MouseEventArgs e){base.OnMouseDown(e);LvMouseDown?.Invoke(this,e);if(e.Button==MouseButtons.Left&&Enabled){_dragStart=e.Location;_pressed=true;Focus();SetCustomClickMove(true);InvalidateIfNeeded();}}
+    protected override void OnMouseUp(MouseEventArgs e){base.OnMouseUp(e);LvMouseUp?.Invoke(this,e);if(e.Button==MouseButtons.Left&&_pressed){var inside=false;using(var path=CreatePath(ClientRectangle)) inside=path.IsVisible(e.Location);_pressed=false;SetCustomClickMove(false);if(inside)PerformClick();InvalidateIfNeeded();}}
+    protected override void OnMouseCaptureChanged(EventArgs e){base.OnMouseCaptureChanged(e);if(!Capture){_pressed=false;SetCustomClickMove(false);InvalidateIfNeeded();}}
     protected override void OnMouseMove(MouseEventArgs e)
     {
         base.OnMouseMove(e);
@@ -445,10 +482,12 @@ public class LaVolpeButton : Control, IButtonControl
 
         _pressed = false;
         var data = CreateDragData(Caption);
-        OLEStartDrag?.Invoke(this, new DragEventArgs(data, 0, e.X, e.Y, DragDropEffects.Copy, DragDropEffects.Copy));
+        var startArgs = new DragEventArgs(data, 0, e.X, e.Y, DragDropEffects.Copy, DragDropEffects.Copy);
+        OLEStartDrag?.Invoke(this, startArgs);
         try
         {
-            DoDragDrop(data, DragDropEffects.Copy);
+            if (startArgs.Effect != DragDropEffects.None)
+                DoDragDrop(data, startArgs.Effect);
         }
         finally
         {
@@ -581,6 +620,18 @@ public class LaVolpeButton : Control, IButtonControl
             using var brush=new SolidBrush(back); g.FillPath(brush,fillPath);
         }
         var rings=GetBorders(back,down,hot,selected);
+        if (_shape == ButtonShape.Custom3DBorder)
+        {
+            // CreateButtonRegion/DrawCustomBorders de VB6 dibuja el marco
+            // blanco->gris sobre la región de la imagen antes del contenido.
+            DrawCustom3dBorder(g, full, fillPath, down || selected);
+            return;
+        }
+        if (_shape is ButtonShape.Round3D or ButtonShape.Round3DFixed && _style != BackStyle.Hover)
+        {
+            DrawRound3dBorder(g, full, down || selected);
+            return;
+        }
         if (_shape is ButtonShape.Rectangular or ButtonShape.LeftDiagonal or ButtonShape.RightDiagonal or ButtonShape.FullDiagonal)
         {
             // Todos los estilos rectangulares de VB6 terminan en DrawButtonBorder:
@@ -598,6 +649,63 @@ public class LaVolpeButton : Control, IButtonControl
                 DrawRing(g,path,rr,rings[i]);
             }
         }
+    }
+    private static void DrawRound3dBorder(Graphics g, Rectangle bounds, bool reverse)
+    {
+        using var outer = new GraphicsPath();
+        outer.AddEllipse(new Rectangle(bounds.Left, bounds.Top, Math.Max(1, bounds.Width - 1), Math.Max(1, bounds.Height - 1)));
+        using var inner = new GraphicsPath();
+        var innerBounds = Rectangle.Inflate(bounds, -2, -2);
+        inner.AddEllipse(new Rectangle(innerBounds.Left, innerBounds.Top, Math.Max(1, innerBounds.Width - 1), Math.Max(1, innerBounds.Height - 1)));
+        using var border = new Region(outer);
+        border.Exclude(inner);
+        var state = g.Save();
+        g.SetClip(border, CombineMode.Intersect);
+        var height = Math.Max(1, bounds.Height);
+        var colors = new Color[height];
+        colors[0] = Color.White;
+        if (height > 1)
+        {
+            var r = 255.0;
+            var gChannel = 256.0;
+            var b = 256.0;
+            var step = -127.0 / (height - 1.0);
+            // VB6 LoadGradientColors starts G/B at 256 for vbWhite and
+            // reaches 128 for vbGray, so their exact step is -128/n.
+            var convertedStep = -128.0 / (height - 1.0);
+            for (var index = 1; index < height; index++)
+            {
+                r += step;
+                gChannel += convertedStep;
+                b += convertedStep;
+                colors[index] = FromClampedArgb(r, gChannel, b);
+            }
+        }
+        for (var y = 0; y < height; y++)
+        {
+            var index = reverse ? height - 1 - y : y;
+            using var brush = new SolidBrush(colors[index]);
+            g.FillRectangle(brush, bounds.Left, bounds.Top + y, bounds.Width, 1);
+        }
+        g.Restore(state);
+    }
+    private static void DrawCustom3dBorder(Graphics g, Rectangle bounds, GraphicsPath path, bool reverse)
+    {
+        var state = g.Save();
+        g.SetClip(path, CombineMode.Intersect);
+        var height = Math.Max(1, bounds.Height);
+        for (var y = 0; y < height; y++)
+        {
+            var index = reverse ? height - 1 - y : y;
+            var fraction = height <= 1 ? 0d : index / (height - 1d);
+            var color = FromClampedArgb(255d - 127d * fraction, 256d - 128d * fraction, 256d - 128d * fraction);
+            var rowState = g.Save();
+            g.SetClip(new Rectangle(bounds.Left, bounds.Top + y, bounds.Width, 1), CombineMode.Intersect);
+            using var pen = new Pen(color, 1f);
+            g.DrawPath(pen, path);
+            g.Restore(rowState);
+        }
+        g.Restore(state);
     }
     private void DrawVb6BorderNative(Graphics g, Rectangle bounds, RingBorder[] rings)
     {
@@ -710,14 +818,28 @@ public class LaVolpeButton : Control, IButtonControl
         var steps = Math.Max(1, horizontal ? bounds.Width : bounds.Height);
         var state = g.Save();
         g.SetClip(path, CombineMode.Intersect);
+        var colors = new Color[steps];
+        colors[0] = start;
+        if (steps > 1)
+        {
+            var r = (double)start.R;
+            var gChannel = start.G * 256.0 / 255.0;
+            var b = start.B * 256.0 / 255.0;
+            var rStep = (end.R - start.R) / (steps - 1.0);
+            var gStep = (end.G * 256.0 / 255.0 - gChannel) / (steps - 1.0);
+            var bStep = (end.B * 256.0 / 255.0 - b) / (steps - 1.0);
+            for (var index = 1; index < steps; index++)
+            {
+                r += rStep;
+                gChannel += gStep;
+                b += bStep;
+                colors[index] = FromClampedArgb(r, gChannel, b);
+            }
+        }
         for (var i = 0; i < steps; i++)
         {
             var index = reverse ? steps - 1 - i : i;
-            var ratio = steps == 1 ? 0d : (double)index / (steps - 1);
-            var color = Color.FromArgb(
-                (int)Math.Floor(start.R + (end.R - start.R) * ratio),
-                (int)Math.Floor(start.G + (end.G - start.G) * ratio),
-                (int)Math.Floor(start.B + (end.B - start.B) * ratio));
+            var color = colors[index];
             using var brush = new SolidBrush(color);
             if (horizontal)
                 g.FillRectangle(brush, bounds.Left + i, bounds.Top, 1, bounds.Height);
@@ -912,16 +1034,38 @@ public class LaVolpeButton : Control, IButtonControl
         ControlPaint.DrawFocusRectangle(g,inner);
     }
     private Point CustomClickOffset() => CustomClick switch { CustomClick.North => new Point(0,-1), CustomClick.NorthEast => new Point(1,-1), CustomClick.NorthWest => new Point(-1,-1), CustomClick.SouthEast => new Point(1,1), CustomClick.SouthWest => new Point(-1,1), CustomClick.East => new Point(1,0), CustomClick.South => new Point(0,1), CustomClick.West => new Point(-1,0), _ => new Point(1,1) };
+    private void SetCustomClickMove(bool pressed)
+    {
+        var shouldMove = pressed && _customClick != CustomClick.Default && IsCustomShape && _mode == ButtonMode.CommandButton;
+        if (shouldMove && !_customClickMoved)
+        {
+            _customClickOrigin = Location;
+            Location = Point.Add(Location, new Size(CustomClickOffset()));
+            _customClickMoved = true;
+        }
+        else if (!shouldMove && _customClickMoved)
+        {
+            Location = _customClickOrigin;
+            _customClickMoved = false;
+        }
+    }
     // ShadeColor de lvButtons.ctl: desplaza R y G; con lessBlue el azul se mueve proporcionalmente.
     private static Color Shade(Color c, int offset, bool lessBlue = false)
     {
         int r = Math.Clamp(c.R + offset, 0, 255);
-        int g = Math.Clamp(c.G + offset, 0, 255);
+        // VB6 ShadeColor extracts green with /255 (not /256) before applying
+        // the offset; use the same rounded channel conversion.
+        int g = Math.Clamp((int)Math.Round(c.G * 256.0 / 255.0, MidpointRounding.ToEven) + offset, 0, 255);
+        int bBase = (int)Math.Round(c.B * 256.0 / 255.0, MidpointRounding.ToEven);
         int b = lessBlue
-            ? Math.Clamp(c.B + (int)(((long)c.B * offset) / 192), 0, 255)
-            : Math.Clamp(c.B + offset, 0, 255);
+            ? Math.Clamp(bBase + (int)(((long)bBase * offset) / 192), 0, 255)
+            : Math.Clamp(bBase + offset, 0, 255);
         return Color.FromArgb(r, g, b);
     }
+    private static Color FromClampedArgb(double r, double g, double b) => Color.FromArgb(
+        Math.Clamp((int)Math.Floor(r), 0, 255),
+        Math.Clamp((int)Math.Floor(g), 0, 255),
+        Math.Clamp((int)Math.Floor(b), 0, 255));
     // Diagonal de VB6: lEdge = 4 * ((Height + 1) / 4), dejando al menos 5 px de ancho.
     private static int DiagonalEdge(Rectangle r)
     {
@@ -984,7 +1128,8 @@ public class LaVolpeButton : Control, IButtonControl
             // Estilos clásicos: blanco en +1,+1 y luego gris en la posición original.
             return new CaptionColors(gray,Color.White,new Point(1,1));
         }
-        if(_style==BackStyle.Java) return new CaptionColors(gray,null,Point.Empty);
+        // VB6 Java conserva ForeColor; el sample lo usa azul marino igual que WinXP.
+        if(_style==BackStyle.Java) return new CaptionColors(useHoverFore ? _hoverFore : ForeColor,null,Point.Empty);
         return new CaptionColors(useHoverFore ? _hoverFore : ForeColor,null,Point.Empty);
     }
     private int HorizontalAlignClass() => _captionAlign switch
@@ -1055,10 +1200,19 @@ public class LaVolpeButton : Control, IButtonControl
                     irect=_shape==ButtonShape.RoundFlat ? Rectangle.Inflate(client,-1,-1) : Rectangle.Inflate(client,-3,-3);
                 else
                 {
-                    var availW=Math.Max(1,adjWidth-12); var availH=Math.Max(1,h-12);
-                    var scale=Math.Min((double)availW/_picture!.Width,(double)availH/_picture.Height);
-                    int iw=Math.Max(1,(int)Math.Round(_picture.Width*scale)), ih=Math.Max(1,(int)Math.Round(_picture.Height*scale));
-                    irect=new Rectangle((adjWidth-iw)/2+lEdge,(h-ih)/2,iw,ih);
+                    if(IsCustomShape)
+                    {
+                        // lvButtons.ctl: Custom* uses SetRect(0,0,ScaleWidth,ScaleHeight)
+                        // after resizing the control with ScaleImage.
+                        irect=client;
+                    }
+                    else
+                    {
+                        var availW=Math.Max(1,adjWidth-12); var availH=Math.Max(1,h-12);
+                        var scale=Math.Min((double)availW/_picture!.Width,(double)availH/_picture.Height);
+                        int iw=Math.Max(1,(int)Math.Round(_picture.Width*scale)), ih=Math.Max(1,(int)Math.Round(_picture.Height*scale));
+                        irect=new Rectangle((adjWidth-iw)/2+lEdge,(h-ih)/2,iw,ih);
+                    }
                 }
             }
             else
@@ -1122,7 +1276,7 @@ public class LaVolpeButton : Control, IButtonControl
             {
                 // CustomClick=Default encoge la imagen al presionar; el resto desplaza el contenido.
                 var dest = _pressed && _customClick==CustomClick.Default ? Rectangle.Inflate(client,-1,-1) : client;
-                g.DrawImage(_picture,dest);
+                DrawImageWithMask(g, _picture, dest);
             }
             catch (ArgumentException) { }
             catch (ExternalException) { }
@@ -1133,8 +1287,9 @@ public class LaVolpeButton : Control, IButtonControl
         var imageRect=layout.Image; imageRect.Offset(offset);
         if (layout.ShowImage && _picture is not null)
         {
-            // Si el usuario liberó la imagen, se omite el dibujo en vez de tumbar la aplicación.
-            try { g.DrawImage(_picture,imageRect); }
+            // VB6 aplica la máscara de transparencia también a las imágenes normales;
+            // dibujarla directamente deja halos/cuadros amarillos en los recursos del sample.
+            try { DrawImageWithMask(g, _picture, imageRect); }
             catch (ArgumentException) { }
             catch (ExternalException) { }
         }
@@ -1158,6 +1313,58 @@ public class LaVolpeButton : Control, IButtonControl
             TextRenderer.DrawText(g,text,f,sr,shadow,flags);
         }
         TextRenderer.DrawText(g,text,f,r,colors.Color,flags);
+    }
+
+    private static void DrawImageWithMask(Graphics g, Image image, Rectangle destination)
+    {
+        // NormalizeImage/DrawTransparentBitmap de VB6 usa el píxel superior
+        // izquierdo como TransImage y limpia los colores que quedan a ±3
+        // después de CopyImage/StretchBlt. SetColorKey solo elimina una
+        // coincidencia exacta, por lo que deja halos alrededor de la imagen.
+        using var sample = new Bitmap(image);
+        var mask = sample.GetPixel(0, 0);
+        if (mask.A == 0)
+        {
+            g.DrawImage(image, destination);
+            return;
+        }
+
+        using var normalized = new Bitmap(sample.Width, sample.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        using (var normalizeGraphics = Graphics.FromImage(normalized))
+        {
+            normalizeGraphics.CompositingMode = CompositingMode.SourceCopy;
+            normalizeGraphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            normalizeGraphics.PixelOffsetMode = PixelOffsetMode.Half;
+            normalizeGraphics.DrawImage(sample, new Rectangle(0, 0, normalized.Width, normalized.Height), 0, 0, sample.Width, sample.Height, GraphicsUnit.Pixel);
+        }
+
+        var data = normalized.LockBits(new Rectangle(0, 0, normalized.Width, normalized.Height),
+            System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        var bytes = new byte[Math.Abs(data.Stride) * normalized.Height];
+        try
+        {
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+            for (var y = 0; y < normalized.Height; y++)
+            {
+                var row = y * data.Stride;
+                for (var x = 0; x < normalized.Width; x++)
+                {
+                    var index = row + x * 4;
+                    var closeToMask = Math.Abs(bytes[index + 2] - mask.R) <= 3
+                        && Math.Abs(bytes[index + 1] - mask.G) <= 3
+                        && Math.Abs(bytes[index] - mask.B) <= 3;
+                    if (bytes[index + 3] < 20 || closeToMask)
+                        bytes[index + 3] = 0;
+                }
+            }
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+        }
+        finally
+        {
+            normalized.UnlockBits(data);
+        }
+
+        g.DrawImage(normalized, destination, 0, 0, normalized.Width, normalized.Height, GraphicsUnit.Pixel);
     }
 
     [StructLayout(LayoutKind.Sequential)]

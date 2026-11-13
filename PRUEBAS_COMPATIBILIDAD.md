@@ -1,16 +1,23 @@
 # Plan y estado de pruebas de compatibilidad
 
-**Última ejecución:** 2026-11-06 (ronda 3)
-**Proyecto de pruebas automatizadas:** **`LaVolpe.Buttons.Tests`** (ejecutable propio, sin
-dependencias externas, hilo STA y formularios reales).
+**Última ejecución:** 2026-11-13
+**Harness STA:** **`LaVolpe.Buttons.Tests`** (ejecutable propio, hilo STA y formularios reales).
+**Runner:** **`LaVolpe.Buttons.XunitTests`** (xUnit v3/Microsoft Testing Platform, 56 casos).
 
 ```powershell
 dotnet run --project .\LaVolpe.Buttons.Tests --configuration Release
 ```
 
-Resultado actual: **25 correctas, 0 fallidas**, código de salida `0`.
+Resultado actual: **56 correctas, 0 fallidas**, código de salida `0`.
 
-## Pruebas automatizadas (2026-11-06)
+```powershell
+dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj --configuration Release
+```
+
+El runner devuelve **56 correctas, 0 fallidas** y mantiene el comparador visual como herramienta
+separada del conjunto de pruebas.
+
+## Pruebas automatizadas (2026-11-12)
 
 Cada caso crea un `Form` real, agrega el control, ejecuta la comprobación y se cierra. `Region` se
 verifica con `Region.IsVisible` porque `DrawToBitmap` no respeta la región de ventana.
@@ -52,7 +59,7 @@ PASS  Text y Caption sincronizados
 ...
 PASS  CheckBox/OptionButton marcan toda la superficie
 ----------------------------------------------------------------------
-25 correctas, 0 fallidas
+56 correctas, 0 fallidas
 ```
 
 ## Pruebas manuales anteriores (2026-11-05, ronda 1)
@@ -73,9 +80,11 @@ con captura de pantalla real y comprobaciones sobre `Region`:
 | Gradientes en 4 direcciones | PASS | `L=248/R=5`, `L=8/R=250`, `T=224/B=22`, `T=31/B=233` |
 | `PerformClick()` con `Enabled = false` | PASS | 0 clics |
 
-La ronda 2 convirtió los casos de comportamiento en pruebas automatizadas y añadió los de
-OptionButton/CheckBox, `IButtonControl`, `MouseIcon`, `DelayDrawing` y máscaras. La ronda 3 sumó
-punteros, `DragIcon` y la superficie marcada de CheckBox/OptionButton.
+La tabla anterior conserva los 25 casos de la ronda 3. La suite actual añade 20 comprobaciones
+de PropertyGrid/serialización, clic físico Win32, DPI lógico 96/120/144/192, mnemónicos y
+Accept/Cancel, aceptación/rechazo/entrega de texto OLE, sombreado y gradientes VB6, `PictureAlign`,
+redimensionado proporcional de `Custom*`, validación de enums y estados hover/disabled. El detalle
+ejecutable y su salida actual están en `TEST-REPORT.md`.
 
 ## Capturas revisadas
 
@@ -88,7 +97,7 @@ punteros, `DragIcon` y la superficie marcada de CheckBox/OptionButton.
 
 | Caso | Resultado | Evidencia |
 |---|---|---|
-| Compilar biblioteca, ejemplo y pruebas en Release | PASS | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` → 0 errores, 0 advertencias |
+| Compilar los cinco proyectos de la solución en Release | PASS | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release --no-restore --maxcpucount:1` → 0 errores, 0 advertencias |
 | Copiar los tres recursos FRX al output | PASS | `bin/Release/net8.0-windows/Resources/*.png` |
 | Cargar imágenes sin bloquear el archivo | PASS estático | el ejemplo clona con `new Bitmap(source)` |
 | Liberar imágenes del ejemplo | PASS estático | `FormClosed` dispone las imágenes |
@@ -99,13 +108,12 @@ punteros, `DragIcon` y la superficie marcada de CheckBox/OptionButton.
 ## Casos pendientes de ejecución
 
 - Comparar capturas VB6/.NET de los ocho estilos (los anillos son cercanos, no idénticos).
-- DPI 96/120/144/192 y redimensionado con cada forma.
+- Comparación del OCX VB6 en monitores físicos a 96/120/144/192 DPI.
 - Enter, Escape, Space y flechas en un formulario real con varios controles y mnemónicos.
-- `Default`/`Cancel` con `Form.AcceptButton`/`Form.CancelButton` además de `IButtonControl`.
 - Movimiento real del puntero para `MouseOnButton` y los colores de hover.
 - DragDrop externo y efectos Copy/Move/Link.
-- Abrir el DLL en el Toolbox de Visual Studio, editar propiedades y reabrir el diseñador.
-- Serialización de imágenes y enums en `.Designer.cs`.
+- Parcial: Visual Studio mostró `LaVolpeButton` en el Toolbox y `Form1.cs [Diseño]`; queda confirmar edición de propiedades, cierre/reapertura y persistencia.
+- Serialización de imágenes en `.Designer.cs` y persistencia de recursos del diseñador.
 - Instalación limpia con únicamente .NET 8 Desktop Runtime.
 
 ## Criterio de afirmación

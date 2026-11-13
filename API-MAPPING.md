@@ -14,7 +14,7 @@
 | `MouseIcon` | `Image` → `Cursor` | Hotspot centrado |
 | `hDC` | HDC cacheado | Adaptada, no ciclo VB6 |
 | `hwnd` | `Handle` | Adaptada |
-| `Refresh` | `RedrawButton()` | Nombre diferente |
+| `Refresh` | `Control.Refresh()` / `RedrawButton()` | Compatible funcionalmente; el segundo es el helper explícito del port |
 | `DelayDrawing` | `DelayDrawing(bool)` / Begin/End | Compatible funcionalmente |
 | `MouseOnButton` | `EventHandler<bool>` | Firma .NET |
 | `OLE*` | DragDrop/GiveFeedback events | Firma y `DataObject` adaptados |

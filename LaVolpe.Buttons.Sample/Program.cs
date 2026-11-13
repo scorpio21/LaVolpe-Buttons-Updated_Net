@@ -35,6 +35,12 @@ internal static class Program
         Cursor.Position = new Point(0, 0);
         form.Show();
         Application.DoEvents();
+        // Mostrar el formulario puede disparar MouseEnter antes de que el cursor
+        // quede fuera de la ventana; repetirlo aquí evita capturas con hover.
+        Cursor.Position = new Point(0, 0);
+        Application.DoEvents();
+        form.PrepareVisualSnapshot();
+        Application.DoEvents();
 
         using var windowBitmap = new Bitmap(form.Width, form.Height);
         using (var graphics = Graphics.FromImage(windowBitmap))

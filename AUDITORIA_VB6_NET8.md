@@ -1,5 +1,7 @@
 # Auditoría VB6 → C# .NET 8
 
+Actualización 2026-11-13: la suite actual ejecuta 56 pruebas correctas y 0 fallidas; se verificó el clic físico sin doble evento, el ciclo de teclado, Escape, flechas y hover, `ResetDefaultColors`, `Refresh`, `CustomClick` con desplazamiento/restauración VB6, el layout de captions con textos largos y saltos `||`, el anillo degradado de `Custom3DBorder`, la notificación de eventos OLE públicos, la semántica de `HoverColorLocks`, los límites de `ShadeColor` y el redimensionado proporcional de `Custom*`.
+
 ## Alcance
 
 Se revisaron los fuentes VB6 `lvButtons.ctl`, `modLvTimer.bas`, `frmSample.frm`, los proyectos `.vbp`, `Readme.htm`, el recurso `frmSample.frx`, y los proyectos/fuentes C# actuales.
@@ -34,7 +36,7 @@ El port no copia literalmente esas rutinas: usa un único `OnPaint` con `Graphic
 
 ### Temporizador
 
-`modLvTimer.bas` expone `lv_TimerCallBack` y usa `CopyMemory`/`GetProp`. El VB6 emplea callback global y mensajes de ventana. El port actual conserva `TimerUpdate(long)` y mantiene un `System.Windows.Forms.Timer` de 50 ms **por control**, activo solo entre `OnMouseEnter` y `OnMouseLeave` y con limpieza en `Dispose`. No reproduce el callback global Win32 ni `GetProp`. La detección administrada usa `GraphicsPath.IsVisible` para las formas soportadas; las máscaras `CustomFlat`/`Custom3DBorder` afectan a la `Region`, pero no al cálculo de hover.
+`modLvTimer.bas` expone `lv_TimerCallBack` y usa `CopyMemory`/`GetProp`. El VB6 emplea callback global y mensajes de ventana. El port mantiene un `System.Windows.Forms.Timer` de 50 ms **por control**, activo solo entre `OnMouseEnter` y `OnMouseLeave` y con limpieza en `Dispose`; la actualización de hover queda interna y ya no expone el residuo `TimerUpdate(long)`. No reproduce el callback global Win32 ni `GetProp`. La detección administrada usa `GraphicsPath.IsVisible` para las formas soportadas; las máscaras `CustomFlat`/`Custom3DBorder` afectan a la `Region`, pero no al cálculo de hover.
 
 ### Formulario de ejemplo
 
@@ -44,7 +46,7 @@ El port no copia literalmente esas rutinas: usa un único `OnPaint` con `Graphic
 
 El control `LaVolpeButton` contiene enums compatibles `lv_*`, propiedades de apariencia, imagen, modo, foco, cursor, compatibilidad (`hwnd`, `hDC`), eventos de mouse/teclado/OLE, estados CheckBox/OptionButton, tooltips, accesibilidad, `IButtonControl` (`DialogResult`/`NotifyDefault`), `PerformClick`, `Cancel`, `Default`, `DragMode`, `DelayDrawing(bool)`, `Index`, `HelpContextID` y `WhatsThisHelpID`.
 
-El ejemplo C# es funcional y usa recursos extraídos del FRX. No es todavía un formulario generado por diseñador: está construido en `SampleForm.cs`. El control incorpora metadatos `ToolboxItem`, `DesignTimeVisible`, `DesignerCategory`, `DefaultEvent` y `DefaultProperty`; la validación real de Visual Studio Designer requiere un entorno VS con WinForms.
+El ejemplo C# es funcional y usa recursos extraídos del FRX. No es todavía un formulario generado por diseñador: está construido en `SampleForm.cs`. El control incorpora metadatos `ToolboxItem`, `DesignTimeVisible`, `DesignerCategory`, `DefaultEvent` y `DefaultProperty`; la validación real de Visual Studio Designer requiere un entorno VS con WinForms. En la comprobación del 2026-11-13 el inventario del equipo expuso Visual Studio Code, pero no Visual Studio ni una ventana de diseñador disponible; por eso el issue #16 permanece abierto.
 
 ## Teclado y navegación
 
@@ -57,11 +59,11 @@ El VB6 trata Space como pulsación visual seguida de Click, remite flechas al co
 3. `MousePointer` usa `MousePointerConstants` (15 valores VB6) y se mapea a `Cursor`; `MouseIcon` implica `Custom`. `DragIcon` crea su propio cursor/HICON. Faltan pruebas de transparencia real de ambos cursores.
 4. Drag-and-drop emite `OLEStartDrag` antes de `DoDragDrop` y `OLECompleteDrag` después; las firmas siguen siendo adaptaciones WinForms y no `DataObject` VB6. `DragIcon` ya se aplica en `OnGiveFeedback`.
 5. El temporizador global VB6 aún no está reproducido literalmente: hay un `Timer` de 50 ms por control.
-6. Las formas usan geometría real (diagonales con `lEdge`, elipses para `Round*`), el control define `Region`, aplica `LopOffCorners1..4` y deriva la región de `CustomFlat`/`Custom3DBorder` desde la imagen. Queda la diferencia de que VB6 redimensiona el control a la imagen y el port estira la imagen al control.
+6. Las formas usan geometría real (diagonales con `lEdge`, elipses para `Round*`), el control define `Region`, aplica `LopOffCorners1..4` y deriva la región de `CustomFlat`/`Custom3DBorder` desde la imagen. El port ya redimensiona proporcionalmente el control mediante `ScaleImage`; queda pendiente replicar toda la normalización GDI y la paridad de pintado.
 7. Los estilos ya usan tres anillos concéntricos con colores por estado, pero cada anillo colapsa sus cuatro lados en una pareja claro/oscuro; no son aún las ocho rutinas `DrawButton_*` completas.
 8. Los arrays/indexados del formulario VB6 se representan como controles independientes con nombres explícitos.
 9. El ejemplo clona las imágenes al cargar y las libera al cerrar, evitando el bloqueo de archivos que produciría `Image.FromFile` directo.
-10. `Text` ya refleja `Caption`, `Value` aplica la semántica de OptionButton/CommandButton y existe `IButtonControl` con `DialogResult`/`NotifyDefault`. Queda conectar `Default`/`Cancel` a `Form.AcceptButton`/`Form.CancelButton` sin depender del foco.
+10. `Text` ya refleja `Caption`, `Value` aplica la semántica de OptionButton/CommandButton y existe `IButtonControl` con `DialogResult`/`NotifyDefault`. `Default`/`Cancel` ya conectan `Form.AcceptButton`/`Form.CancelButton` sin depender del foco.
 
 ## Estado de los hallazgos de pintura (2026-11-05)
 
@@ -79,7 +81,7 @@ El VB6 trata Space como pulsación visual seguida de Click, remite flechas al co
 | OptionButton/CheckBox | **Corregido**: exclusividad, `GotFocus`, flechas y supresión de clic repetido |
 | `MouseIcon` | **Corregido**: hotspot centrado, `DestroyIcon` y `MousePointer = Custom` |
 | `DragIcon` / `MousePointer` | **Corregido**: `MousePointerConstants` y cursor de arrastre propio |
-| `Default`/`Cancel` | **Parcial**: `IButtonControl` y teclas con foco; falta `AcceptButton`/`CancelButton` |
+| `Default`/`Cancel` | **Equivalente funcional**: `IButtonControl`, teclas y enlace automático a `AcceptButton`/`CancelButton` |
 | Indicador CheckBox/OptionButton | **Corregido**: se eliminó el glifo; toda la superficie usa `cCheckBox` |
 | Ocho rutinas `DrawButton_*` | **Parcial**: tres anillos con colores por estilo; faltan los 4 lados independientes |
 
@@ -91,7 +93,7 @@ El VB6 trata Space como pulsación visual seguida de Click, remite flechas al co
 dotnet build .\LaVolpe.Buttons.Net.sln --configuration Release
 ```
 
-Resultado: **0 errores, 0 advertencias** para la biblioteca, el proyecto de ejemplo y el proyecto de pruebas. `LaVolpe.Buttons.Tests` ejecuta 25 casos y devuelve `25 correctas, 0 fallidas`.
+Resultado: **0 errores, 0 advertencias** para los cinco proyectos de la solución (incluido el runner xUnit). `LaVolpe.Buttons.Tests` ejecuta 56 casos y devuelve `56 correctas, 0 fallidas`.
 
 > Corrección: la versión anterior de esta auditoría afirmaba que la solución completa fallaba por
 > `Microsoft.NET.SDK.WorkloadAutoImportPropsLocator` / `WorkloadManifestTargetsLocator` con el SDK

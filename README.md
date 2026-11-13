@@ -14,7 +14,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 39 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 56 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -25,7 +25,8 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | `LaVolpe.Buttons.Net/` | Biblioteca WinForms con el control `LaVolpeButton`. |
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
 | `LaVolpe.Buttons.DesignerSample/` | Formulario mínimo para probar el control desde el diseñador y verificar arrastre OLE. |
-| `LaVolpe.Buttons.Tests/` | Pruebas de compatibilidad sin dependencias externas. |
+| `LaVolpe.Buttons.Tests/` | Harness STA de compatibilidad y herramientas de captura/comparación. |
+| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 56 casos. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
 | `LaVolpe-Buttons-Updated-/` | Código VB6 original de referencia (no forma parte de la compilación). |
 | `ESTADO-PORT-NET.md` | Estado del port, porcentaje estimado y evidencia por área. |
@@ -91,11 +92,21 @@ dotnet run --project .\LaVolpe.Buttons.Tests --configuration Release
 
 El ejecutable crea formularios reales en un hilo STA, comprueba la API y las regiones, imprime `PASS`/`FAIL` por caso y devuelve código de salida `1` si algo falla. No requiere xUnit, NUnit ni paquetes externos.
 
+Para ejecutar la misma suite mediante el runner estándar:
+
+```powershell
+dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj --configuration Release
+```
+
 ## Verificar el arrastre OLE desde Visual Studio
 
 Abre `LaVolpe.Buttons.DesignerSample/LaVolpe.Buttons.DesignerSample.csproj`, ejecútalo y abre el Bloc de notas. Escribe y selecciona texto, arrástralo sobre el botón `LOAD` y suéltalo. El formulario muestra `OLEDragOver` mientras se arrastra y `OLEDragDrop: <texto>` al recibirlo. Esta prueba debe hacerse en una sesión interactiva de Windows; la suite automática solo verifica la publicación del `DataObject` y no sustituye la interoperabilidad con otra aplicación.
 
 ## Publicar
+
+> **Aviso de licencia:** el issue #17 sigue abierto. El paquete se puede generar
+> localmente para pruebas, pero no debe publicarse en `nuget.org` ni redistribuirse
+> hasta verificar los términos del proyecto VB6 original y de sus recursos.
 
 Para consumir la biblioteca desde NuGet:
 
@@ -146,9 +157,9 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 ## Limitaciones y diferencias conocidas
 
 - **No hay compatibilidad COM/ActiveX**: no se conservan CLSID, PropertyBag, registro del OCX ni el diseñador de VB6.
-- **Pintado aproximado**: los tres anillos, focos y paletas se reproducen con GDI+, pero cada anillo colapsa sus cuatro lados en una pareja claro/oscuro; no se garantiza igualdad píxel a píxel con el control original.
-- **Formas personalizadas**: VB6 redimensiona el control para ajustarlo a la imagen; este port estira la imagen al tamaño actual del control para que coincida con la región calculada. El caption sólo aparece en modo CheckBox/OptionButton con `Value = True`.
-- **Máscara de imagen**: se usa el píxel superior izquierdo (±10 por canal) o alpha < 20. Si el control supera 250 000 píxeles, se usa un rectángulo para evitar regiones costosas. Una imagen ya liberada se ignora al recalcular la región.
+- **Pintado aproximado**: los tres anillos, focos y paletas se reproducen con GDI/GDI+, incluidos los colores independientes por lado en estilos rectangulares y diagonales; no se garantiza igualdad píxel a píxel con el control original.
+- **Formas personalizadas**: VB6 y el port redimensionan proporcionalmente el control al asignar `Picture`/`ButtonShape`; la normalización GDI no es binariamente idéntica. El caption sólo aparece en modo CheckBox/OptionButton con `Value = True`.
+- **Máscara de imagen**: se usa el píxel superior izquierdo (±3 por canal) o alpha < 20. Si el control supera 250 000 píxeles, se usa un rectángulo para evitar regiones costosas. Una imagen ya liberada se ignora al recalcular la región.
 - **`DrawToBitmap` no respeta `Region`**: para comprobar el recorte de ventana hay que usar `Region.IsVisible` o una captura real de pantalla.
 - **Eventos OLE adaptados**: `OLEDragDrop`, `OLEStartDrag`, etc. son equivalentes WinForms, no OLE real.
 - **`Index` no crea un arreglo de controles**: es solo una propiedad de compatibilidad.
@@ -175,4 +186,11 @@ La muestra reutiliza esos PNG tal como venían del proyecto original. Algunos pu
 
 ## Licencia
 
-MIT. Consulte [LICENSE](LICENSE).
+El código nuevo del port .NET se distribuye bajo MIT; consulte [LICENSE](LICENSE).
+El port deriva de **LaVolpe Buttons (Updated)**, publicado en Planet Source Code
+como código 45279. El `@PSC_ReadMe` original advierte que el autor podía
+conservar derechos, por lo que esta atribución no se interpreta como una
+relicencia del código VB6 original ni de las imágenes. Los comentarios de
+`lvButtons.ctl` acreditan la inspiración de Gonchuki y la fórmula de colores
+XP de Gonchuki y Ghuran Kartal. Verifique los términos originales antes de
+redistribuir el port o sus recursos.

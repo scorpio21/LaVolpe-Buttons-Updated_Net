@@ -19,3 +19,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Upstream attribution and scope
+------------------------------
+This .NET port is derived from the VB6 project "LaVolpe Buttons (Updated)"
+published on Planet Source Code as code ID 45279. The original package's
+@PSC_ReadMe states that its author may have retained copyrights and asks users
+to review the original copyright conditions before distribution. The original
+source comments credit Gonchuki's Chameleon Button and Ghuran Kartal for
+inspiration and the XP color formula. This MIT notice applies to the .NET port
+code authored for this repository; it does not grant a license for upstream
+code, third-party artwork, or other original-project materials whose terms
+remain to be verified.

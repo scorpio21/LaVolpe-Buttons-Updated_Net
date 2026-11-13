@@ -4,13 +4,13 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 
 | Elemento VB6 | Equivalente .NET | Estado | % | Diferencias |
 |---|---|---:|---:|---|
-| `ButtonStyle` | `BackStyle` | Implementado | 75 | Tres anillos y colores por estado; cada anillo colapsa sus 4 lados en 2 |
+| `ButtonStyle` | `BackStyle` | Implementado | 80 | Tres anillos y colores por estado; los estilos rectangulares/diagonales conservan colores independientes por lado, pero el rasterizado GDI+ no es idéntico |
 | `Mode` | `ButtonMode` | Implementado | 90 | Agrupación OptionButton depende del contenedor WinForms |
 | `Caption` | `Caption` | Implementado | 95 | `||` se convierte a salto de línea |
 | `CaptionAlign` | `ContentAlignment` | Implementado | 90 | Flags de DrawText no son idénticos |
 | `CaptionStyle` | `CaptionStyle` | Implementado | 85 | Sombra administrada aproximada |
-| `CustomClick` | `CustomClick` | Parcial | 65 | El desplazamiento se conserva, falta validar todos los estilos |
-| `ButtonShape` | `ButtonShape` | Implementado | 85 | Regiones, `LopOffCorners` y máscaras; `Custom*` estira en vez de redimensionar |
+| `CustomClick` | `CustomClick` | Parcial | 80 | Los botones custom de comando desplazan temporalmente el control y restauran su posición; faltan validaciones visuales de todos los vectores |
+| `ButtonShape` | `ButtonShape` | Implementado | 85 | Regiones, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `Picture` | `Image` | Implementado | 80 | No es `StdPicture`/COM |
 | `PictureAlign` | `ImagePlacement` | Implementado | 85 | Cálculo distinto en casos extremos |
 | `PictureSize` | `ImageSize` | Implementado | 80 | Falta comparar interpolación original |
@@ -24,7 +24,7 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 | `ForeColor` | `Control.ForeColor` | Implementado | 90 | OLE_COLOR no es el mismo tipo |
 | `BackColor` | `BackColor` | Implementado | 90 | OLE_COLOR no es el mismo tipo |
 | `GradientColor` | `Color` | Implementado | 85 | Fórmulas XP no demostradas equivalentes |
-| `GradientMode` | `GradientMode` | Implementado | 85 | Usa LinearGradientBrush |
+| `GradientMode` | `GradientMode` | Implementado | 85 | Franjas de 1 píxel con extremos inclusivos y canales limitados a 0–255; la paridad global de rasterizado sigue pendiente |
 | `ResetDefaultColors` | `ResetDefaultColors` | Implementado | 80 | Restaura defaults y vuelve a heredar del contenedor |
 | `HoverColorLocks` | `HoverColorLocks` | Implementado | 90 | Default y combinaciones de VB6 implementados |
 | `HoverForeColor` | `Color` | Implementado | 90 | Semántica de locks aproximada |
@@ -37,7 +37,7 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 | `Click` | `Click` | Implementado | 95 | Orden de eventos puede diferir |
 | `DoubleClick` | `ButtonDoubleClick` | Implementado | 85 | Firma adaptada |
 | OLE events | DragDrop/GiveFeedback | Parcial | 45 | `DataObject` y argumentos no son equivalentes |
-| `DefaultCancel` | `Default`/`Cancel` + `IButtonControl` | Adaptado | 85 | `DialogResult`/`NotifyDefault`; falta usar `AcceptButton`/`CancelButton` sin foco |
+| `DefaultCancel` | `Default`/`Cancel` + `IButtonControl` | Equivalente funcional | 95 | `DialogResult`/`NotifyDefault` y enlace automático a `AcceptButton`/`CancelButton` |
 | `ToolTipText` | `ToolTip` | Implementado | 85 | Componente externo WinForms |
 | `Index` | `Index` | Compatibilidad | 60 | No crea control arrays VB6 |
 | `HelpContextID` | `int` | Almacenado | 30 | Falta integración HelpProvider |
@@ -57,7 +57,7 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 - OLE/ActiveX: **aprox. 45 %**.
 - Diseñador/persistencia: **aprox. 65 %** (metadatos Toolbox/Designer añadidos; falta validación real en Visual Studio).
 - Formulario de ejemplo: **aprox. 60 %**.
-- Port global estimado: **aprox. 76 %** (ver `ESTADO-PORT-NET.md`).
+- Port global histórico estimado: **aprox. 76 %**; la revisión actual lo sitúa en el rango 65–75 % (ver `ESTADO-PORT-NET.md`).
 
 No se declara compatibilidad binaria COM/ActiveX.
 
