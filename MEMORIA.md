@@ -24,20 +24,25 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ DPI lógico 96/120/144/192 y hook `OnDpiChangedAfterParent` cubiertos; comparación física VB6 pendiente.
 - ⚠️ Pintado no es pixel-equivalente; issue visual #2 permanece abierto y el gap técnico está medido.
 - ✅ La atribución de procedencia se añadió a `LICENSE`, `README.md`, `NOTICE.md` y al paquete NuGet; issue #17 sigue abierto porque los términos de redistribución del original no están verificados.
+- ✅ Issue #16 validado en Visual Studio Enterprise: `Form1.cs [Diseño]` carga, `LaVolpeButton` aparece en el Toolbox y el PropertyGrid expone sus propiedades principales; comentario publicado, cierre pendiente de autenticación GitHub.
+- ✅ El comparador visual rechaza referencia y salida en la misma carpeta para evitar resultados autorreferentes; el #12 sigue abierto porque faltan las 32 capturas VB6.
 - ⚠️ No cerrar issues de GitHub sin evidencia; los issues abiertos se mantienen abiertos cuando falta una validación externa o legal.
 - ✅ `dotnet test` descubre y ejecuta los 56 casos mediante `LaVolpe.Buttons.XunitTests`; `dotnet run` conserva el harness STA y las herramientas visuales.
 
 ## Work history
 
-- No hay commits creados en esta sesión; todas las modificaciones están sin commit en el árbol de trabajo.
+- `8599b56` — Reject self-referential visual comparisons (publicado en `origin/main`).
+- `2ccbe61` — Clarify upstream licensing scope (publicado en `origin/main`).
+- `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
 
 ## Next steps
 
-1. Repetir build, harness y captura tras cualquier cambio.
-2. Revisar diferencias visuales restantes con métricas, especialmente anillos custom y tipografía, sin cambios especulativos.
-3. Validar diseñador (guardar/cerrar/reabrir) y DPI físico 120/144 si el entorno lo permite.
-4. Mantener #6 reservado para el final; solo después de resolver los issues anteriores repetir la prueba OLE externa real con `DesignerSample`.
-5. Resolver los términos legales originales antes de publicar NuGet; la atribución ya está integrada y verificada dentro del `.nupkg`.
+1. Obtener las 32 capturas de referencia VB6 para #12 y compararlas contra las 32 capturas .NET; no usar autocapturas .NET como referencia.
+2. Completar la edición/guardado/reapertura del diseñador y cerrar #16 solo cuando GitHub esté autenticado.
+3. Revisar diferencias visuales restantes con métricas, especialmente anillos custom y tipografía, sin cambios especulativos (#2).
+4. Validar DPI físico 120/144 si el entorno lo permite (#3); el harness lógico ya está cubierto.
+5. Mantener #6 reservado para el final; solo después de resolver los issues anteriores repetir la prueba OLE externa real con `DesignerSample`.
+6. Resolver los términos legales originales antes de publicar NuGet (#17).
 
 ## Known gotchas
 
