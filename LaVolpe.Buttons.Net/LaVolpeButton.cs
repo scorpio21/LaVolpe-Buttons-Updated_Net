@@ -101,6 +101,7 @@ public class LaVolpeButton : Control, IButtonControl
     private Cursor? _mouseIconCursor, _dragIconCursor;
     private IntPtr _mouseIconHandle, _dragIconHandle;
     private readonly System.Windows.Forms.Timer _hoverTimer;
+    private readonly LaVolpeButtonPalette _palette = new();
     private Region? _region;
     private Graphics? _hdcGraphics;
     private IntPtr _hdc;
@@ -117,7 +118,7 @@ public class LaVolpeButton : Control, IButtonControl
     public event GiveFeedbackEventHandler? OLEGiveFeedback;
     public event EventHandler? OLECompleteDrag, OLESetData;
 
-    public LaVolpeButton() { SetStyle(ControlStyles.UserPaint|ControlStyles.AllPaintingInWmPaint|ControlStyles.OptimizedDoubleBuffer|ControlStyles.ResizeRedraw|ControlStyles.Selectable,true); SetStyle(ControlStyles.StandardClick,false); Size=new Size(90,33); TabStop=true; AllowDrop=false; AccessibleRole=AccessibleRole.PushButton; _hoverTimer=new System.Windows.Forms.Timer { Interval=50 }; _hoverTimer.Tick += (_,_) => UpdateHoverState(); }
+    public LaVolpeButton() { SetStyle(ControlStyles.UserPaint|ControlStyles.AllPaintingInWmPaint|ControlStyles.OptimizedDoubleBuffer|ControlStyles.ResizeRedraw|ControlStyles.Selectable,true); SetStyle(ControlStyles.StandardClick,false); Size=new Size(90,33); TabStop=true; AllowDrop=false; AccessibleRole=AccessibleRole.PushButton; _palette.Changed += PaletteChanged; _hoverTimer=new System.Windows.Forms.Timer { Interval=50 }; _hoverTimer.Tick += (_,_) => UpdateHoverState(); }
     [Category("LaVolpe"), DefaultValue(""), Description("Texto visible del botón; admite && para aceleradores y || para salto de línea.")] public string Caption { get=>_caption; set{ if(_caption==(value??""))return; _caption=value??""; base.Text=_caption; if(string.IsNullOrWhiteSpace(AccessibleName))AccessibleName=_caption.Replace("&",""); InvalidateIfNeeded();} }
     // VB6: Caption es el miembro por defecto; Text debe reflejarlo para accesibilidad y diseñador.
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -144,6 +145,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{if(!Enum.IsDefined(value)||(_pictureAlign is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)&&value!=ContentAlignment.MiddleCenter)return;_captionAlign=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;SyncHoverColorsFromLocks();InvalidateIfNeeded();} }
+    [Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), NotifyParentProperty(true)] public LaVolpeButtonPalette Palette => _palette;
     [Category("LaVolpe"), DefaultValue(CustomClick.Default)] public CustomClick CustomClick { get=>_customClick; set{if(!Enum.IsDefined(value))return;_customClick=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle)] public FontStyles FontStyle { get=>_fontStyle; set{if(!Enum.IsDefined(value))return;_fontStyle=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? MouseIcon { get=>_mouseIcon; set{_mouseIcon=value;if(value is not null)_mousePointer=MousePointerConstants.Custom;ApplyMouseIcon();InvalidateIfNeeded();} }
@@ -173,7 +175,7 @@ public class LaVolpeButton : Control, IButtonControl
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.
     [Browsable(false)] public IntPtr hDC { get { if(_hdc==IntPtr.Zero){ _hdcGraphics=Graphics.FromHwnd(Handle); _hdc=_hdcGraphics.GetHdc(); } return _hdc; } }
     [Category("LaVolpe")] public bool ResetDefaultColors { get => _resetDefaultColors; set { _resetDefaultColors = value; if (value) ResetDefaultColorsNow(); } }
-    public void ResetDefaultColorsNow(){_normalBack=SystemColors.Control;_hoverBack=Color.Empty;_gradientColor=SystemColors.ControlLight;_hoverFore=SystemColors.ControlText;_hoverColorLocks=HoverColorLocks.TextAndBackColor;_gradientMode=GradientMode.None;_explicitBackColor=false;base.BackColor=_normalBack;base.ForeColor=SystemColors.ControlText;_resetDefaultColors=false;InvalidateIfNeeded();}
+    public void ResetDefaultColorsNow(){_normalBack=SystemColors.Control;_hoverBack=Color.Empty;_gradientColor=SystemColors.ControlLight;_hoverFore=SystemColors.ControlText;_hoverColorLocks=HoverColorLocks.TextAndBackColor;_gradientMode=GradientMode.None;_explicitBackColor=false;_palette.Reset();base.BackColor=_normalBack;base.ForeColor=SystemColors.ControlText;_resetDefaultColors=false;InvalidateIfNeeded();}
     private bool LocksText => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.TextColorOnly;
     private bool LocksBack => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.BackColorOnly;
     private Color HoverBackEffective => _hoverBack.IsEmpty ? (_gradientMode == GradientMode.None ? _normalBack : _gradientColor) : _hoverBack;
@@ -572,6 +574,7 @@ public class LaVolpeButton : Control, IButtonControl
     private Color GetStateBack(bool down, bool hot, bool selected)
     {
         // VB6: sólo el CommandButton XP deshabilitado oscurece el fondo (-0x18).
+        if(!Enabled && !_palette.DisabledBackColor.IsEmpty) return _palette.DisabledBackColor;
         if(!Enabled && _style==BackStyle.WindowsXp && _mode==ButtonMode.CommandButton) return Shade(GetUpBack(),-0x18,true);
         if(selected) return GetCheckBack();
         var up=GetUpBack();
@@ -580,26 +583,26 @@ public class LaVolpeButton : Control, IButtonControl
         return up;
     }
     // adjBackColorUp/adjBackColorDn/cCheckBox se calculan por estilo en lvButtons.ctl.
-    private Color GetUpBack() => _style switch
+    private Color GetUpBack() => !_palette.NormalBackColor.IsEmpty ? _palette.NormalBackColor : _style switch
     {
         BackStyle.Macintosh => Shade(_normalBack,0x1F),
         BackStyle.WindowsXp => Shade(_normalBack,0x30,true),
         _ => _normalBack
     };
-    private Color GetHoverBack(Color up) { var h=HoverBackEffective; return _style switch
+    private Color GetHoverBack(Color up) { if(!_palette.HoverBackColor.IsEmpty) return _palette.HoverBackColor; var h=HoverBackEffective; return _style switch
     {
         BackStyle.Macintosh => Shade(h,0x1F),
         BackStyle.WindowsXp => Shade(h,0x30,true),
         _ => h
     }; }
-    private Color GetDownBack(Color up) => _style switch
+    private Color GetDownBack(Color up) => !_palette.PressedBackColor.IsEmpty ? _palette.PressedBackColor : _style switch
     {
         BackStyle.Macintosh => Shade(Color.FromArgb(128,128,128),-0x10),
         BackStyle.WindowsXp => Shade(up,-0x20,true),
         BackStyle.Java => Shade(Color.FromArgb(128,128,128),0x0C),
         _ => up
     };
-    private Color GetCheckBack() => _style switch
+    private Color GetCheckBack() => !_palette.CheckedBackColor.IsEmpty ? _palette.CheckedBackColor : _style switch
     {
         BackStyle.Macintosh => Shade(Color.FromArgb(128,128,128),0x10,true),
         BackStyle.WindowsXp => Shade(Color.White,-0x20,true),
@@ -1117,6 +1120,7 @@ public class LaVolpeButton : Control, IButtonControl
         var gray=Color.FromArgb(128,128,128);
         if(!Enabled)
         {
+            if(!_palette.DisabledTextColor.IsEmpty) return new CaptionColors(_palette.DisabledTextColor,null,Point.Empty);
             if(_style==BackStyle.WindowsXp)
             {
                 // cDisabled = ShadeColor(backShade, -0x68, True), color único.
@@ -1134,9 +1138,13 @@ public class LaVolpeButton : Control, IButtonControl
             return new CaptionColors(gray,Color.White,new Point(1,1));
         }
         // VB6 Java conserva ForeColor; el sample lo usa azul marino igual que WinXP.
+        if(useHoverFore && !_palette.HoverTextColor.IsEmpty) return new CaptionColors(_palette.HoverTextColor,null,Point.Empty);
+        if(!useHoverFore && !_palette.TextColor.IsEmpty) return new CaptionColors(_palette.TextColor,null,Point.Empty);
         if(_style==BackStyle.Java) return new CaptionColors(useHoverFore ? _hoverFore : ForeColor,null,Point.Empty);
         return new CaptionColors(useHoverFore ? _hoverFore : ForeColor,null,Point.Empty);
     }
+
+    private void PaletteChanged(object? sender, EventArgs e) => InvalidateIfNeeded();
     private int HorizontalAlignClass() => _captionAlign switch
     {
         ContentAlignment.TopLeft or ContentAlignment.MiddleLeft or ContentAlignment.BottomLeft => 0,

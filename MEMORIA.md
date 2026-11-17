@@ -19,6 +19,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ `OLEStartDrag` respeta el `Effect` que establezca el manejador y permite cancelar el origen con `None`; `OLECompleteDrag` sigue notificándose en `finally`.
 - ✅ `CustomFlat`/`Custom3DBorder` redimensiona el control proporcionalmente según `ScaleImage` de VB6; prueba y métrica visual mejoradas.
 - ✅ El punto visual 1 añade una regresión para las máscaras amarillas de los recursos del sample; la captura actual ya no muestra el cuadrado amarillo detrás del botón custom.
+- ✅ Issue #22: `LaVolpeButton.Palette` permite personalizar fondos y textos por estado desde el diseñador; los colores `Empty` conservan el renderer VB6 y `ResetDefaultColors` restaura la paleta.
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.
@@ -36,12 +37,13 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `2ccbe61` — Clarify upstream licensing scope (publicado en `origin/main`).
 - `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
 - `e05bb5b` — Cover yellow transparency mask regression (publicado en `origin/main`).
+- Pendiente de publicar — Primera paleta visual propia inspirada en ideas de Krypton, sin copiar código ni recursos.
 
 ## Next steps
 
 1. Validar DPI físico 120/144/192 si el entorno lo permite (#3); el harness lógico ya está cubierto, pero no basta para cerrar el issue.
 2. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
-3. Mantener #6 reservado para el final; solo después de resolver los issues anteriores repetir la prueba OLE externa real con `DesignerSample`.
+3. Mantener los eventos OLE declarados por compatibilidad; el issue #6 se cerró como no planificado porque el VB6 original solo reenvía eventos no utilizados.
 
 ## Known gotchas
 

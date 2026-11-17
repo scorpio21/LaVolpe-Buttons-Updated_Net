@@ -71,6 +71,27 @@ public static class Program
             Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
         });
 
+        Test("Paleta visual configura los estados sin alterar los valores por defecto", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Size = new Size(100, 36) });
+            var stateBack = typeof(LaVolpeButton).GetMethod("GetStateBack", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+            Check(button.Palette.ToString() == "(predeterminada)", "Palette no muestra el estado predeterminado");
+            button.Palette.NormalBackColor = Color.FromArgb(10, 20, 30);
+            button.Palette.HoverBackColor = Color.FromArgb(20, 30, 40);
+            button.Palette.PressedBackColor = Color.FromArgb(30, 40, 50);
+            button.Palette.CheckedBackColor = Color.FromArgb(40, 50, 60);
+            button.Palette.DisabledBackColor = Color.FromArgb(50, 60, 70);
+            button.HoverColorLocks = HoverColorLocks.NoLocks;
+            Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.NormalBackColor, "Palette no aplica NormalBackColor");
+            Check((Color)stateBack.Invoke(button, new object[] { false, true, false })! == button.Palette.HoverBackColor, "Palette no aplica HoverBackColor");
+            Check((Color)stateBack.Invoke(button, new object[] { true, false, false })! == button.Palette.PressedBackColor, "Palette no aplica PressedBackColor");
+            Check((Color)stateBack.Invoke(button, new object[] { false, false, true })! == button.Palette.CheckedBackColor, "Palette no aplica CheckedBackColor");
+            button.Enabled = false;
+            Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.DisabledBackColor, "Palette no aplica DisabledBackColor");
+            button.Palette.Reset();
+            Check(button.Palette.NormalBackColor.IsEmpty && button.Palette.DisabledBackColor.IsEmpty, "Palette.Reset no restaura Empty");
+        });
+
         Test("Opciones de diseñador WinForms", form =>
         {
             var button = Add(form, new LaVolpeButton());
@@ -82,7 +103,7 @@ public static class Program
                 "GradientColor", "GradientMode", "Height", "HelpContextID", "HoverBackColor", "HoverColorLocks",
                 "HoverForeColor", "Index", "Left", "Mode", "MouseIcon", "MousePointer", "Picture", "PictureAlign",
                 "PictureSize", "ResetDefaultColors", "ShowFocusRect", "TabIndex", "TabStop", "Tag", "ToolTipText",
-                "Top", "Value", "Visible", "WhatsThisHelpID", "Width"
+                "Top", "Value", "Visible", "WhatsThisHelpID", "Width", "Palette"
             };
             foreach (var name in vb6Properties)
                 Check(properties[name] is not null, $"{name} no aparece en PropertyGrid");
@@ -227,11 +248,13 @@ public static class Program
             button.GradientColor = Color.Green;
             button.GradientMode = GradientMode.TopToBottom;
             button.HoverColorLocks = HoverColorLocks.NoLocks;
+            button.Palette.NormalBackColor = Color.Purple;
             button.ResetDefaultColors = true;
             Check(button.BackColor == SystemColors.Control, $"BackColor={button.BackColor}");
             Check(button.ForeColor == SystemColors.ControlText, $"ForeColor={button.ForeColor}");
             Check(button.GradientMode == GradientMode.None, $"GradientMode={button.GradientMode}");
             Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
+            Check(button.Palette.NormalBackColor.IsEmpty, "Palette no se restablece");
         });
 
         Test("HoverColorLocks sincroniza colores como VB6", form =>
