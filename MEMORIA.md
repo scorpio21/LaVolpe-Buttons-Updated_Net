@@ -25,6 +25,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ PropertyGrid: la paleta muestra `(personalizada)` cuando contiene colores configurados y `(predeterminada)` tras restaurarla.
 - ✅ `Palette.HoverBackColor` tiene prioridad sobre `HoverColorLocks` cuando se configura explícitamente, por lo que el color hover del diseñador funciona al mover el ratón.
 - ✅ `ShouldSerializeMode()` conserva `CheckBox`/`OptionButton` en el código del diseñador; antes solo se persistían `AccessibleRole` y `Value`, y al ejecutar volvía a `CommandButton`.
+- ✅ `DesignerSample/Form1.Designer.cs` conserva explícitamente `Mode = lv_CheckBox`, evitando que el formulario de validación vuelva a `CommandButton` al ejecutar.
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.

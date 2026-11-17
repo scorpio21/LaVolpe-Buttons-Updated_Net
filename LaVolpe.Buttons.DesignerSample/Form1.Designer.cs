@@ -28,52 +28,93 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-        this.laVolpeButton1 = new LaVolpe.Buttons.Net.LaVolpeButton();
-        this.oleInstructionLabel = new System.Windows.Forms.Label();
-        this.oleStatusLabel = new System.Windows.Forms.Label();
-        this.SuspendLayout();
-        //
+        laVolpeButton1 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        oleInstructionLabel = new Label();
+        oleStatusLabel = new Label();
+        laVolpeButton2 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        SuspendLayout();
+        // 
         // laVolpeButton1
-        //
-        this.laVolpeButton1.Caption = "LOAD";
-        this.laVolpeButton1.AllowDrop = true;
-        this.laVolpeButton1.DragMode = LaVolpe.Buttons.Net.DragModeConstants.Automatic;
-        this.laVolpeButton1.Location = new System.Drawing.Point(315, 179);
-        this.laVolpeButton1.Name = "laVolpeButton1";
-        this.laVolpeButton1.Size = new System.Drawing.Size(121, 43);
-        this.laVolpeButton1.TabIndex = 0;
-        this.laVolpeButton1.ButtonShape = LaVolpe.Buttons.Net.ButtonShape.lv_LeftDiagonal;
-        this.laVolpeButton1.ButtonStyle = LaVolpe.Buttons.Net.BackStyle.lv_XP;
-        this.laVolpeButton1.CaptionAlign = System.Drawing.ContentAlignment.MiddleCenter;
-        this.laVolpeButton1.PictureSize = LaVolpe.Buttons.Net.ImageSize.lv_32x32;
-        //
+        // 
+        laVolpeButton1.AccessibleName = "LOAD";
+        laVolpeButton1.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton1.AllowDrop = true;
+        laVolpeButton1.BackColor = SystemColors.Control;
+        laVolpeButton1.Caption = "LOAD";
+        laVolpeButton1.DragIcon = null;
+        laVolpeButton1.GradientColor = SystemColors.ControlLight;
+        laVolpeButton1.HoverBackColor = SystemColors.Control;
+        laVolpeButton1.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton1.Location = new Point(315, 179);
+        laVolpeButton1.MouseIcon = null;
+        laVolpeButton1.Name = "laVolpeButton1";
+        laVolpeButton1.Picture = null;
+        laVolpeButton1.ResetDefaultColors = false;
+        laVolpeButton1.ShowFocusRect = true;
+        laVolpeButton1.Size = new Size(121, 43);
+        laVolpeButton1.TabIndex = 0;
+        // 
         // oleInstructionLabel
-        //
-        this.oleInstructionLabel.AutoSize = true;
-        this.oleInstructionLabel.Location = new System.Drawing.Point(24, 24);
-        this.oleInstructionLabel.Name = "oleInstructionLabel";
-        this.oleInstructionLabel.Size = new System.Drawing.Size(590, 15);
-        this.oleInstructionLabel.TabIndex = 1;
-        this.oleInstructionLabel.Text = "Arrastre texto desde Notepad sobre LOAD para comprobar OLEDragOver/OLEDragDrop.";
-        //
+        // 
+        oleInstructionLabel.AutoSize = true;
+        oleInstructionLabel.Location = new Point(24, 24);
+        oleInstructionLabel.Name = "oleInstructionLabel";
+        oleInstructionLabel.Size = new Size(468, 15);
+        oleInstructionLabel.TabIndex = 1;
+        oleInstructionLabel.Text = "Arrastre texto desde Notepad sobre LOAD para comprobar OLEDragOver/OLEDragDrop.";
+        // 
         // oleStatusLabel
-        //
-        this.oleStatusLabel.AutoEllipsis = true;
-        this.oleStatusLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-        this.oleStatusLabel.Location = new System.Drawing.Point(24, 320);
-        this.oleStatusLabel.Name = "oleStatusLabel";
-        this.oleStatusLabel.Size = new System.Drawing.Size(752, 36);
-        this.oleStatusLabel.TabIndex = 2;
-        this.oleStatusLabel.Text = "OLE: esperando una operación de arrastre.";
-        this.oleStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
-        this.Controls.Add(this.oleStatusLabel);
-        this.Controls.Add(this.oleInstructionLabel);
-        this.Controls.Add(this.laVolpeButton1);
-        this.Text = "Form1";
-        this.ResumeLayout(false);
+        // 
+        oleStatusLabel.AutoEllipsis = true;
+        oleStatusLabel.BorderStyle = BorderStyle.Fixed3D;
+        oleStatusLabel.Location = new Point(24, 320);
+        oleStatusLabel.Name = "oleStatusLabel";
+        oleStatusLabel.Size = new Size(752, 36);
+        oleStatusLabel.TabIndex = 2;
+        oleStatusLabel.Text = "OLE: esperando una operación de arrastre.";
+        oleStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+        // 
+        // laVolpeButton2
+        // 
+        laVolpeButton2.AccessibleRole = AccessibleRole.CheckButton;
+        laVolpeButton2.BackColor = SystemColors.Control;
+        laVolpeButton2.DragIcon = null;
+        laVolpeButton2.GradientColor = SystemColors.ControlLight;
+        laVolpeButton2.HoverBackColor = SystemColors.Control;
+        laVolpeButton2.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton2.Location = new Point(519, 193);
+        laVolpeButton2.MouseIcon = null;
+        laVolpeButton2.Mode = LaVolpe.Buttons.Net.ButtonMode.lv_CheckBox;
+        laVolpeButton2.Name = "laVolpeButton2";
+        laVolpeButton2.Palette.CheckedBackColor = Color.FromArgb(255, 128, 0);
+        laVolpeButton2.Palette.DisabledBackColor = Color.Empty;
+        laVolpeButton2.Palette.DisabledTextColor = Color.Empty;
+        laVolpeButton2.Palette.FocusColor = Color.Yellow;
+        laVolpeButton2.Palette.HoverBackColor = Color.Lime;
+        laVolpeButton2.Palette.HoverTextColor = Color.Empty;
+        laVolpeButton2.Palette.NormalBackColor = Color.Blue;
+        laVolpeButton2.Palette.PressedBackColor = Color.Red;
+        laVolpeButton2.Palette.TextColor = Color.Empty;
+        laVolpeButton2.Picture = null;
+        laVolpeButton2.ResetDefaultColors = false;
+        laVolpeButton2.ShowFocusRect = true;
+        laVolpeButton2.Size = new Size(90, 33);
+        laVolpeButton2.TabIndex = 3;
+        laVolpeButton2.Value = true;
+        // 
+        // Form1
+        // 
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(800, 450);
+        Controls.Add(laVolpeButton2);
+        Controls.Add(oleStatusLabel);
+        Controls.Add(oleInstructionLabel);
+        Controls.Add(laVolpeButton1);
+        Name = "Form1";
+        Text = "Form1";
+        ResumeLayout(false);
+        PerformLayout();
     }
 
     #endregion
@@ -81,4 +122,5 @@ partial class Form1
     private LaVolpe.Buttons.Net.LaVolpeButton laVolpeButton1;
     private System.Windows.Forms.Label oleInstructionLabel;
     private System.Windows.Forms.Label oleStatusLabel;
+    private Net.LaVolpeButton laVolpeButton2;
 }
