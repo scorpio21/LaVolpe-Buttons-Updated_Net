@@ -6,6 +6,14 @@ Port de `lvButtons_H` (VB6/ActiveX) a un control personalizado **C# .NET 8 WinFo
 
 Inspired by the original LaVolpe Buttons control for VB6. This project is an independent .NET implementation and does not contain the original VB6 source code.
 
+## Estado del port .NET
+
+![Estado del port .NET](docs/port-progress.svg)
+
+El rango global estimado es **65–75 %**. Las barras resumen la compatibilidad
+por área; la metodología, la evidencia y las limitaciones están documentadas
+en [ESTADO-PORT-NET.md](ESTADO-PORT-NET.md).
+
 ## Estado actual
 
 El control compila sin errores ni advertencias y cuenta con una suite de pruebas ejecutable. Las funciones verificadas por ejecución incluyen:

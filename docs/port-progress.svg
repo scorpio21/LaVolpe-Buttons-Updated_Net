@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+  <title id="title">Estado del port LaVolpe Buttons .NET</title>
+  <desc id="desc">Barras de compatibilidad por área. El rango global estimado del port es 65 a 75 por ciento.</desc>
+  <rect width="760" height="430" rx="8" fill="#111827"/>
+  <text x="30" y="38" fill="#f9fafb" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700">Estado del port .NET</text>
+  <text x="30" y="62" fill="#9ca3af" font-family="Segoe UI,Arial,sans-serif" font-size="13">Compatibilidad estimada por área · rango global: 65–75 %</text>
+
+  <g font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#e5e7eb">
+    <text x="30" y="100">Control WinForms</text><text x="30" y="132">Propiedades y enums</text>
+    <text x="30" y="164">Mouse y teclado</text><text x="30" y="196">CheckBox / OptionButton</text>
+    <text x="30" y="228">Eventos OLE</text><text x="30" y="260">Estados visuales</text>
+    <text x="30" y="292">Formas gráficas</text><text x="30" y="324">Estilos visuales</text>
+    <text x="30" y="356">Imágenes y escalado</text><text x="30" y="388">Equivalencia visual VB6</text>
+  </g>
+
+  <g fill="#374151">
+    <rect x="205" y="87" width="470" height="20" rx="10"/><rect x="205" y="119" width="470" height="20" rx="10"/>
+    <rect x="205" y="151" width="470" height="20" rx="10"/><rect x="205" y="183" width="470" height="20" rx="10"/>
+    <rect x="205" y="215" width="470" height="20" rx="10"/><rect x="205" y="247" width="470" height="20" rx="10"/>
+    <rect x="205" y="279" width="470" height="20" rx="10"/><rect x="205" y="311" width="470" height="20" rx="10"/>
+    <rect x="205" y="343" width="470" height="20" rx="10"/><rect x="205" y="375" width="470" height="20" rx="10"/>
+  </g>
+  <g>
+    <rect x="205" y="87" width="414" height="20" rx="10" fill="#9333ea"/>
+    <rect x="205" y="119" width="423" height="20" rx="10" fill="#3b82f6"/>
+    <rect x="205" y="151" width="329" height="20" rx="10" fill="#6366f1"/>
+    <rect x="205" y="183" width="423" height="20" rx="10" fill="#4f46e5"/>
+    <rect x="205" y="215" width="188" height="20" rx="10" fill="#4b87ad"/>
+    <rect x="205" y="247" width="385" height="20" rx="10" fill="#f15a24"/>
+    <rect x="205" y="279" width="385" height="20" rx="10" fill="#2563eb"/>
+    <rect x="205" y="311" width="338" height="20" rx="10" fill="#0ea5e9"/>
+    <rect x="205" y="343" width="367" height="20" rx="10" fill="#38bdf8"/>
+    <rect x="205" y="375" width="282" height="20" rx="10" fill="#f97316"/>
+  </g>
+  <g fill="#fff" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="end">
+    <text x="660" y="102">88%</text><text x="660" y="134">90%</text><text x="660" y="166">70%</text>
+    <text x="660" y="198">90%</text><text x="660" y="230">40%</text><text x="660" y="262">82%</text>
+    <text x="660" y="294">82%</text><text x="660" y="326">72%</text><text x="660" y="358">78%</text><text x="660" y="390">60%</text>
+  </g>
+</svg>
