@@ -1,3 +1,8 @@
+// Inspired by the original LaVolpe Buttons VB6 control,
+// which credits Chameleon Button by Gonchuki.
+// This is an independent .NET implementation written from scratch.
+// It does not contain or redistribute the original VB6 source code.
+
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Drawing2D;

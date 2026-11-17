@@ -196,6 +196,11 @@ relicencia del código VB6 original ni de las imágenes. Los comentarios de
 `lvButtons.ctl` acreditan la inspiración de Gonchuki y la fórmula de colores
 XP de Gonchuki y Ghuran Kartal. Verifique los términos originales antes de
 redistribuir el port o sus recursos.
+La referencia de Chameleon Button se conserva en el espejo de [Planet Source
+Code](https://github.com/Planet-Source-Code/malachi-chameleon-button-an-awesome-multi-style-button__1-28761);
+su fuente identifica copyright ©2001 de Gonchuki, pero no se encontró una
+licencia explícita de redistribución. Este proyecto no copia ni relicencia ese
+código VB6 ni sus imágenes.
 La evidencia revisada y la decisión de alcance están detalladas en
 [NOTICE.md](NOTICE.md); el MIT del port no relicencia el código VB6, el OCX ni
 las imágenes originales.

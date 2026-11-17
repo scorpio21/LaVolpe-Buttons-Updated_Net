@@ -8,6 +8,11 @@ The original `@PSC_ReadMe` says that the author may have retained copyrights
 and asks users to review the original copyright conditions before distribution.
 The original `lvButtons.ctl` comments credit Gonchuki's Chameleon Button for
 inspiration and Gonchuki and Ghuran Kartal for the XP colour formula.
+The referenced Chameleon Button source is the Planet Source Code mirror
+[malachi-chameleon-button-an-awesome-multi-style-button__1-28761](https://github.com/Planet-Source-Code/malachi-chameleon-button-an-awesome-multi-style-button__1-28761).
+Its source identifies copyright ©2001 by Gonchuki; no explicit redistribution
+license was found in that mirror, so this project does not copy or relicense
+its VB6 source or artwork.
 
 ## Evidence reviewed
 
