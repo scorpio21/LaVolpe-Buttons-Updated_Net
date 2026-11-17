@@ -87,6 +87,7 @@ public static class Program
             button.Palette.DisabledBackColor = Color.FromArgb(50, 60, 70);
             button.Palette.FocusColor = Color.Orange;
             button.HoverColorLocks = HoverColorLocks.NoLocks;
+            Check(button.Palette.ToString() == "(personalizada)", "Palette personalizada no se refleja en PropertyGrid");
             Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.NormalBackColor, "Palette no aplica NormalBackColor");
             Check((Color)stateBack.Invoke(button, new object[] { false, true, false })! == button.Palette.HoverBackColor, "Palette no aplica HoverBackColor");
             Check((Color)stateBack.Invoke(button, new object[] { true, false, false })! == button.Palette.PressedBackColor, "Palette no aplica PressedBackColor");

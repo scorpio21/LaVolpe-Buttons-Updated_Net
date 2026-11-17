@@ -68,7 +68,7 @@ public sealed class LaVolpeButtonPalette
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    public override string ToString() => "(predeterminada)";
+    public override string ToString() => IsDefault ? "(predeterminada)" : "(personalizada)";
 
     private void Set(ref Color field, Color value)
     {
