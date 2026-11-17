@@ -14,6 +14,11 @@ El rango global estimado es **65–75 %**. Las barras resumen la compatibilidad
 por área; la metodología, la evidencia y las limitaciones están documentadas
 en [ESTADO-PORT-NET.md](ESTADO-PORT-NET.md).
 
+La paleta visual está validada en Visual Studio: los estados normal, hover,
+pulsado y foco funcionan, y sus valores se conservan al cerrar y reabrir el
+diseñador. El rango global no cambia porque siguen pendientes la licencia
+upstream y la paridad visual completa con VB6.
+
 ## Estado actual
 
 El control compila sin errores ni advertencias y cuenta con una suite de pruebas ejecutable. Las funciones verificadas por ejecución incluyen:

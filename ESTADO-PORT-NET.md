@@ -2,7 +2,7 @@
 
 ## Estado verificado 2026-11-13
 
-La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 56/56 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la validación OLE externa.
+La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 58/58 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
 **Fecha de esta revisión:** 2026-11-13 (verificación de cierre de la ronda actual)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
@@ -36,9 +36,9 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Recursos `.frx` | 85 % | 75 % | 75 % | 80 % | 80 % | Sin cambios |
 | Formulario de ejemplo | 85 % | 35 % | 35 % | 58 % | 58 % | Sin cambios: la demo sigue siendo un subconjunto |
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | Sin cambios |
-| Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 50 % | Sin validación real en el diseñador |
+| Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 75 % | Toolbox, PropertyGrid, paleta, serialización y reapertura validados |
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
-| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 62 % | 50 casos: paleta, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI, clic físico y superficie marcada |
+| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 58 casos en el harness y 56 en xUnit: paleta, diseñador, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
 | **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología; el cambio de paleta no altera el rango global 65–75 %) |
 
@@ -62,9 +62,9 @@ redondeado a **73 %**, calculado con los porcentajes de la última columna de la
 | Recursos `.frx` | 3 | 80 % | [EVIDENCIA_Y_DIFERENCIAS.md](EVIDENCIA_Y_DIFERENCIAS.md) |
 | Formulario de ejemplo | 5 | 58 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [SampleForm.cs](LaVolpe.Buttons.Sample/SampleForm.cs) |
 | Proyecto de ejemplo | 3 | 65 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
-| Diseñador de Visual Studio | 4 | 50 % | [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
+| Diseñador de Visual Studio | 4 | 75 % | [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
 | Instalación/distribución | 2 | 35 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
-| Pruebas automatizadas | 3 | 62 % | [TEST-REPORT.md](TEST-REPORT.md) |
+| Pruebas automatizadas | 3 | 65 % | [TEST-REPORT.md](TEST-REPORT.md) |
 | Equivalencia visual con VB6 | 10 | 60 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [GAP-REPORT.md](GAP-REPORT.md) |
 
 La cifra histórica del 76 % queda conservada únicamente como referencia de rondas anteriores; no se usa
