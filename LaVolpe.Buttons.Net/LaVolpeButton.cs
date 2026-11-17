@@ -581,7 +581,7 @@ public class LaVolpeButton : Control, IButtonControl
         if(selected) return GetCheckBack();
         var up=GetUpBack();
         if(down) return GetDownBack(up);
-        if(hot && _hoverColorLocks is not (HoverColorLocks.BackColorOnly or HoverColorLocks.TextAndBackColor)) return GetHoverBack(up);
+        if(hot && (!_palette.HoverBackColor.IsEmpty || _hoverColorLocks is not (HoverColorLocks.BackColorOnly or HoverColorLocks.TextAndBackColor))) return GetHoverBack(up);
         return up;
     }
     // adjBackColorUp/adjBackColorDn/cCheckBox se calculan por estilo en lvButtons.ctl.
