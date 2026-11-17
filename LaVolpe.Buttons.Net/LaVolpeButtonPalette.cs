@@ -22,32 +22,37 @@ public sealed class LaVolpeButtonPalette
 
     public event EventHandler? Changed;
 
-    [Category("Normal"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Normal"), Description("Color de fondo del estado normal."), DefaultValue(typeof(Color), "Empty")]
     public Color NormalBackColor { get => _normalBackColor; set => Set(ref _normalBackColor, value); }
 
-    [Category("Hover"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Hover"), Description("Color de fondo cuando el puntero está sobre el botón."), DefaultValue(typeof(Color), "Empty")]
     public Color HoverBackColor { get => _hoverBackColor; set => Set(ref _hoverBackColor, value); }
 
-    [Category("Pressed"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Pressed"), Description("Color de fondo mientras el botón está pulsado."), DefaultValue(typeof(Color), "Empty")]
     public Color PressedBackColor { get => _pressedBackColor; set => Set(ref _pressedBackColor, value); }
 
-    [Category("Checked"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Checked"), Description("Color de fondo de CheckBox u OptionButton marcado."), DefaultValue(typeof(Color), "Empty")]
     public Color CheckedBackColor { get => _checkedBackColor; set => Set(ref _checkedBackColor, value); }
 
-    [Category("Disabled"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Disabled"), Description("Color de fondo cuando el control está deshabilitado."), DefaultValue(typeof(Color), "Empty")]
     public Color DisabledBackColor { get => _disabledBackColor; set => Set(ref _disabledBackColor, value); }
 
-    [Category("Text"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Text"), Description("Color del texto en el estado normal."), DefaultValue(typeof(Color), "Empty")]
     public Color TextColor { get => _textColor; set => Set(ref _textColor, value); }
 
-    [Category("Text"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Text"), Description("Color del texto durante hover."), DefaultValue(typeof(Color), "Empty")]
     public Color HoverTextColor { get => _hoverTextColor; set => Set(ref _hoverTextColor, value); }
 
-    [Category("Text"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Text"), Description("Color del texto cuando el control está deshabilitado."), DefaultValue(typeof(Color), "Empty")]
     public Color DisabledTextColor { get => _disabledTextColor; set => Set(ref _disabledTextColor, value); }
 
-    [Category("Focus"), DefaultValue(typeof(Color), "Empty")]
+    [Category("Focus"), Description("Color del indicador de foco."), DefaultValue(typeof(Color), "Empty")]
     public Color FocusColor { get => _focusColor; set => Set(ref _focusColor, value); }
+
+    [Browsable(false)]
+    public bool IsDefault => _normalBackColor.IsEmpty && _hoverBackColor.IsEmpty && _pressedBackColor.IsEmpty
+        && _checkedBackColor.IsEmpty && _disabledBackColor.IsEmpty && _textColor.IsEmpty
+        && _hoverTextColor.IsEmpty && _disabledTextColor.IsEmpty && _focusColor.IsEmpty;
 
     public void Reset()
     {

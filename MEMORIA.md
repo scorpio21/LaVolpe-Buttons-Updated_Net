@@ -21,6 +21,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ El punto visual 1 añade una regresión para las máscaras amarillas de los recursos del sample; la captura actual ya no muestra el cuadrado amarillo detrás del botón custom.
 - ✅ Issue #22: `LaVolpeButton.Palette` permite personalizar fondos, textos y foco por estado desde el diseñador; los colores `Empty` conservan el renderer VB6 y `ResetDefaultColors` restaura la paleta.
 - ✅ Accesibilidad: `AccessibleRole` cambia entre PushButton, CheckButton y RadioButton según `Mode`; el harness lo cubre.
+- ✅ Diseñador: `Palette` muestra descripciones, se serializa solo cuando cambia y ofrece `ResetPalette()`.
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.

@@ -77,6 +77,9 @@ public static class Program
             var button = Add(form, new LaVolpeButton { Size = new Size(100, 36) });
             var stateBack = typeof(LaVolpeButton).GetMethod("GetStateBack", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
             Check(button.Palette.ToString() == "(predeterminada)", "Palette no muestra el estado predeterminado");
+            var paletteProperty = TypeDescriptor.GetProperties(button)[nameof(LaVolpeButton.Palette)]!;
+            Check(paletteProperty.SerializationVisibility == DesignerSerializationVisibility.Content, "Palette no se serializa como contenido");
+            Check(!button.ShouldSerializePalette(), "Palette predeterminada debe omitirse");
             button.Palette.NormalBackColor = Color.FromArgb(10, 20, 30);
             button.Palette.HoverBackColor = Color.FromArgb(20, 30, 40);
             button.Palette.PressedBackColor = Color.FromArgb(30, 40, 50);
@@ -88,10 +91,14 @@ public static class Program
             Check((Color)stateBack.Invoke(button, new object[] { false, true, false })! == button.Palette.HoverBackColor, "Palette no aplica HoverBackColor");
             Check((Color)stateBack.Invoke(button, new object[] { true, false, false })! == button.Palette.PressedBackColor, "Palette no aplica PressedBackColor");
             Check((Color)stateBack.Invoke(button, new object[] { false, false, true })! == button.Palette.CheckedBackColor, "Palette no aplica CheckedBackColor");
+            Check(button.ShouldSerializePalette(), "Palette modificada debe serializarse");
             button.Enabled = false;
             Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.DisabledBackColor, "Palette no aplica DisabledBackColor");
             button.Palette.Reset();
             Check(button.Palette.NormalBackColor.IsEmpty && button.Palette.DisabledBackColor.IsEmpty && button.Palette.FocusColor.IsEmpty, "Palette.Reset no restaura Empty");
+            button.Palette.NormalBackColor = Color.Purple;
+            button.ResetPalette();
+            Check(!button.ShouldSerializePalette(), "ResetPalette no devuelve la paleta al valor predeterminado");
         });
 
         Test("Modo actualiza el rol accesible", form =>
