@@ -69,6 +69,7 @@ public static class Program
             Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
             Check(button.HoverBackColor == button.BackColor, $"{button.HoverBackColor} != {button.BackColor}");
             Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
+            Check(button.AccessibleRole == AccessibleRole.PushButton, $"AccessibleRole={button.AccessibleRole}");
         });
 
         Test("Paleta visual configura los estados sin alterar los valores por defecto", form =>
@@ -91,6 +92,17 @@ public static class Program
             Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.DisabledBackColor, "Palette no aplica DisabledBackColor");
             button.Palette.Reset();
             Check(button.Palette.NormalBackColor.IsEmpty && button.Palette.DisabledBackColor.IsEmpty && button.Palette.FocusColor.IsEmpty, "Palette.Reset no restaura Empty");
+        });
+
+        Test("Modo actualiza el rol accesible", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.Mode = ButtonMode.CheckBox;
+            Check(button.AccessibleRole == AccessibleRole.CheckButton, $"CheckBox role={button.AccessibleRole}");
+            button.Mode = ButtonMode.OptionButton;
+            Check(button.AccessibleRole == AccessibleRole.RadioButton, $"OptionButton role={button.AccessibleRole}");
+            button.Mode = ButtonMode.CommandButton;
+            Check(button.AccessibleRole == AccessibleRole.PushButton, $"CommandButton role={button.AccessibleRole}");
         });
 
         Test("Opciones de diseñador WinForms", form =>

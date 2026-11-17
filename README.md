@@ -153,6 +153,7 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 ### Comportamiento
 
 - `Mode`: `CommandButton`, `CheckBox`, `OptionButton`.
+- Accesibilidad: el `AccessibleRole` se adapta automáticamente a `CommandButton`, `CheckBox` u `OptionButton`, y `Caption` inicializa `AccessibleName` cuando no se ha definido otro.
 - `Value`/`Checked`/`Selected`; en `CommandButton` se rechaza `Value = true`, como en VB6.
 - `OptionButton`: deselecciona hermanos, se selecciona al recibir foco y no dispara `Click` si ya estaba elegido.
 - CheckBox/OptionButton marcan toda la superficie con `cCheckBox`, igual que `Style = Graphical`; no hay glifo independiente.

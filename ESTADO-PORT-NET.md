@@ -29,7 +29,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Eventos de mouse y teclado | 80 % | 65 % | 66 % | 70 % | 70 % | Sin cambios: OLE y arrastre siguen adaptados |
 | CheckBox y OptionButton | 80 % | 45 % | 45 % | 78 % | 90 % | Toda la superficie cambia de estado; se eliminó el glifo de 14 px |
 | Eventos OLE | 50 % | 40 % | 40 % | 40 % | 40 % | Sin cambios: adaptaciones WinForms |
-| Estados visuales | 80 % | 50 % | 55 % | 66 % | 82 % | Estados normal/foco/pulsado/marcado con colores por estilo |
+| Estados visuales | 80 % | 50 % | 55 % | 66 % | 83 % | Estados normal/foco/pulsado/marcado con colores por estilo y paleta configurable |
 | Formas gráficas | 70 % | 30 % | 55 % | 80 % | 82 % | Imagen encogida al pulsar y reglas de caption para `Custom*` |
 | Estilos visuales | 65 % | 25 % | 32 % | 42 % | 72 % | Tres anillos concéntricos y parejas de color por estilo |
 | Imágenes y escalado | 80 % | 55 % | 55 % | 70 % | 78 % | Reglas `Custom*`, máscara y redimensionado proporcional; paridad GDI pendiente |
@@ -40,7 +40,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
 | Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 62 % | 50 casos: paleta, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI, clic físico y superficie marcada |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
-| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología) |
+| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología; el cambio de paleta no altera el rango global 65–75 %) |
 
 ### Metodología vigente (2026-11-13)
 

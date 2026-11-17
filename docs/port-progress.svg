@@ -26,7 +26,7 @@
     <rect x="205" y="151" width="329" height="20" rx="10" fill="#6366f1"/>
     <rect x="205" y="183" width="423" height="20" rx="10" fill="#4f46e5"/>
     <rect x="205" y="215" width="188" height="20" rx="10" fill="#4b87ad"/>
-    <rect x="205" y="247" width="385" height="20" rx="10" fill="#f15a24"/>
+    <rect x="205" y="247" width="390" height="20" rx="10" fill="#f15a24"/>
     <rect x="205" y="279" width="385" height="20" rx="10" fill="#2563eb"/>
     <rect x="205" y="311" width="338" height="20" rx="10" fill="#0ea5e9"/>
     <rect x="205" y="343" width="367" height="20" rx="10" fill="#38bdf8"/>
@@ -34,7 +34,7 @@
   </g>
   <g fill="#fff" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="end">
     <text x="660" y="102">88%</text><text x="660" y="134">90%</text><text x="660" y="166">70%</text>
-    <text x="660" y="198">90%</text><text x="660" y="230">40%</text><text x="660" y="262">82%</text>
+    <text x="660" y="198">90%</text><text x="660" y="230">40%</text><text x="660" y="262">83%</text>
     <text x="660" y="294">82%</text><text x="660" y="326">72%</text><text x="660" y="358">78%</text><text x="660" y="390">60%</text>
   </g>
 </svg>
