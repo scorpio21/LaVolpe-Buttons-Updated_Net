@@ -18,6 +18,7 @@ public sealed class LaVolpeButtonPalette
     private Color _textColor;
     private Color _hoverTextColor;
     private Color _disabledTextColor;
+    private Color _focusColor;
 
     public event EventHandler? Changed;
 
@@ -45,6 +46,9 @@ public sealed class LaVolpeButtonPalette
     [Category("Text"), DefaultValue(typeof(Color), "Empty")]
     public Color DisabledTextColor { get => _disabledTextColor; set => Set(ref _disabledTextColor, value); }
 
+    [Category("Focus"), DefaultValue(typeof(Color), "Empty")]
+    public Color FocusColor { get => _focusColor; set => Set(ref _focusColor, value); }
+
     public void Reset()
     {
         _normalBackColor = Color.Empty;
@@ -55,6 +59,7 @@ public sealed class LaVolpeButtonPalette
         _textColor = Color.Empty;
         _hoverTextColor = Color.Empty;
         _disabledTextColor = Color.Empty;
+        _focusColor = Color.Empty;
         Changed?.Invoke(this, EventArgs.Empty);
     }
 

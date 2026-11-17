@@ -148,7 +148,7 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 - `GradientMode`: `LeftToRight`, `RightToLeft`, `TopToBottom`, `BottomToTop`.
 - `CaptionStyle` (`Default`, `Sunken`, `Raised`), `CaptionAlign`, `FontStyle` y `ShowFocusRect`.
 - `Picture`, `PictureAlign` y `PictureSize` (`16x16`, `24x24`, `32x32`, `FillStretch`, `FillScaleUpDown`).
-- `Palette` opcional para personalizar desde el diseñador los fondos normal, hover, pulsado, marcado y deshabilitado, además de los colores de texto; los colores `Empty` conservan el renderer VB6 por defecto.
+- `Palette` opcional para personalizar desde el diseñador los fondos normal, hover, pulsado, marcado y deshabilitado, los colores de texto y el foco; los colores `Empty` conservan el renderer VB6 por defecto.
 
 ### Comportamiento
 

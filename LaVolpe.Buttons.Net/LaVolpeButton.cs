@@ -1027,6 +1027,13 @@ public class LaVolpeButton : Control, IButtonControl
     {
         if(IsCustomShape) return;
         var inner=Rectangle.Inflate(r,-4,-4);
+        if(!_palette.FocusColor.IsEmpty)
+        {
+            using var palettePen = new Pen(_palette.FocusColor,1) { DashStyle=DashStyle.Dot };
+            if(_shape is ButtonShape.Round3D or ButtonShape.Round3DFixed or ButtonShape.RoundFlat) g.DrawEllipse(palettePen,inner);
+            else g.DrawRectangle(palettePen,inner);
+            return;
+        }
         if(_shape is ButtonShape.Round3D or ButtonShape.Round3DFixed or ButtonShape.RoundFlat)
         {
             using var pen=new Pen(Color.Black,1) { DashStyle=DashStyle.Dot };

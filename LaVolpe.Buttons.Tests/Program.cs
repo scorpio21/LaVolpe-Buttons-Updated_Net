@@ -81,6 +81,7 @@ public static class Program
             button.Palette.PressedBackColor = Color.FromArgb(30, 40, 50);
             button.Palette.CheckedBackColor = Color.FromArgb(40, 50, 60);
             button.Palette.DisabledBackColor = Color.FromArgb(50, 60, 70);
+            button.Palette.FocusColor = Color.Orange;
             button.HoverColorLocks = HoverColorLocks.NoLocks;
             Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.NormalBackColor, "Palette no aplica NormalBackColor");
             Check((Color)stateBack.Invoke(button, new object[] { false, true, false })! == button.Palette.HoverBackColor, "Palette no aplica HoverBackColor");
@@ -89,7 +90,7 @@ public static class Program
             button.Enabled = false;
             Check((Color)stateBack.Invoke(button, new object[] { false, false, false })! == button.Palette.DisabledBackColor, "Palette no aplica DisabledBackColor");
             button.Palette.Reset();
-            Check(button.Palette.NormalBackColor.IsEmpty && button.Palette.DisabledBackColor.IsEmpty, "Palette.Reset no restaura Empty");
+            Check(button.Palette.NormalBackColor.IsEmpty && button.Palette.DisabledBackColor.IsEmpty && button.Palette.FocusColor.IsEmpty, "Palette.Reset no restaura Empty");
         });
 
         Test("Opciones de diseñador WinForms", form =>
