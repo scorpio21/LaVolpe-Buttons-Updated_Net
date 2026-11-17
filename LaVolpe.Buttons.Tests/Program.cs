@@ -70,6 +70,10 @@ public static class Program
             Check(button.HoverBackColor == button.BackColor, $"{button.HoverBackColor} != {button.BackColor}");
             Check(button.Mode == ButtonMode.CommandButton, $"Mode={button.Mode}");
             Check(button.AccessibleRole == AccessibleRole.PushButton, $"AccessibleRole={button.AccessibleRole}");
+            button.Mode = ButtonMode.CheckBox;
+            Check(button.ShouldSerializeMode(), "ShouldSerializeMode no detecta CheckBox");
+            button.Mode = ButtonMode.CommandButton;
+            Check(!button.ShouldSerializeMode(), "ShouldSerializeMode no omite CommandButton");
         });
 
         Test("Paleta visual configura los estados sin alterar los valores por defecto", form =>

@@ -172,6 +172,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
     public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
     public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
+    public bool ShouldSerializeMode() => _mode != ButtonMode.CommandButton;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.
