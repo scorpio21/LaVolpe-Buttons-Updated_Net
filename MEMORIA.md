@@ -18,6 +18,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ Eventos OLE conservados y cubiertos en harness; validación con aplicación externa sigue pendiente.
 - ✅ `OLEStartDrag` respeta el `Effect` que establezca el manejador y permite cancelar el origen con `None`; `OLECompleteDrag` sigue notificándose en `finally`.
 - ✅ `CustomFlat`/`Custom3DBorder` redimensiona el control proporcionalmente según `ScaleImage` de VB6; prueba y métrica visual mejoradas.
+- ✅ El punto visual 1 añade una regresión para las máscaras amarillas de los recursos del sample; la captura actual ya no muestra el cuadrado amarillo detrás del botón custom.
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.
@@ -34,6 +35,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `8599b56` — Reject self-referential visual comparisons (publicado en `origin/main`).
 - `2ccbe61` — Clarify upstream licensing scope (publicado en `origin/main`).
 - `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
+- `e05bb5b` — Cover yellow transparency mask regression (publicado en `origin/main`).
 
 ## Next steps
 
