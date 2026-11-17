@@ -21,11 +21,11 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.
-- ✅ DPI lógico 96/120/144/192 y hook `OnDpiChangedAfterParent` cubiertos; comparación física VB6 pendiente.
-- ⚠️ Pintado no es pixel-equivalente; issue visual #2 permanece abierto y el gap técnico está medido.
+- ✅ DPI lógico 96/120/144/192 y hook `OnDpiChangedAfterParent` cubiertos; la pantalla primaria del equipo actual fue medida a 96 DPI (3440×1440), por lo que la comparación física VB6 a 120/144/192 sigue pendiente.
+- ⚠️ Pintado no es pixel-equivalente; los issues visuales #2 y #12 se cerraron por quedar fuera del objetivo actual de implantación .NET.
 - ✅ La atribución de procedencia se añadió a `LICENSE`, `README.md`, `NOTICE.md` y al paquete NuGet; issue #17 sigue abierto porque los términos de redistribución del original no están verificados.
-- ✅ Issue #16 validado en Visual Studio Enterprise: `Form1.cs [Diseño]` carga, `LaVolpeButton` aparece en el Toolbox y el PropertyGrid expone sus propiedades principales; comentario publicado, cierre pendiente de autenticación GitHub.
-- ✅ El comparador visual rechaza referencia y salida en la misma carpeta para evitar resultados autorreferentes; el #12 sigue abierto porque faltan las 32 capturas VB6.
+- ✅ Issue #16 validado en Visual Studio Enterprise: `Form1.cs [Diseño]` carga, `LaVolpeButton` aparece en el Toolbox y el PropertyGrid expone sus propiedades principales; issue cerrado en GitHub.
+- ✅ El comparador visual rechaza referencia y salida en la misma carpeta para evitar resultados autorreferentes; los issues de capturas #2 y #12 están cerrados.
 - ⚠️ No cerrar issues de GitHub sin evidencia; los issues abiertos se mantienen abiertos cuando falta una validación externa o legal.
 - ✅ `dotnet test` descubre y ejecuta los 56 casos mediante `LaVolpe.Buttons.XunitTests`; `dotnet run` conserva el harness STA y las herramientas visuales.
 
@@ -37,12 +37,9 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 
 ## Next steps
 
-1. Obtener las 32 capturas de referencia VB6 para #12 y compararlas contra las 32 capturas .NET; no usar autocapturas .NET como referencia.
-2. Completar la edición/guardado/reapertura del diseñador y cerrar #16 solo cuando GitHub esté autenticado.
-3. Revisar diferencias visuales restantes con métricas, especialmente anillos custom y tipografía, sin cambios especulativos (#2).
-4. Validar DPI físico 120/144 si el entorno lo permite (#3); el harness lógico ya está cubierto.
-5. Mantener #6 reservado para el final; solo después de resolver los issues anteriores repetir la prueba OLE externa real con `DesignerSample`.
-6. Resolver los términos legales originales antes de publicar NuGet (#17).
+1. Validar DPI físico 120/144/192 si el entorno lo permite (#3); el harness lógico ya está cubierto, pero no basta para cerrar el issue.
+2. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
+3. Mantener #6 reservado para el final; solo después de resolver los issues anteriores repetir la prueba OLE externa real con `DesignerSample`.
 
 ## Known gotchas
 

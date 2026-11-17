@@ -1,6 +1,6 @@
 # Matriz DPI
 
-Actualización 2026-11-13: `LaVolpe.Buttons.Sample`, `LaVolpe.Buttons.Tests` y `LaVolpe.Buttons.DesignerSample` declaran `ApplicationHighDpiMode=PerMonitorV2`. El control reconstruye su región en `OnDpiChangedAfterParent`; sigue pendiente una comparación del OCX VB6 en monitores físicos con DPI distintos.
+Actualización 2026-11-17: `LaVolpe.Buttons.Sample`, `LaVolpe.Buttons.Tests` y `LaVolpe.Buttons.DesignerSample` declaran `ApplicationHighDpiMode=PerMonitorV2`. El control reconstruye su región en `OnDpiChangedAfterParent`; sigue pendiente una comparación del OCX VB6 en monitores físicos con DPI distintos.
 
 ## Resultado
 
@@ -20,3 +20,7 @@ dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Rel
 ```
 
 El control también reconstruye su región y repinta en `OnDpiChangedAfterParent` (`LaVolpe.Buttons.Net/LaVolpeButton.cs:409`). Esta matriz verifica escalado geométrico reproducible, pero no cambia la configuración DPI del monitor de Windows. La comparación visual del OCX VB6 ejecutándose realmente a 120/144/192 DPI sigue pendiente; el issue #3 permanece abierto.
+
+## Entorno físico verificado
+
+La sesión Windows usada para esta validación informa `DpiX=96` y `DpiY=96` para la pantalla primaria (3440×1440). No hay en este equipo una pantalla/configuración física disponible a 120, 144 o 192 DPI; por tanto, este dato no sustituye las capturas comparativas VB6/.NET requeridas para cerrar el issue #3.
