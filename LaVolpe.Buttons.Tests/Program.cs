@@ -511,6 +511,23 @@ public static class Program
                 for (var x = 0; x < regularRendered.Width; x++)
                     if (regularRendered.GetPixel(x, y).ToArgb() == Color.Magenta.ToArgb()) maskPixels++;
             Check(maskPixels == 0, $"la imagen normal conserva {maskPixels} píxeles del color máscara");
+
+            // Los recursos del sample usan amarillo como color de máscara; conserva
+            // la regresión que antes dejaba un cuadrado amarillo detrás del zorro.
+            using var yellowImage = new Bitmap(24, 24, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var yellowGraphics = Graphics.FromImage(yellowImage))
+            {
+                yellowGraphics.Clear(Color.Yellow);
+                yellowGraphics.FillEllipse(Brushes.Red, 2, 2, 20, 20);
+            }
+            using var yellowRendered = new Bitmap(24, 24, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var yellowGraphics = Graphics.FromImage(yellowRendered))
+            {
+                yellowGraphics.Clear(Color.Transparent);
+                var drawImageWithMask = typeof(LaVolpeButton).GetMethod("DrawImageWithMask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+                drawImageWithMask.Invoke(null, new object[] { yellowGraphics, yellowImage, new Rectangle(0, 0, 24, 24) });
+            }
+            Check(yellowRendered.GetPixel(0, 0).A == 0, "la máscara amarilla del sample deja un cuadrado visible");
         });
 
         Test("Custom* redimensiona proporcionalmente como VB6", form =>
