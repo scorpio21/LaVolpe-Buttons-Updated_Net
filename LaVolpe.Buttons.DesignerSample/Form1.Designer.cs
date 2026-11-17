@@ -32,6 +32,7 @@ partial class Form1
         oleInstructionLabel = new Label();
         oleStatusLabel = new Label();
         laVolpeButton2 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        laVolpeButton3 = new LaVolpe.Buttons.Net.LaVolpeButton();
         SuspendLayout();
         // 
         // laVolpeButton1
@@ -84,7 +85,6 @@ partial class Form1
         laVolpeButton2.HoverForeColor = SystemColors.ControlText;
         laVolpeButton2.Location = new Point(519, 193);
         laVolpeButton2.MouseIcon = null;
-        laVolpeButton2.Mode = LaVolpe.Buttons.Net.ButtonMode.lv_CheckBox;
         laVolpeButton2.Name = "laVolpeButton2";
         laVolpeButton2.Palette.CheckedBackColor = Color.FromArgb(255, 128, 0);
         laVolpeButton2.Palette.DisabledBackColor = Color.Empty;
@@ -102,11 +102,29 @@ partial class Form1
         laVolpeButton2.TabIndex = 3;
         laVolpeButton2.Value = true;
         // 
+        // laVolpeButton3
+        // 
+        laVolpeButton3.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton3.BackColor = SystemColors.Control;
+        laVolpeButton3.DragIcon = null;
+        laVolpeButton3.GradientColor = SystemColors.ControlLight;
+        laVolpeButton3.HoverBackColor = SystemColors.Control;
+        laVolpeButton3.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton3.Location = new Point(535, 102);
+        laVolpeButton3.MouseIcon = null;
+        laVolpeButton3.Name = "laVolpeButton3";
+        laVolpeButton3.Picture = null;
+        laVolpeButton3.ResetDefaultColors = false;
+        laVolpeButton3.ShowFocusRect = true;
+        laVolpeButton3.Size = new Size(90, 33);
+        laVolpeButton3.TabIndex = 4;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(800, 450);
+        Controls.Add(laVolpeButton3);
         Controls.Add(laVolpeButton2);
         Controls.Add(oleStatusLabel);
         Controls.Add(oleInstructionLabel);
@@ -123,4 +141,5 @@ partial class Form1
     private System.Windows.Forms.Label oleInstructionLabel;
     private System.Windows.Forms.Label oleStatusLabel;
     private Net.LaVolpeButton laVolpeButton2;
+    private Net.LaVolpeButton laVolpeButton3;
 }

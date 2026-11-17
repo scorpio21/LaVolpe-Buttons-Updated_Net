@@ -123,7 +123,7 @@ public class LaVolpeButton : Control, IButtonControl
     // VB6: Caption es el miembro por defecto; Text debe reflejarlo para accesibilidad y diseñador.
     [AllowNull, Browsable(false), EditorBrowsable(EditorBrowsableState.Advanced), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text { get=>_caption; set=>Caption=value??string.Empty; }
-    [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton)] public ButtonMode Mode { get=>_mode; set{ if(!Enum.IsDefined(value)||_mode==value)return; _mode=value; AccessibleRole=value switch { ButtonMode.CheckBox => AccessibleRole.CheckButton, ButtonMode.OptionButton => AccessibleRole.RadioButton, _ => AccessibleRole.PushButton }; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ButtonMode.CommandButton), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonMode Mode { get=>_mode; set{ if(!Enum.IsDefined(value)||_mode==value)return; _mode=value; AccessibleRole=value switch { ButtonMode.CheckBox => AccessibleRole.CheckButton, ButtonMode.OptionButton => AccessibleRole.RadioButton, _ => AccessibleRole.PushButton }; if(value==ButtonMode.CommandButton&&_value){_value=false;ValueChanged?.Invoke(this,EventArgs.Empty);} InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ButtonShape.Rectangular), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ButtonShape ButtonShape { get=>_shape; set{if(!Enum.IsDefined(value))return;var custom=value is ButtonShape.CustomFlat or ButtonShape.Custom3DBorder;if(custom&&_picture is null)return;if(custom)_pictureSize=ImageSize.FillScaleUpDown;_shape=value; ResizeCustomToImage(); UpdateRegion(); InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(BackStyle.Windows95), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public BackStyle ButtonStyle { get=>_style; set{if(!Enum.IsDefined(value))return;_style=value;UpdateRegion();InvalidateIfNeeded();} }
     // VB6 rechaza Value = True en modo CommandButton.
@@ -173,6 +173,8 @@ public class LaVolpeButton : Control, IButtonControl
     public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
     public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
     public bool ShouldSerializeMode() => _mode != ButtonMode.CommandButton;
+    public void ResetButtonShape() => ButtonShape = ButtonShape.Rectangular;
+    public void ResetMode() => Mode = ButtonMode.CommandButton;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;
     // HDC válido mientras el control exista. Se libera al destruir el handle o al hacer Dispose.

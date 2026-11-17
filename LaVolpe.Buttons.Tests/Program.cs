@@ -162,6 +162,8 @@ public static class Program
             button.ButtonStyle = BackStyle.Windows95;
             Check(!button.AllowDrop, "AllowDrop debe ser opt-in como OLEDropMode=Manual");
             Check(properties[nameof(LaVolpeButton.Caption)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "Caption no es serializable");
+            Check(properties[nameof(LaVolpeButton.Mode)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "Mode no es serializable");
+            Check(properties[nameof(LaVolpeButton.ButtonShape)]!.SerializationVisibility == DesignerSerializationVisibility.Visible, "ButtonShape no es serializable");
             Check(!properties[nameof(LaVolpeButton.Caption)]!.ShouldSerializeValue(button), "Caption predeterminado debe omitirse");
             button.Caption = "Designer button";
             Check(properties[nameof(LaVolpeButton.Caption)]!.ShouldSerializeValue(button), "Caption modificado no se serializa");
@@ -170,6 +172,12 @@ public static class Program
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle modificado no se serializa");
             button.ButtonShape = ButtonShape.LeftDiagonal;
             Check(properties[nameof(LaVolpeButton.ButtonShape)]!.ShouldSerializeValue(button), "ButtonShape modificado no se serializa");
+            button.ResetButtonShape();
+            Check(button.ButtonShape == ButtonShape.Rectangular && !properties[nameof(LaVolpeButton.ButtonShape)]!.ShouldSerializeValue(button), "ResetButtonShape no restaura el valor predeterminado");
+            button.Mode = ButtonMode.CheckBox;
+            Check(properties[nameof(LaVolpeButton.Mode)]!.ShouldSerializeValue(button), "Mode modificado no se serializa");
+            button.ResetMode();
+            Check(button.Mode == ButtonMode.CommandButton && !properties[nameof(LaVolpeButton.Mode)]!.ShouldSerializeValue(button), "ResetMode no restaura el valor predeterminado");
             Check(button.DragMode == DragModeConstants.vbManual, $"DragMode={button.DragMode}");
             button.DragMode = DragModeConstants.vbAutomatic;
             Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
