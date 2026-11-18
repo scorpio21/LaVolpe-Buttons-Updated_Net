@@ -147,6 +147,7 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 
 - `BackStyle`: `Windows95`, `Windows31`, `WindowsXp`, `Java`, `Flat`, `Hover`, `Netscape` y `Macintosh`.
 - `ButtonShape`: `Rectangular`, `LeftDiagonal`, `RightDiagonal`, `FullDiagonal`, `Round3D`, `Round3DFixed`, `RoundFlat`, `CustomFlat` y `Custom3DBorder`.
+- Los enums del PropertyGrid muestran los nombres compatibles con VB6 (`lv_*`/`vb*`) y sus valores numéricos, sin duplicar los alias internos de C#; por ejemplo, `ButtonStyle` ofrece 8 estilos y `CaptionStyle` ofrece `lv_Default`, `lv_Sunken` y `lv_Raised`.
 - En el diseñador de Visual Studio, `Mode` (`CheckBox`/`OptionButton`) y `ButtonShape` se serializan y reaparecen al guardar y reabrir el formulario; usan `DesignerSerializationVisibility`, convertidores ligados al tipo real, `ShouldSerializeXxx` y `ResetXxx`.
 - Regiones de ventana reales: diagonales calculadas como el VB6, elipses completas en las formas redondeadas y recorte de esquinas según el estilo (`LopOffCorners`).
 - En `CustomFlat`/`Custom3DBorder` la región se genera desde la imagen: el píxel superior izquierdo actúa como color transparente (también se descarta alpha < 20).

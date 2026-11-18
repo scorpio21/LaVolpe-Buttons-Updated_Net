@@ -70,6 +70,16 @@ internal sealed class ButtonModeConverter : VB6EnumConverter
     public ButtonModeConverter() : base(typeof(ButtonMode)) { }
 }
 
+internal sealed class BackStyleConverter : VB6EnumConverter
+{
+    public BackStyleConverter() : base(typeof(BackStyle)) { }
+}
+
+internal sealed class CaptionStyleConverter : VB6EnumConverter
+{
+    public CaptionStyleConverter() : base(typeof(CaptionStyle)) { }
+}
+
 [TypeConverter(typeof(VB6EnumConverter))] public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
 [TypeConverter(typeof(VB6EnumConverter))] public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
 [TypeConverter(typeof(ButtonModeConverter))] public enum ButtonMode { CommandButton=0, CheckBox=1, OptionButton=2, lv_CommandButton=CommandButton, lv_CheckBox=CheckBox, lv_OptionButton=OptionButton }
@@ -77,9 +87,9 @@ internal sealed class ButtonModeConverter : VB6EnumConverter
 [TypeConverter(typeof(VB6EnumConverter))] public enum HoverColorLocks { TextAndBackColor=0, TextColorOnly=1, BackColorOnly=2, NoLocks=3, LockTextandBackColor=TextAndBackColor, LockTextColorOnly=TextColorOnly, LockBackColorOnly=BackColorOnly, lv_LockTextandBackColor=TextAndBackColor, lv_LockTextColorOnly=TextColorOnly, lv_LockBackColorOnly=BackColorOnly, lv_NoLocks=NoLocks }
 [TypeConverter(typeof(VB6EnumConverter))] public enum CustomClick { Default=0, North=1, NorthEast=2, NorthWest=3, SouthEast=4, SouthWest=5, East=6, South=7, West=8, lv_cDefault=Default, lv_cNorth=North, lv_cNorthEast=NorthEast, lv_cNorthWest=NorthWest, lv_cSouthEast=SouthEast, lv_cSouthWest=SouthWest, lv_cEast=East, lv_cSouth=South, lv_cWest=West, lv_Default=Default, lv_North=North, lv_NorthEast=NorthEast, lv_NorthWest=NorthWest, lv_SouthEast=SouthEast, lv_SouthWest=SouthWest, lv_East=East, lv_South=South, lv_West=West }
 [TypeConverter(typeof(VB6EnumConverter))] public enum GradientMode { None=0, LeftToRight=1, RightToLeft=2, TopToBottom=3, BottomToTop=4, NoGradient=None, Left2Right=LeftToRight, Right2Left=RightToLeft, Top2Bottom=TopToBottom, Bottom2Top=BottomToTop }
-[TypeConverter(typeof(VB6EnumConverter))] public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
+[TypeConverter(typeof(CaptionStyleConverter))] public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
 [Flags, TypeConverter(typeof(VB6EnumConverter))] public enum FontStyles { PlainStyle=0, Bold=2, Italic=4, Underline=8, BoldItalic=6, BoldUnderline=10, ItalicUnderline=12, BoldItalicUnderline=14, lv_PlainStyle=PlainStyle, lv_Bold=Bold, lv_Italic=Italic, lv_Underline=Underline, lv_BoldItalic=BoldItalic, lv_BoldUnderline=BoldUnderline, lv_ItalicUnderline=ItalicUnderline, lv_BoldItalicUnderline=BoldItalicUnderline }
-[TypeConverter(typeof(VB6EnumConverter))] public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
+[TypeConverter(typeof(BackStyleConverter))] public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
 [TypeConverter(typeof(VB6EnumConverter))] public enum MousePointerConstants { Default=0, Arrow=1, Crosshair=2, IBeam=3, SizeNESW=6, SizeNS=7, SizeNWSE=8, SizeWE=9, UpArrow=10, Hourglass=11, NoDrop=12, ArrowHourglass=13, ArrowQuestion=14, SizeAll=15, Custom=99, vbDefault=Default, vbArrow=Arrow, vbCrosshair=Crosshair, vbIBeam=IBeam, vbSizeNESW=SizeNESW, vbSizeNS=SizeNS, vbSizeNWSE=SizeNWSE, vbSizeWE=SizeWE, vbUpArrow=UpArrow, vbHourglass=Hourglass, vbNoDrop=NoDrop, vbArrowHourglass=ArrowHourglass, vbArrowQuestion=ArrowQuestion, vbSizeAll=SizeAll, vbCustom=Custom }
 [TypeConverter(typeof(VB6EnumConverter))] public enum DragModeConstants { vbManual=0, vbAutomatic=1, Manual=vbManual, Automatic=vbAutomatic }
 
@@ -154,7 +164,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;if(value is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)_captionAlign=ContentAlignment.MiddleCenter;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;if(IsCustomShape&&value!=ImageSize.FillScaleUpDown)return;_pictureSize=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{if(!Enum.IsDefined(value)||(_pictureAlign is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)&&value!=ContentAlignment.MiddleCenter)return;_captionAlign=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(CaptionStyle.Default)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(CaptionStyle.Default), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;SyncHoverColorsFromLocks();InvalidateIfNeeded();} }
     [Category("Appearance"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), NotifyParentProperty(true)] public LaVolpeButtonPalette Palette => _palette;
     public void ResetPalette() => _palette.Reset();
@@ -183,8 +193,10 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
     public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
     public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
+    public bool ShouldSerializeCaptionStyle() => _captionStyle != CaptionStyle.Default;
     public bool ShouldSerializeMode() => _mode != ButtonMode.CommandButton;
     public void ResetButtonShape() => ButtonShape = ButtonShape.Rectangular;
+    public void ResetCaptionStyle() => CaptionStyle = CaptionStyle.Default;
     public void ResetMode() => Mode = ButtonMode.CommandButton;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;

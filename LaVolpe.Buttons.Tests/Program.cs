@@ -134,12 +134,14 @@ public static class Program
             Check(properties[nameof(LaVolpeButton.Caption)] is not null, "Caption no aparece en PropertyGrid");
             Check(properties[nameof(LaVolpeButton.ButtonStyle)] is not null, "ButtonStyle no aparece en PropertyGrid");
             var styleText = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.ConvertTo(BackStyle.WindowsXp, typeof(string));
+            var captionStyleText = properties[nameof(LaVolpeButton.CaptionStyle)]!.Converter.ConvertTo(CaptionStyle.Raised, typeof(string));
             var modeText = properties[nameof(LaVolpeButton.Mode)]!.Converter.ConvertTo(ButtonMode.CheckBox, typeof(string));
             var shapeText = properties[nameof(LaVolpeButton.ButtonShape)]!.Converter.ConvertTo(ButtonShape.Custom3DBorder, typeof(string));
             var imageAlignText = properties[nameof(LaVolpeButton.PictureAlign)]!.Converter.ConvertTo(ImagePlacement.TopCenter, typeof(string));
             var imageSizeText = properties[nameof(LaVolpeButton.PictureSize)]!.Converter.ConvertTo(ImageSize.FillScaleUpDown, typeof(string));
             var pointerText = properties[nameof(LaVolpeButton.MousePointer)]!.Converter.ConvertTo(MousePointerConstants.Custom, typeof(string));
             Check(styleText?.ToString() == "lv_XP", $"BackStyle={styleText}");
+            Check(captionStyleText?.ToString() == "lv_Raised", $"CaptionStyle={captionStyleText}");
             Check(modeText?.ToString() == "lv_CheckBox", $"Mode={modeText}");
             Check(shapeText?.ToString() == "lv_Custom3DBorder", $"ButtonShape={shapeText}");
             Check(imageAlignText?.ToString() == "lv_TopCenter", $"PictureAlign={imageAlignText}");
@@ -150,6 +152,10 @@ public static class Program
             var styleValues = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValues(styleContext)!.Cast<BackStyle>().ToArray();
             Check(styleValues.Length == 8, $"ButtonStyle muestra {styleValues.Length} valores en vez de 8");
             Check(styleValues.Select(value => (int)value).Distinct().Count() == styleValues.Length, "ButtonStyle contiene valores repetidos");
+            var captionStyleContext = new PropertyContext(button, properties[nameof(LaVolpeButton.CaptionStyle)]!);
+            var captionStyleValues = properties[nameof(LaVolpeButton.CaptionStyle)]!.Converter.GetStandardValues(captionStyleContext)!.Cast<CaptionStyle>().ToArray();
+            Check(captionStyleValues.Length == 3, $"CaptionStyle muestra {captionStyleValues.Length} valores en vez de 3");
+            Check(captionStyleValues.Select(value => (int)value).Distinct().Count() == captionStyleValues.Length, "CaptionStyle contiene valores repetidos");
             var modeContext = new PropertyContext(button, properties[nameof(LaVolpeButton.Mode)]!);
             var modeValues = properties[nameof(LaVolpeButton.Mode)]!.Converter.GetStandardValues(modeContext)!.Cast<ButtonMode>().ToArray();
             Check(modeValues.Length == 3, $"Mode muestra {modeValues.Length} valores en vez de 3");
@@ -174,6 +180,11 @@ public static class Program
             Check(!properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle predeterminado debe omitirse");
             button.ButtonStyle = BackStyle.WindowsXp;
             Check(properties[nameof(LaVolpeButton.ButtonStyle)]!.ShouldSerializeValue(button), "ButtonStyle modificado no se serializa");
+            button.ButtonStyle = BackStyle.Windows95;
+            button.CaptionStyle = CaptionStyle.Raised;
+            Check(properties[nameof(LaVolpeButton.CaptionStyle)]!.ShouldSerializeValue(button), "CaptionStyle modificado no se serializa");
+            button.ResetCaptionStyle();
+            Check(button.CaptionStyle == CaptionStyle.Default && !properties[nameof(LaVolpeButton.CaptionStyle)]!.ShouldSerializeValue(button), "ResetCaptionStyle no restaura el valor predeterminado");
             button.ButtonShape = ButtonShape.LeftDiagonal;
             Check(properties[nameof(LaVolpeButton.ButtonShape)]!.ShouldSerializeValue(button), "ButtonShape modificado no se serializa");
             button.ResetButtonShape();
