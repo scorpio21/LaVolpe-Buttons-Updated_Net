@@ -1,4 +1,4 @@
-namespace LaVolpe.Buttons.DesignerSample;
+namespace LaVolpe.Buttons.DesignerSample2;
 
 public partial class Form1 : Form
 {
@@ -9,8 +9,9 @@ public partial class Form1 : Form
         if (File.Exists(picturePath))
         {
             using var source = Image.FromFile(picturePath);
-            laVolpeButton5.Picture = new Bitmap(source);
+            laVolpeButton4.Picture = new Bitmap(source);
         }
+
         laVolpeButton1.OLEDragOver += LaVolpeButton1_OLEDragOver;
         laVolpeButton1.OLEDragDrop += LaVolpeButton1_OLEDragDrop;
         laVolpeButton1.OLEStartDrag += LaVolpeButton1_OLEStartDrag;
@@ -48,5 +49,10 @@ public partial class Form1 : Form
     private void LaVolpeButton1_OLEGiveFeedback(object? sender, GiveFeedbackEventArgs e)
     {
         oleStatusLabel.Text = "OLEGiveFeedback: cursor de arrastre activo";
+    }
+
+    private void laVolpeButton4_Click(object sender, EventArgs e)
+    {
+
     }
 }

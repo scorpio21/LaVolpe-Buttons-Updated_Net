@@ -11,7 +11,7 @@
 ## Alcance COM/ActiveX
 
 - Decisión: el producto objetivo es una biblioteca WinForms administrada para .NET 8; no se añade una capa COM/ActiveX.
-- Consumidores dentro del repositorio: `LaVolpe.Buttons.Sample` y `LaVolpe.Buttons.DesignerSample` consumen el proyecto .NET mediante referencia de proyecto. El proyecto VB6 (`LaVolpe-Buttons-Updated-`) es la referencia de comportamiento, no un consumidor binario del ensamblado .NET.
+- Consumidores dentro del repositorio: `LaVolpe.Buttons.Sample` y `LaVolpe.Buttons.DesignerSample2` consumen el proyecto .NET mediante referencia de proyecto. El proyecto VB6 (`LaVolpe-Buttons-Updated-`) es la referencia de comportamiento, no un consumidor binario del ensamblado .NET.
 - Consecuencia: no se preservan CLSID, registro OCX, `StdPicture`, `PropertyBag` ni persistencia binaria. Si aparece un consumidor VB6 que necesite insertar el control .NET como ActiveX, será un proyecto separado y requerirá un adaptador COM explícito.
 - Evidencia: la búsqueda del repositorio no encuentra registros COM/ActiveX ni consumidores de `PropertyBag`; la matriz mantiene esas filas como `ausente`/`no compatible`, no como equivalentes.
 

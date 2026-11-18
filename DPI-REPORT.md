@@ -1,6 +1,6 @@
 # Matriz DPI
 
-Actualización 2026-11-17: `LaVolpe.Buttons.Sample`, `LaVolpe.Buttons.Tests` y `LaVolpe.Buttons.DesignerSample` declaran `ApplicationHighDpiMode=PerMonitorV2`. El control reconstruye su región en `OnDpiChangedAfterParent`; sigue pendiente una comparación del OCX VB6 en monitores físicos con DPI distintos.
+Actualización 2026-11-17: `LaVolpe.Buttons.Sample`, `LaVolpe.Buttons.Tests` y `LaVolpe.Buttons.DesignerSample2` declaran `ApplicationHighDpiMode=PerMonitorV2`. El control reconstruye su región en `OnDpiChangedAfterParent`; sigue pendiente una comparación del OCX VB6 en monitores físicos con DPI distintos.
 
 ## Resultado
 

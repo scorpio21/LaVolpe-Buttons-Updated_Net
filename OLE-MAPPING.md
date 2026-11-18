@@ -20,13 +20,13 @@ Estado 2026-11-13: `DesignerSample` compila y abre en una sesión interactiva; c
 - `OLECompleteDrag` está protegido por `finally`, por lo que el cursor vuelve a `MousePointer` aunque `DoDragDrop` lance una excepción.
 - El harness verifica creación/liberación de `DragIcon` y los formatos del `DataObject` en `LaVolpe.Buttons.Tests/Program.cs:318-347`.
 - El harness verifica también la aceptación de `Copy` durante `DragEnter` sin manejador, el respeto del rechazo explícito y que `DragDrop` entrega el texto externo al evento en `LaVolpe.Buttons.Tests/Program.cs:407-457`.
-- `LaVolpe.Buttons.DesignerSample/Form1.Designer.cs` configura `AllowDrop=true` y muestra una guía y un estado visible para probar el arrastre desde otra aplicación.
-- `LaVolpe.Buttons.DesignerSample/Form1.cs` conecta `OLEStartDrag`, `OLEDragOver`, `OLEDragDrop`, `OLEGiveFeedback` y `OLECompleteDrag`; el texto recibido se muestra en el formulario.
-- La sesión interactiva real abrió `DesignerSample` y, al activar `LOAD`, mostró `OLECompleteDrag`; esto confirma el flujo de origen del control. El intento automatizado del 2026-11-13 seleccionó texto en Bloc de notas, pero la ventana de `DesignerSample` dejó de estar disponible para la automatización antes del arrastre entre ventanas; el receptor siguió en `OLE: esperando...`, por lo que no confirma interoperabilidad externa.
+- `LaVolpe.Buttons.DesignerSample2/Form1.Designer.cs` configura `AllowDrop=true` y muestra una guía y un estado visible para probar el arrastre desde otra aplicación.
+- `LaVolpe.Buttons.DesignerSample2/Form1.cs` conecta `OLEStartDrag`, `OLEDragOver`, `OLEDragDrop`, `OLEGiveFeedback` y `OLECompleteDrag`; el texto recibido se muestra en el formulario.
+- La sesión interactiva real abrió `DesignerSample2` y, al activar `LOAD`, mostró `OLECompleteDrag`; esto confirma el flujo de origen del control. El intento automatizado del 2026-11-13 seleccionó texto en Bloc de notas, pero la ventana de `DesignerSample2` dejó de estar disponible para la automatización antes del arrastre entre ventanas; el receptor siguió en `OLE: esperando...`, por lo que no confirma interoperabilidad externa.
 
 ## Prueba manual del DesignerSample
 
-1. Ejecutar `LaVolpe.Buttons.DesignerSample` desde Visual Studio.
+1. Ejecutar `LaVolpe.Buttons.DesignerSample2` desde Visual Studio.
 2. Abrir el Bloc de notas, escribir una palabra y seleccionar el texto.
 3. Arrastrar la selección encima de `LOAD`.
 4. Soltar y comprobar que el estado muestra `OLEDragDrop: <texto>`.

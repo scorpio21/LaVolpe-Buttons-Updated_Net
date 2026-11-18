@@ -14,7 +14,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 ## Current state
 
 - ✅ Clic físico Win32 no duplica `Click`/`Value`; `StandardClick=false` está probado.
-- ✅ `AllowDrop=false` por defecto; solo `DesignerSample` activa `AllowDrop=true` y `DragMode=Automatic`.
+- ✅ `AllowDrop=false` por defecto; solo `DesignerSample2` activa `AllowDrop=true` y `DragMode=Automatic`.
 - ✅ Eventos OLE conservados y cubiertos en harness; validación con aplicación externa sigue pendiente.
 - ✅ `OLEStartDrag` respeta el `Effect` que establezca el manejador y permite cancelar el origen con `None`; `OLECompleteDrag` sigue notificándose en `finally`.
 - ✅ `CustomFlat`/`Custom3DBorder` redimensiona el control proporcionalmente según `ScaleImage` de VB6; prueba y métrica visual mejoradas.
@@ -25,7 +25,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ PropertyGrid: la paleta muestra `(personalizada)` cuando contiene colores configurados y `(predeterminada)` tras restaurarla.
 - ✅ `Palette.HoverBackColor` tiene prioridad sobre `HoverColorLocks` cuando se configura explícitamente, por lo que el color hover del diseñador funciona al mover el ratón.
 - ✅ `ShouldSerializeMode()` conserva `CheckBox`/`OptionButton` en el código del diseñador; antes solo se persistían `AccessibleRole` y `Value`, y al ejecutar volvía a `CommandButton`.
-- ✅ `DesignerSample/Form1.Designer.cs` conserva explícitamente `Mode = lv_CheckBox`, evitando que el formulario de validación vuelva a `CommandButton` al ejecutar.
+- ✅ `DesignerSample2/Form1.Designer.cs` conserva explícitamente `Mode = lv_CheckBox`, evitando que el formulario de validación vuelva a `CommandButton` al ejecutar.
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.
@@ -36,7 +36,8 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ El comparador visual rechaza referencia y salida en la misma carpeta para evitar resultados autorreferentes; los issues de capturas #2 y #12 están cerrados.
 - ⚠️ No cerrar issues de GitHub sin evidencia; los issues abiertos se mantienen abiertos cuando falta una validación externa o legal.
 - ✅ `dotnet test` descubre y ejecuta los 56 casos mediante `LaVolpe.Buttons.XunitTests`; `dotnet run` conserva el harness STA y las herramientas visuales.
-- ✅ El bloqueo MSB3821 de Visual Studio quedó aislado: `Form1.resx` ya no contiene la imagen binaria; `DesignerSample` carga `Resources/vb6-round-mouse-icon.png` desde la salida y evita la generación accidental de código sobre `Form1.Designer.cs`. Debug verificado: 0 advertencias, 0 errores; harness 58/58 y xUnit 56/56.
+- ✅ El bloqueo MSB3821 de Visual Studio quedó aislado: `DesignerSample2/Form1.resx` ya no contiene la imagen binaria; `DesignerSample2` carga `Resources/vb6-round-mouse-icon.png` desde la salida y evita la generación accidental de código sobre `Form1.Designer.cs`. Debug verificado: 0 advertencias, 0 errores; harness 58/58 y xUnit 56/56.
+- ✅ `LaVolpe.Buttons.DesignerSample` fue eliminado explícitamente; la solución y la documentación usan `LaVolpe.Buttons.DesignerSample2`, que compila y copia su PNG externo correctamente.
 
 ## Work history
 
@@ -45,6 +46,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
 - `e05bb5b` — Cover yellow transparency mask regression (publicado en `origin/main`).
 - `676e07a` — Avoid blocked binary designer resource (publicado en `origin/main`).
+- Pendiente de publicar — Reemplazo de `DesignerSample` por `DesignerSample2` y limpieza de referencias documentales.
 - Pendiente de publicar — Primera paleta visual propia inspirada en ideas de Krypton, sin copiar código ni recursos.
 
 ## Next steps
