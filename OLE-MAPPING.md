@@ -1,6 +1,6 @@
 # OLE/Drag-and-drop VB6 → WinForms
 
-Estado 2026-11-13: `DesignerSample` compila y abre en una sesión interactiva; configura `AllowDrop=true` y `DragMode=Automatic` para que puedan producirse los flujos OLE de destino y origen. `LaVolpeButton` deja `AllowDrop=false` por defecto, equivalente al `OLEDropMode=Manual` del OCX y evita activar OLE implícito en el sample principal. La interacción de origen del botón mostró `OLECompleteDrag: arrastre finalizado`. También se intentó arrastrar una selección de Bloc de notas sobre `LOAD`, pero la automatización perdió la ventana de `DesignerSample` antes de completar el arrastre y el estado no cambió; no se cuenta como interoperabilidad externa verificada.
+Estado 2026-11-18: los eventos OLE permanecen declarados y cubiertos por pruebas en `LaVolpeButton`, pero el nuevo `DesignerSample2` es un formulario limpio y no activa drag-and-drop. `LaVolpeButton` deja `AllowDrop=false` por defecto, equivalente al `OLEDropMode=Manual` del OCX.
 
 | VB6 | WinForms .NET 8 | Efecto portado | Estado |
 |---|---|---|---|
@@ -20,16 +20,14 @@ Estado 2026-11-13: `DesignerSample` compila y abre en una sesión interactiva; c
 - `OLECompleteDrag` está protegido por `finally`, por lo que el cursor vuelve a `MousePointer` aunque `DoDragDrop` lance una excepción.
 - El harness verifica creación/liberación de `DragIcon` y los formatos del `DataObject` en `LaVolpe.Buttons.Tests/Program.cs:318-347`.
 - El harness verifica también la aceptación de `Copy` durante `DragEnter` sin manejador, el respeto del rechazo explícito y que `DragDrop` entrega el texto externo al evento en `LaVolpe.Buttons.Tests/Program.cs:407-457`.
-- `LaVolpe.Buttons.DesignerSample2/Form1.Designer.cs` configura `AllowDrop=true` y muestra una guía y un estado visible para probar el arrastre desde otra aplicación.
-- `LaVolpe.Buttons.DesignerSample2/Form1.cs` conecta `OLEStartDrag`, `OLEDragOver`, `OLEDragDrop`, `OLEGiveFeedback` y `OLECompleteDrag`; el texto recibido se muestra en el formulario.
-- La sesión interactiva real abrió `DesignerSample2` y, al activar `LOAD`, mostró `OLECompleteDrag`; esto confirma el flujo de origen del control. El intento automatizado del 2026-11-13 seleccionó texto en Bloc de notas, pero la ventana de `DesignerSample2` dejó de estar disponible para la automatización antes del arrastre entre ventanas; el receptor siguió en `OLE: esperando...`, por lo que no confirma interoperabilidad externa.
+- `LaVolpe.Buttons.DesignerSample2/Form1.Designer.cs` contiene únicamente un `LaVolpeButton` para validación del diseñador.
 
-## Prueba manual del DesignerSample
+## Prueba manual del DesignerSample2
 
-1. Ejecutar `LaVolpe.Buttons.DesignerSample2` desde Visual Studio.
-2. Abrir el Bloc de notas, escribir una palabra y seleccionar el texto.
-3. Arrastrar la selección encima de `LOAD`.
-4. Soltar y comprobar que el estado muestra `OLEDragDrop: <texto>`.
+1. Abrir `LaVolpe.Buttons.DesignerSample2` desde Visual Studio.
+2. Seleccionar el `LaVolpeButton` en el diseñador.
+3. Cambiar una propiedad, por ejemplo `ButtonShape` o `Mode`.
+4. Ejecutar con F5 y comprobar que el formulario abre sin activar drag-and-drop.
 
 Esta prueba confirmaría la interoperabilidad con una aplicación externa. El issue #6 permanece abierto y se deja para el final; la compilación y las 56 pruebas automáticas no sustituyen esta comprobación interactiva.
 

@@ -7,21 +7,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Form1.resx">
-      <Generator></Generator>
-      <LastGenOutput></LastGenOutput>
-    </EmbeddedResource>
-    <None Include="..\LaVolpe.Buttons.Net\Resources\vb6-round-mouse-icon.png"
-          Link="Resources\vb6-round-mouse-icon.png"
-          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

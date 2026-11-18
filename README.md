@@ -39,7 +39,7 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | --- | --- |
 | `LaVolpe.Buttons.Net/` | Biblioteca WinForms con el control `LaVolpeButton`. |
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
-| `LaVolpe.Buttons.DesignerSample2/` | Formulario mínimo para probar el control desde el diseñador y verificar arrastre OLE. |
+| `LaVolpe.Buttons.DesignerSample2/` | Formulario WinForms limpio con un `LaVolpeButton` para validar el diseñador de Visual Studio. No activa drag-and-drop. |
 | `LaVolpe.Buttons.Tests/` | Harness STA de compatibilidad y herramientas de captura/comparación. |
 | `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 56 casos. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
@@ -115,7 +115,7 @@ dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj --con
 
 ## Verificar el arrastre OLE desde Visual Studio
 
-Abre `LaVolpe.Buttons.DesignerSample2/LaVolpe.Buttons.DesignerSample2.csproj`, ejecútalo y abre el Bloc de notas. Escribe y selecciona texto, arrástralo sobre el botón `LOAD` y suéltalo. El formulario muestra `OLEDragOver` mientras se arrastra y `OLEDragDrop: <texto>` al recibirlo. Esta prueba debe hacerse en una sesión interactiva de Windows; la suite automática solo verifica la publicación del `DataObject` y no sustituye la interoperabilidad con otra aplicación.
+Abre `LaVolpe.Buttons.DesignerSample2/LaVolpe.Buttons.DesignerSample2.csproj` para validar el control desde el diseñador de Visual Studio. El formulario nuevo solo contiene un `LaVolpeButton`; no configura drag-and-drop ni recursos externos.
 
 ## Publicar
 
@@ -149,7 +149,7 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 - `ButtonShape`: `Rectangular`, `LeftDiagonal`, `RightDiagonal`, `FullDiagonal`, `Round3D`, `Round3DFixed`, `RoundFlat`, `CustomFlat` y `Custom3DBorder`.
 - Los enums del PropertyGrid muestran los nombres compatibles con VB6 (`lv_*`/`vb*`) y sus valores numéricos, sin duplicar los alias internos de C#; por ejemplo, `ButtonStyle` ofrece 8 estilos y `CaptionStyle` ofrece `lv_Default`, `lv_Sunken` y `lv_Raised`.
 - En el diseñador de Visual Studio, `Mode` (`CheckBox`/`OptionButton`), `ButtonShape`, `ButtonStyle`, `CaptionStyle`, `GradientMode`, `CustomClick`, `DragMode`, `FontStyle`, `HoverColorLocks`, `MousePointer`, `PictureAlign` y `PictureSize` se serializan y reaparecen al guardar y reabrir el formulario; usan `DesignerSerializationVisibility`, convertidores ligados al tipo real, `ShouldSerializeXxx` y `ResetXxx`.
-- `DesignerSample2` no guarda la imagen del botón como objeto binario dentro de `Form1.resx`: la carga desde `Resources/vb6-round-mouse-icon.png`, que se copia al directorio de salida. Así se evita el bloqueo MSB3821 del editor de recursos de Visual Studio. Si Visual Studio conserva el aviso rojo, cierra la pestaña `Form1.resx` y vuelve a abrirla después de recargar el proyecto.
+- El nuevo `DesignerSample2` parte de una plantilla WinForms limpia y no incluye `Form1.resx` ni recursos binarios. Así se evita el bloqueo MSB3821 del editor de recursos de Visual Studio.
 - Regiones de ventana reales: diagonales calculadas como el VB6, elipses completas en las formas redondeadas y recorte de esquinas según el estilo (`LopOffCorners`).
 - En `CustomFlat`/`Custom3DBorder` la región se genera desde la imagen: el píxel superior izquierdo actúa como color transparente (también se descarta alpha < 20).
 - Colores derivados de `BackColor`/`HoverBackColor` mediante el mismo desplazamiento de canales que `ShadeColor`; bordes de tres anillos concéntricos con colores por estilo y estado, más el degradado vertical fijo de XP.
