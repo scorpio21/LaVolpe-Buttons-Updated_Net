@@ -174,6 +174,7 @@ partial class Form1
         laVolpeButton5.MouseIcon = null;
         laVolpeButton5.Name = "laVolpeButton5";
         laVolpeButton5.Picture = (Image)resources.GetObject("laVolpeButton5.Picture");
+        laVolpeButton5.PictureSize = Net.ImageSize.Size24x24;
         laVolpeButton5.ResetDefaultColors = false;
         laVolpeButton5.ShowFocusRect = true;
         laVolpeButton5.Size = new Size(90, 33);

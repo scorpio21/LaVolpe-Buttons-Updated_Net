@@ -115,13 +115,18 @@ internal sealed class MousePointerConverter : VB6EnumConverter
     public MousePointerConverter() : base(typeof(MousePointerConstants)) { }
 }
 
+internal sealed class GradientModeConverter : VB6EnumConverter
+{
+    public GradientModeConverter() : base(typeof(GradientMode)) { }
+}
+
 [TypeConverter(typeof(ImagePlacementConverter))] public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
 [TypeConverter(typeof(ImageSizeConverter))] public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
 [TypeConverter(typeof(ButtonModeConverter))] public enum ButtonMode { CommandButton=0, CheckBox=1, OptionButton=2, lv_CommandButton=CommandButton, lv_CheckBox=CheckBox, lv_OptionButton=OptionButton }
 [TypeConverter(typeof(ButtonShapeConverter))] public enum ButtonShape { Rectangular=0, LeftDiagonal=1, RightDiagonal=2, FullDiagonal=3, Round3D=4, Round3DFixed=5, RoundFlat=6, CustomFlat=7, Custom3DBorder=8, lv_Rectangular=Rectangular, lv_LeftDiagonal=LeftDiagonal, lv_RightDiagonal=RightDiagonal, lv_FullDiagonal=FullDiagonal, lv_Round3D=Round3D, lv_Round3DFixed=Round3DFixed, lv_RoundFlat=RoundFlat, lv_CustomFlat=CustomFlat, lv_Custom3DBorder=Custom3DBorder }
 [TypeConverter(typeof(HoverColorLocksConverter))] public enum HoverColorLocks { TextAndBackColor=0, TextColorOnly=1, BackColorOnly=2, NoLocks=3, LockTextandBackColor=TextAndBackColor, LockTextColorOnly=TextColorOnly, LockBackColorOnly=BackColorOnly, lv_LockTextandBackColor=TextAndBackColor, lv_LockTextColorOnly=TextColorOnly, lv_LockBackColorOnly=BackColorOnly, lv_NoLocks=NoLocks }
 [TypeConverter(typeof(CustomClickConverter))] public enum CustomClick { Default=0, North=1, NorthEast=2, NorthWest=3, SouthEast=4, SouthWest=5, East=6, South=7, West=8, lv_cDefault=Default, lv_cNorth=North, lv_cNorthEast=NorthEast, lv_cNorthWest=NorthWest, lv_cSouthEast=SouthEast, lv_cSouthWest=SouthWest, lv_cEast=East, lv_cSouth=South, lv_cWest=West, lv_Default=Default, lv_North=North, lv_NorthEast=NorthEast, lv_NorthWest=NorthWest, lv_SouthEast=SouthEast, lv_SouthWest=SouthWest, lv_East=East, lv_South=South, lv_West=West }
-[TypeConverter(typeof(VB6EnumConverter))] public enum GradientMode { None=0, LeftToRight=1, RightToLeft=2, TopToBottom=3, BottomToTop=4, NoGradient=None, Left2Right=LeftToRight, Right2Left=RightToLeft, Top2Bottom=TopToBottom, Bottom2Top=BottomToTop }
+[TypeConverter(typeof(GradientModeConverter))] public enum GradientMode { None=0, LeftToRight=1, RightToLeft=2, TopToBottom=3, BottomToTop=4, NoGradient=None, Left2Right=LeftToRight, Right2Left=RightToLeft, Top2Bottom=TopToBottom, Bottom2Top=BottomToTop }
 [TypeConverter(typeof(CaptionStyleConverter))] public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
 [Flags, TypeConverter(typeof(FontStylesConverter))] public enum FontStyles { PlainStyle=0, Bold=2, Italic=4, Underline=8, BoldItalic=6, BoldUnderline=10, ItalicUnderline=12, BoldItalicUnderline=14, lv_PlainStyle=PlainStyle, lv_Bold=Bold, lv_Italic=Italic, lv_Underline=Underline, lv_BoldItalic=BoldItalic, lv_BoldUnderline=BoldUnderline, lv_ItalicUnderline=ItalicUnderline, lv_BoldItalicUnderline=BoldItalicUnderline }
 [TypeConverter(typeof(BackStyleConverter))] public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
@@ -194,7 +199,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe")] public Color HoverBackColor { get=>HoverBackEffective; set{_hoverBack=value;if(value!=_normalBack&&LocksBack)_hoverColorLocks=LocksText?HoverColorLocks.TextColorOnly:HoverColorLocks.NoLocks;InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color HoverForeColor { get=>_hoverFore; set{_hoverFore=value;if(value!=ForeColor&&LocksText)_hoverColorLocks=LocksBack?HoverColorLocks.BackColorOnly:HoverColorLocks.NoLocks;InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value;if(_gradientMode!=GradientMode.None&&LocksBack)_hoverBack=value;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value;SyncHoverColorsFromLocks(); InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(GradientMode.None), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value;SyncHoverColorsFromLocks(); InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value;if(value is null&&IsCustomShape)_shape=ButtonShape.Rectangular;else if(value is not null&&IsCustomShape)_pictureSize=ImageSize.FillScaleUpDown; ResizeCustomToImage(); UpdateRegion(); InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;if(value is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)_captionAlign=ContentAlignment.MiddleCenter;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;if(IsCustomShape&&value!=ImageSize.FillScaleUpDown)return;_pictureSize=value;InvalidateIfNeeded();} }
@@ -236,6 +241,7 @@ public class LaVolpeButton : Control, IButtonControl
     public bool ShouldSerializePictureAlign() => _pictureAlign != ImagePlacement.LeftOfCaption;
     public bool ShouldSerializePictureSize() => _pictureSize != ImageSize.Size16x16;
     public bool ShouldSerializeMousePointer() => _mousePointer != MousePointerConstants.Default;
+    public bool ShouldSerializeGradientMode() => _gradientMode != GradientMode.None;
     public bool ShouldSerializeMode() => _mode != ButtonMode.CommandButton;
     public void ResetButtonShape() => ButtonShape = ButtonShape.Rectangular;
     public void ResetCaptionStyle() => CaptionStyle = CaptionStyle.Default;
@@ -246,6 +252,7 @@ public class LaVolpeButton : Control, IButtonControl
     public void ResetPictureAlign() => PictureAlign = ImagePlacement.LeftOfCaption;
     public void ResetPictureSize() => PictureSize = ImageSize.Size16x16;
     public void ResetMousePointer() => MousePointer = MousePointerConstants.Default;
+    public void ResetGradientMode() => GradientMode = GradientMode.None;
     public void ResetMode() => Mode = ButtonMode.CommandButton;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;

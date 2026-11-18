@@ -177,6 +177,9 @@ public static class Program
             var mousePointerContext = new PropertyContext(button, properties[nameof(LaVolpeButton.MousePointer)]!);
             var mousePointerValues = properties[nameof(LaVolpeButton.MousePointer)]!.Converter.GetStandardValues(mousePointerContext)!.Cast<MousePointerConstants>().ToArray();
             Check(mousePointerValues.Length == 15, $"MousePointer muestra {mousePointerValues.Length} valores en vez de 15");
+            var gradientContext = new PropertyContext(button, properties[nameof(LaVolpeButton.GradientMode)]!);
+            var gradientValues = properties[nameof(LaVolpeButton.GradientMode)]!.Converter.GetStandardValues(gradientContext)!.Cast<GradientMode>().ToArray();
+            Check(gradientValues.Length == 5, $"GradientMode muestra {gradientValues.Length} valores en vez de 5");
             var modeContext = new PropertyContext(button, properties[nameof(LaVolpeButton.Mode)]!);
             var modeValues = properties[nameof(LaVolpeButton.Mode)]!.Converter.GetStandardValues(modeContext)!.Cast<ButtonMode>().ToArray();
             Check(modeValues.Length == 3, $"Mode muestra {modeValues.Length} valores en vez de 3");
@@ -217,9 +220,11 @@ public static class Program
             button.PictureAlign = ImagePlacement.RightOfCaption;
             button.PictureSize = ImageSize.Size32x32;
             button.MousePointer = MousePointerConstants.Crosshair;
+            button.GradientMode = GradientMode.LeftToRight;
             Check(properties[nameof(LaVolpeButton.PictureAlign)]!.ShouldSerializeValue(button), "PictureAlign modificado no se serializa");
             Check(properties[nameof(LaVolpeButton.PictureSize)]!.ShouldSerializeValue(button), "PictureSize modificado no se serializa");
             Check(properties[nameof(LaVolpeButton.MousePointer)]!.ShouldSerializeValue(button), "MousePointer modificado no se serializa");
+            Check(properties[nameof(LaVolpeButton.GradientMode)]!.ShouldSerializeValue(button), "GradientMode modificado no se serializa");
             button.ResetCustomClick();
             button.ResetFontStyle();
             button.ResetHoverColorLocks();
@@ -227,7 +232,8 @@ public static class Program
             button.ResetPictureAlign();
             button.ResetPictureSize();
             button.ResetMousePointer();
-            Check(button.CustomClick == CustomClick.Default && button.FontStyle == FontStyles.PlainStyle && button.HoverColorLocks == HoverColorLocks.TextAndBackColor && button.DragMode == DragModeConstants.vbManual && button.PictureAlign == ImagePlacement.LeftOfCaption && button.PictureSize == ImageSize.Size16x16 && button.MousePointer == MousePointerConstants.Default, "Reset de enums de diseño no restaura los valores predeterminados");
+            button.ResetGradientMode();
+            Check(button.CustomClick == CustomClick.Default && button.FontStyle == FontStyles.PlainStyle && button.HoverColorLocks == HoverColorLocks.TextAndBackColor && button.DragMode == DragModeConstants.vbManual && button.PictureAlign == ImagePlacement.LeftOfCaption && button.PictureSize == ImageSize.Size16x16 && button.MousePointer == MousePointerConstants.Default && button.GradientMode == GradientMode.None, "Reset de enums de diseño no restaura los valores predeterminados");
             button.ButtonShape = ButtonShape.LeftDiagonal;
             Check(properties[nameof(LaVolpeButton.ButtonShape)]!.ShouldSerializeValue(button), "ButtonShape modificado no se serializa");
             button.ResetButtonShape();
