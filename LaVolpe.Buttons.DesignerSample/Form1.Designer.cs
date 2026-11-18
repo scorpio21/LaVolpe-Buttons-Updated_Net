@@ -126,9 +126,14 @@ partial class Form1
         // 
         // laVolpeButton4
         // 
+        laVolpeButton4.AccessibleName = "Lopera";
         laVolpeButton4.AccessibleRole = AccessibleRole.PushButton;
         laVolpeButton4.BackColor = SystemColors.Control;
         laVolpeButton4.ButtonShape = Net.ButtonShape.Round3D;
+        laVolpeButton4.ButtonStyle = Net.BackStyle.XP;
+        laVolpeButton4.Caption = "Lopera";
+        laVolpeButton4.CaptionAlign = ContentAlignment.TopCenter;
+        laVolpeButton4.CaptionStyle = Net.CaptionStyle.Sunken;
         laVolpeButton4.DragIcon = null;
         laVolpeButton4.GradientColor = SystemColors.ControlLight;
         laVolpeButton4.HoverBackColor = SystemColors.Control;

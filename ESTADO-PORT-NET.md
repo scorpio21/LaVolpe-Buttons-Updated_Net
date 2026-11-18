@@ -4,7 +4,7 @@
 
 La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 58/58 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
-**Fecha de esta revisión:** 2026-11-18 (persistencia de `ButtonShape`, `CheckBox` y `OptionButton` validada en el diseñador)
+**Fecha de esta revisión:** 2026-11-18 (persistencia de enums de apariencia, modo y comportamiento validada en el diseñador)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
 **Revisión anterior:** 2026-11-05 (segunda ronda) - 70 %
 **Estado general estimado:** **≈70 %** (rango 65–75 %; la equivalencia visual no está ponderada en la cifra histórica)
@@ -36,7 +36,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Recursos `.frx` | 85 % | 75 % | 75 % | 80 % | 80 % | Sin cambios |
 | Formulario de ejemplo | 85 % | 35 % | 35 % | 58 % | 58 % | Sin cambios: la demo sigue siendo un subconjunto |
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | Sin cambios |
-| Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 80 % | Toolbox, PropertyGrid, paleta, serialización y reapertura validados para `ButtonShape`, `CheckBox` y `OptionButton` |
+| Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 80 % | Toolbox, PropertyGrid, paleta, serialización y reapertura validados para enums de apariencia, modo y comportamiento |
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
 | Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 58 casos en el harness y 56 en xUnit: paleta, diseñador, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
