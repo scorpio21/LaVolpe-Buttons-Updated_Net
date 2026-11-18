@@ -44,6 +44,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `2ccbe61` — Clarify upstream licensing scope (publicado en `origin/main`).
 - `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
 - `e05bb5b` — Cover yellow transparency mask regression (publicado en `origin/main`).
+- `676e07a` — Avoid blocked binary designer resource (publicado en `origin/main`).
 - Pendiente de publicar — Primera paleta visual propia inspirada en ideas de Krypton, sin copiar código ni recursos.
 
 ## Next steps
