@@ -29,7 +29,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 56 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 58 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -41,7 +41,7 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
 | `LaVolpe.Buttons.DesignerSample2/` | Formulario WinForms limpio con un `LaVolpeButton` para validar el diseñador de Visual Studio. No activa drag-and-drop. |
 | `LaVolpe.Buttons.Tests/` | Harness STA de compatibilidad y herramientas de captura/comparación. |
-| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 56 casos. |
+| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 58 casos. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
 | `LaVolpe-Buttons-Updated-/` | Código VB6 original de referencia (no forma parte de la compilación). |
 | `ESTADO-PORT-NET.md` | Estado del port, porcentaje estimado y evidencia por área. |
@@ -173,6 +173,32 @@ dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
 - Eventos `ValueChanged`, `CheckedChanged`, `SelectedChanged`, `ButtonDoubleClick`, `LvMouseDown/Up/Move`, `LvKeyDown/Up`, `LvKeyPress`, además de los eventos WinForms habituales.
 - Propiedades de compatibilidad: `hDC`, `hwnd`, `Index`, `HelpContextID`, `WhatsThisHelpID`, `BackColorButton`, `ResetDefaultColors`.
 - Alias `lv_*` en los enums para facilitar el traslado de código VB6.
+
+## Estado de compatibilidad pendiente
+
+La API funcional principal de `lvButtons_H` ya está implementada y verificada en
+WinForms. No obstante, no es correcto declarar una equivalencia del 100 % mientras
+queden estas diferencias objetivas:
+
+- `HelpContextID` y `WhatsThisHelpID` se conservan como propiedades, pero todavía
+  no están conectadas a un `HelpProvider` o a una ayuda contextual automática.
+- `Index` se conserva como valor compatible; .NET no recrea los `Control Array` de
+  VB6 porque WinForms no utiliza ese modelo.
+- `DragMode` conserva los valores `vbManual`/`vbAutomatic`, pero el ciclo OLE se
+  adapta a WinForms y no reproduce el sistema ActiveX binario del OCX.
+- `hWnd`, `hDC`, `StdPicture`, `PropertyBag`, CLSID, registro del OCX y persistencia
+  binaria no pueden ser idénticos en una biblioteca WinForms administrada.
+- La pintura, las regiones personalizadas y la normalización de imágenes son
+  funcionalmente equivalentes, pero no se ha demostrado igualdad píxel a píxel.
+- La validación DPI disponible es lógica; falta una comparación física del OCX y
+  del control .NET en monitores reales de 120, 144 y 192 DPI.
+- La licencia del código VB6 original y de algunas imágenes upstream sigue sin
+  estar verificada; por eso el paquete no debe publicarse como si relicenciara el
+  OCX original.
+
+Estas diferencias no impiden utilizar el control en Visual Studio como control
+WinForms; delimitan únicamente la compatibilidad binaria, visual y legal con el
+OCX VB6 original.
 
 ## Limitaciones y diferencias conocidas
 
