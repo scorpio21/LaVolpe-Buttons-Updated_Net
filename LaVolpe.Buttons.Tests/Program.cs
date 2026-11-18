@@ -150,6 +150,10 @@ public static class Program
             var styleValues = properties[nameof(LaVolpeButton.ButtonStyle)]!.Converter.GetStandardValues(styleContext)!.Cast<BackStyle>().ToArray();
             Check(styleValues.Length == 8, $"ButtonStyle muestra {styleValues.Length} valores en vez de 8");
             Check(styleValues.Select(value => (int)value).Distinct().Count() == styleValues.Length, "ButtonStyle contiene valores repetidos");
+            var modeContext = new PropertyContext(button, properties[nameof(LaVolpeButton.Mode)]!);
+            var modeValues = properties[nameof(LaVolpeButton.Mode)]!.Converter.GetStandardValues(modeContext)!.Cast<ButtonMode>().ToArray();
+            Check(modeValues.Length == 3, $"Mode muestra {modeValues.Length} valores en vez de 3");
+            Check(modeValues.Select(value => (int)value).Distinct().Count() == modeValues.Length, "Mode contiene valores repetidos");
             var shapeContext = new PropertyContext(button, properties[nameof(LaVolpeButton.ButtonShape)]!);
             var shapeValues = properties[nameof(LaVolpeButton.ButtonShape)]!.Converter.GetStandardValues(shapeContext)!.Cast<ButtonShape>().ToArray();
             Check(shapeValues.Length == 9, $"ButtonShape muestra {shapeValues.Length} valores en vez de 9");
