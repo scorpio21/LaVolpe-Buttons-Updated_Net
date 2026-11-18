@@ -100,8 +100,23 @@ internal sealed class HoverColorLocksConverter : VB6EnumConverter
     public HoverColorLocksConverter() : base(typeof(HoverColorLocks)) { }
 }
 
-[TypeConverter(typeof(VB6EnumConverter))] public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
-[TypeConverter(typeof(VB6EnumConverter))] public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
+internal sealed class ImagePlacementConverter : VB6EnumConverter
+{
+    public ImagePlacementConverter() : base(typeof(ImagePlacement)) { }
+}
+
+internal sealed class ImageSizeConverter : VB6EnumConverter
+{
+    public ImageSizeConverter() : base(typeof(ImageSize)) { }
+}
+
+internal sealed class MousePointerConverter : VB6EnumConverter
+{
+    public MousePointerConverter() : base(typeof(MousePointerConstants)) { }
+}
+
+[TypeConverter(typeof(ImagePlacementConverter))] public enum ImagePlacement { LeftEdge=0, LeftOfCaption=1, RightEdge=2, RightOfCaption=3, TopCenter=4, BottomCenter=5, lv_LeftEdge=LeftEdge, lv_LeftOfCaption=LeftOfCaption, lv_RightEdge=RightEdge, lv_RightOfCaption=RightOfCaption, lv_TopCenter=TopCenter, lv_BottomCenter=BottomCenter }
+[TypeConverter(typeof(ImageSizeConverter))] public enum ImageSize { Size16x16=0, Size24x24=1, Size32x32=2, FillStretch=3, FillScaleUpDown=4, lv_16x16=Size16x16, lv_24x24=Size24x24, lv_32x32=Size32x32, lv_Fill_Stretch=FillStretch, lv_Fill_ScaleUpDown=FillScaleUpDown }
 [TypeConverter(typeof(ButtonModeConverter))] public enum ButtonMode { CommandButton=0, CheckBox=1, OptionButton=2, lv_CommandButton=CommandButton, lv_CheckBox=CheckBox, lv_OptionButton=OptionButton }
 [TypeConverter(typeof(ButtonShapeConverter))] public enum ButtonShape { Rectangular=0, LeftDiagonal=1, RightDiagonal=2, FullDiagonal=3, Round3D=4, Round3DFixed=5, RoundFlat=6, CustomFlat=7, Custom3DBorder=8, lv_Rectangular=Rectangular, lv_LeftDiagonal=LeftDiagonal, lv_RightDiagonal=RightDiagonal, lv_FullDiagonal=FullDiagonal, lv_Round3D=Round3D, lv_Round3DFixed=Round3DFixed, lv_RoundFlat=RoundFlat, lv_CustomFlat=CustomFlat, lv_Custom3DBorder=Custom3DBorder }
 [TypeConverter(typeof(HoverColorLocksConverter))] public enum HoverColorLocks { TextAndBackColor=0, TextColorOnly=1, BackColorOnly=2, NoLocks=3, LockTextandBackColor=TextAndBackColor, LockTextColorOnly=TextColorOnly, LockBackColorOnly=BackColorOnly, lv_LockTextandBackColor=TextAndBackColor, lv_LockTextColorOnly=TextColorOnly, lv_LockBackColorOnly=BackColorOnly, lv_NoLocks=NoLocks }
@@ -110,7 +125,7 @@ internal sealed class HoverColorLocksConverter : VB6EnumConverter
 [TypeConverter(typeof(CaptionStyleConverter))] public enum CaptionStyle { Default=0, Sunken=1, Raised=2, lv_Default=Default, lv_Sunken=Sunken, lv_Raised=Raised }
 [Flags, TypeConverter(typeof(FontStylesConverter))] public enum FontStyles { PlainStyle=0, Bold=2, Italic=4, Underline=8, BoldItalic=6, BoldUnderline=10, ItalicUnderline=12, BoldItalicUnderline=14, lv_PlainStyle=PlainStyle, lv_Bold=Bold, lv_Italic=Italic, lv_Underline=Underline, lv_BoldItalic=BoldItalic, lv_BoldUnderline=BoldUnderline, lv_ItalicUnderline=ItalicUnderline, lv_BoldItalicUnderline=BoldItalicUnderline }
 [TypeConverter(typeof(BackStyleConverter))] public enum BackStyle { Windows95=0, Windows31=1, WindowsXp=2, Java=3, Flat=4, Hover=5, Netscape=6, Macintosh=7, w95=Windows95, w31=Windows31, XP=WindowsXp, hover=Hover, lv_w95=Windows95, lv_w31=Windows31, lv_XP=WindowsXp, lv_Java=Java, lv_Flat=Flat, lv_hover=Hover, lv_Netscape=Netscape, lv_Macintosh=Macintosh }
-[TypeConverter(typeof(VB6EnumConverter))] public enum MousePointerConstants { Default=0, Arrow=1, Crosshair=2, IBeam=3, SizeNESW=6, SizeNS=7, SizeNWSE=8, SizeWE=9, UpArrow=10, Hourglass=11, NoDrop=12, ArrowHourglass=13, ArrowQuestion=14, SizeAll=15, Custom=99, vbDefault=Default, vbArrow=Arrow, vbCrosshair=Crosshair, vbIBeam=IBeam, vbSizeNESW=SizeNESW, vbSizeNS=SizeNS, vbSizeNWSE=SizeNWSE, vbSizeWE=SizeWE, vbUpArrow=UpArrow, vbHourglass=Hourglass, vbNoDrop=NoDrop, vbArrowHourglass=ArrowHourglass, vbArrowQuestion=ArrowQuestion, vbSizeAll=SizeAll, vbCustom=Custom }
+[TypeConverter(typeof(MousePointerConverter))] public enum MousePointerConstants { Default=0, Arrow=1, Crosshair=2, IBeam=3, SizeNESW=6, SizeNS=7, SizeNWSE=8, SizeWE=9, UpArrow=10, Hourglass=11, NoDrop=12, ArrowHourglass=13, ArrowQuestion=14, SizeAll=15, Custom=99, vbDefault=Default, vbArrow=Arrow, vbCrosshair=Crosshair, vbIBeam=IBeam, vbSizeNESW=SizeNESW, vbSizeNS=SizeNS, vbSizeNWSE=SizeNWSE, vbSizeWE=SizeWE, vbUpArrow=UpArrow, vbHourglass=Hourglass, vbNoDrop=NoDrop, vbArrowHourglass=ArrowHourglass, vbArrowQuestion=ArrowQuestion, vbSizeAll=SizeAll, vbCustom=Custom }
 [TypeConverter(typeof(DragModeConverter))] public enum DragModeConstants { vbManual=0, vbAutomatic=1, Manual=vbManual, Automatic=vbAutomatic }
 
 public delegate void LvMouseEventHandler(object sender, MouseEventArgs e);
@@ -181,8 +196,8 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe")] public Color GradientColor { get=>_gradientColor; set{_gradientColor=value;if(_gradientMode!=GradientMode.None&&LocksBack)_hoverBack=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(GradientMode.None)] public GradientMode GradientMode { get=>_gradientMode; set{if(!Enum.IsDefined(value))return;_gradientMode=value;SyncHoverColorsFromLocks(); InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? Picture { get=>_picture; set{_picture=value;if(value is null&&IsCustomShape)_shape=ButtonShape.Rectangular;else if(value is not null&&IsCustomShape)_pictureSize=ImageSize.FillScaleUpDown; ResizeCustomToImage(); UpdateRegion(); InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;if(value is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)_captionAlign=ContentAlignment.MiddleCenter;InvalidateIfNeeded();} }
-    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;if(IsCustomShape&&value!=ImageSize.FillScaleUpDown)return;_pictureSize=value;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImagePlacement.LeftOfCaption), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ImagePlacement PictureAlign { get=>_pictureAlign; set{if(!Enum.IsDefined(value))return;_pictureAlign=value;if(value is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)_captionAlign=ContentAlignment.MiddleCenter;InvalidateIfNeeded();} }
+    [Category("LaVolpe"), DefaultValue(ImageSize.Size16x16), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public ImageSize PictureSize { get=>_pictureSize; set{if(!Enum.IsDefined(value))return;if(IsCustomShape&&value!=ImageSize.FillScaleUpDown)return;_pictureSize=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(ContentAlignment.MiddleCenter)] public ContentAlignment CaptionAlign { get=>_captionAlign; set{if(!Enum.IsDefined(value)||(_pictureAlign is ImagePlacement.TopCenter or ImagePlacement.BottomCenter)&&value!=ContentAlignment.MiddleCenter)return;_captionAlign=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(CaptionStyle.Default), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public CaptionStyle CaptionStyle { get=>_captionStyle; set{if(!Enum.IsDefined(value))return;_captionStyle=value;InvalidateIfNeeded();} }
     [Category("LaVolpe"), DefaultValue(HoverColorLocks.TextAndBackColor), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public HoverColorLocks HoverColorLocks { get=>_hoverColorLocks; set{if(!Enum.IsDefined(value))return;_hoverColorLocks=value;SyncHoverColorsFromLocks();InvalidateIfNeeded();} }
@@ -193,7 +208,7 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("LaVolpe"), DefaultValue(FontStyles.PlainStyle), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public FontStyles FontStyle { get=>_fontStyle; set{if(!Enum.IsDefined(value))return;_fontStyle=value; InvalidateIfNeeded();} }
     [Category("LaVolpe")] public Image? MouseIcon { get=>_mouseIcon; set{_mouseIcon=value;if(value is not null)_mousePointer=MousePointerConstants.Custom;ApplyMouseIcon();InvalidateIfNeeded();} }
     // VB6: MousePointerConstants, no un Cursor arbitrario. Custom usa MouseIcon.
-    [Category("LaVolpe"), DefaultValue(MousePointerConstants.Default)]
+    [Category("LaVolpe"), DefaultValue(MousePointerConstants.Default), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public MousePointerConstants MousePointer { get=>_mousePointer; set{if(!Enum.IsDefined(value))return;_mousePointer=value;ApplyMousePointer();} }
     // VB6/UserControl: imagen de arrastre usada durante OLEDrag.
     [Category("LaVolpe")] public Image? DragIcon { get=>_dragIcon; set{_dragIcon=value;BuildDragCursor();} }
@@ -218,6 +233,9 @@ public class LaVolpeButton : Control, IButtonControl
     public bool ShouldSerializeFontStyle() => _fontStyle != FontStyles.PlainStyle;
     public bool ShouldSerializeHoverColorLocks() => _hoverColorLocks != HoverColorLocks.TextAndBackColor;
     public bool ShouldSerializeDragMode() => DragMode != DragModeConstants.vbManual;
+    public bool ShouldSerializePictureAlign() => _pictureAlign != ImagePlacement.LeftOfCaption;
+    public bool ShouldSerializePictureSize() => _pictureSize != ImageSize.Size16x16;
+    public bool ShouldSerializeMousePointer() => _mousePointer != MousePointerConstants.Default;
     public bool ShouldSerializeMode() => _mode != ButtonMode.CommandButton;
     public void ResetButtonShape() => ButtonShape = ButtonShape.Rectangular;
     public void ResetCaptionStyle() => CaptionStyle = CaptionStyle.Default;
@@ -225,6 +243,9 @@ public class LaVolpeButton : Control, IButtonControl
     public void ResetFontStyle() => FontStyle = FontStyles.PlainStyle;
     public void ResetHoverColorLocks() => HoverColorLocks = HoverColorLocks.TextAndBackColor;
     public void ResetDragMode() => DragMode = DragModeConstants.vbManual;
+    public void ResetPictureAlign() => PictureAlign = ImagePlacement.LeftOfCaption;
+    public void ResetPictureSize() => PictureSize = ImageSize.Size16x16;
+    public void ResetMousePointer() => MousePointer = MousePointerConstants.Default;
     public void ResetMode() => Mode = ButtonMode.CommandButton;
     [Browsable(false)] public bool MouseOver=>_hovered;
     [Browsable(false)] public IntPtr hwnd=>Handle;

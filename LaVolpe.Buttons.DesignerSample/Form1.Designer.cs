@@ -28,12 +28,14 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
         laVolpeButton1 = new LaVolpe.Buttons.Net.LaVolpeButton();
         oleInstructionLabel = new Label();
         oleStatusLabel = new Label();
         laVolpeButton2 = new LaVolpe.Buttons.Net.LaVolpeButton();
         laVolpeButton3 = new LaVolpe.Buttons.Net.LaVolpeButton();
         laVolpeButton4 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        laVolpeButton5 = new LaVolpe.Buttons.Net.LaVolpeButton();
         SuspendLayout();
         // 
         // laVolpeButton1
@@ -132,11 +134,14 @@ partial class Form1
         laVolpeButton4.ButtonShape = Net.ButtonShape.Round3D;
         laVolpeButton4.ButtonStyle = Net.BackStyle.XP;
         laVolpeButton4.Caption = "Lopera";
-        laVolpeButton4.CaptionAlign = ContentAlignment.TopCenter;
         laVolpeButton4.CaptionStyle = Net.CaptionStyle.Sunken;
+        laVolpeButton4.CustomClick = Net.CustomClick.lv_cSouthWest;
         laVolpeButton4.DragIcon = null;
+        laVolpeButton4.DragMode = Net.DragModeConstants.vbAutomatic;
+        laVolpeButton4.FontStyle = Net.FontStyles.lv_Bold | Net.FontStyles.lv_Italic;
         laVolpeButton4.GradientColor = SystemColors.ControlLight;
-        laVolpeButton4.HoverBackColor = SystemColors.Control;
+        laVolpeButton4.HoverBackColor = Color.Red;
+        laVolpeButton4.HoverColorLocks = Net.HoverColorLocks.TextColorOnly;
         laVolpeButton4.HoverForeColor = SystemColors.ControlText;
         laVolpeButton4.Location = new Point(128, 114);
         laVolpeButton4.MouseIcon = null;
@@ -147,11 +152,40 @@ partial class Form1
         laVolpeButton4.Size = new Size(90, 33);
         laVolpeButton4.TabIndex = 5;
         // 
+        // laVolpeButton5
+        // 
+        laVolpeButton5.AccessibleName = "Lopera";
+        laVolpeButton5.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton5.BackColor = SystemColors.Control;
+        laVolpeButton5.ButtonShape = Net.ButtonShape.Round3D;
+        laVolpeButton5.ButtonStyle = Net.BackStyle.XP;
+        laVolpeButton5.Caption = "Lopera";
+        laVolpeButton5.CaptionStyle = Net.CaptionStyle.Sunken;
+        laVolpeButton5.CustomClick = Net.CustomClick.North;
+        laVolpeButton5.DragIcon = null;
+        laVolpeButton5.DragMode = Net.DragModeConstants.vbAutomatic;
+        laVolpeButton5.FontStyle = Net.FontStyles.lv_Bold | Net.FontStyles.lv_Italic;
+        laVolpeButton5.GradientColor = SystemColors.ControlLight;
+        laVolpeButton5.HoverBackColor = Color.FromArgb(255, 255, 128);
+        laVolpeButton5.HoverColorLocks = Net.HoverColorLocks.NoLocks;
+        laVolpeButton5.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton5.ImeMode = ImeMode.AlphaFull;
+        laVolpeButton5.Location = new Point(237, 114);
+        laVolpeButton5.MouseIcon = null;
+        laVolpeButton5.Name = "laVolpeButton5";
+        laVolpeButton5.Picture = (Image)resources.GetObject("laVolpeButton5.Picture");
+        laVolpeButton5.ResetDefaultColors = false;
+        laVolpeButton5.ShowFocusRect = true;
+        laVolpeButton5.Size = new Size(90, 33);
+        laVolpeButton5.TabIndex = 6;
+        laVolpeButton5.ToolTipText = "Raton Lopera";
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(800, 450);
+        Controls.Add(laVolpeButton5);
         Controls.Add(laVolpeButton4);
         Controls.Add(laVolpeButton3);
         Controls.Add(laVolpeButton2);
@@ -172,4 +206,5 @@ partial class Form1
     private Net.LaVolpeButton laVolpeButton2;
     private Net.LaVolpeButton laVolpeButton3;
     private Net.LaVolpeButton laVolpeButton4;
+    private Net.LaVolpeButton laVolpeButton5;
 }
