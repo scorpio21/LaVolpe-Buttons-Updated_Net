@@ -36,6 +36,7 @@ partial class Form1
         laVolpeButton3 = new LaVolpe.Buttons.Net.LaVolpeButton();
         laVolpeButton4 = new LaVolpe.Buttons.Net.LaVolpeButton();
         laVolpeButton5 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        laVolpeButton6 = new LaVolpe.Buttons.Net.LaVolpeButton();
         SuspendLayout();
         // 
         // laVolpeButton1
@@ -181,11 +182,31 @@ partial class Form1
         laVolpeButton5.TabIndex = 6;
         laVolpeButton5.ToolTipText = "Raton Lopera";
         // 
+        // laVolpeButton6
+        // 
+        laVolpeButton6.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton6.BackColor = SystemColors.Control;
+        laVolpeButton6.DragIcon = null;
+        laVolpeButton6.GradientColor = Color.FromArgb(192, 0, 0);
+        laVolpeButton6.GradientMode = Net.GradientMode.TopToBottom;
+        laVolpeButton6.HoverBackColor = Color.FromArgb(192, 0, 0);
+        laVolpeButton6.HoverColorLocks = Net.HoverColorLocks.TextColorOnly;
+        laVolpeButton6.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton6.Location = new Point(51, 211);
+        laVolpeButton6.MouseIcon = null;
+        laVolpeButton6.Name = "laVolpeButton6";
+        laVolpeButton6.Picture = null;
+        laVolpeButton6.ResetDefaultColors = false;
+        laVolpeButton6.ShowFocusRect = true;
+        laVolpeButton6.Size = new Size(90, 33);
+        laVolpeButton6.TabIndex = 7;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(800, 450);
+        Controls.Add(laVolpeButton6);
         Controls.Add(laVolpeButton5);
         Controls.Add(laVolpeButton4);
         Controls.Add(laVolpeButton3);
@@ -208,4 +229,5 @@ partial class Form1
     private Net.LaVolpeButton laVolpeButton3;
     private Net.LaVolpeButton laVolpeButton4;
     private Net.LaVolpeButton laVolpeButton5;
+    private Net.LaVolpeButton laVolpeButton6;
 }
