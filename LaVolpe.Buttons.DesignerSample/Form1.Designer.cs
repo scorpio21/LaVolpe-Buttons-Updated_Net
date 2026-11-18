@@ -41,6 +41,7 @@ partial class Form1
         laVolpeButton1.AccessibleRole = AccessibleRole.PushButton;
         laVolpeButton1.AllowDrop = true;
         laVolpeButton1.BackColor = SystemColors.Control;
+        laVolpeButton1.ButtonShape = Net.ButtonShape.RightDiagonal;
         laVolpeButton1.Caption = "LOAD";
         laVolpeButton1.DragIcon = null;
         laVolpeButton1.GradientColor = SystemColors.ControlLight;
@@ -84,6 +85,7 @@ partial class Form1
         laVolpeButton2.HoverBackColor = SystemColors.Control;
         laVolpeButton2.HoverForeColor = SystemColors.ControlText;
         laVolpeButton2.Location = new Point(519, 193);
+        laVolpeButton2.Mode = Net.ButtonMode.CheckBox;
         laVolpeButton2.MouseIcon = null;
         laVolpeButton2.Name = "laVolpeButton2";
         laVolpeButton2.Palette.CheckedBackColor = Color.FromArgb(255, 128, 0);
@@ -104,13 +106,14 @@ partial class Form1
         // 
         // laVolpeButton3
         // 
-        laVolpeButton3.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton3.AccessibleRole = AccessibleRole.PageTab;
         laVolpeButton3.BackColor = SystemColors.Control;
         laVolpeButton3.DragIcon = null;
         laVolpeButton3.GradientColor = SystemColors.ControlLight;
         laVolpeButton3.HoverBackColor = SystemColors.Control;
         laVolpeButton3.HoverForeColor = SystemColors.ControlText;
         laVolpeButton3.Location = new Point(535, 102);
+        laVolpeButton3.Mode = Net.ButtonMode.OptionButton;
         laVolpeButton3.MouseIcon = null;
         laVolpeButton3.Name = "laVolpeButton3";
         laVolpeButton3.Picture = null;
@@ -118,6 +121,7 @@ partial class Form1
         laVolpeButton3.ShowFocusRect = true;
         laVolpeButton3.Size = new Size(90, 33);
         laVolpeButton3.TabIndex = 4;
+        laVolpeButton3.Value = true;
         // 
         // Form1
         // 
