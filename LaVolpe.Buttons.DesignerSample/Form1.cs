@@ -5,6 +5,12 @@ public partial class Form1 : Form
     public Form1()
     {
         InitializeComponent();
+        var picturePath = Path.Combine(AppContext.BaseDirectory, "Resources", "vb6-round-mouse-icon.png");
+        if (File.Exists(picturePath))
+        {
+            using var source = Image.FromFile(picturePath);
+            laVolpeButton5.Picture = new Bitmap(source);
+        }
         laVolpeButton1.OLEDragOver += LaVolpeButton1_OLEDragOver;
         laVolpeButton1.OLEDragDrop += LaVolpeButton1_OLEDragDrop;
         laVolpeButton1.OLEStartDrag += LaVolpeButton1_OLEStartDrag;

@@ -36,6 +36,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ El comparador visual rechaza referencia y salida en la misma carpeta para evitar resultados autorreferentes; los issues de capturas #2 y #12 están cerrados.
 - ⚠️ No cerrar issues de GitHub sin evidencia; los issues abiertos se mantienen abiertos cuando falta una validación externa o legal.
 - ✅ `dotnet test` descubre y ejecuta los 56 casos mediante `LaVolpe.Buttons.XunitTests`; `dotnet run` conserva el harness STA y las herramientas visuales.
+- ✅ El bloqueo MSB3821 de Visual Studio quedó aislado: `Form1.resx` ya no contiene la imagen binaria; `DesignerSample` carga `Resources/vb6-round-mouse-icon.png` desde la salida y evita la generación accidental de código sobre `Form1.Designer.cs`. Debug verificado: 0 advertencias, 0 errores; harness 58/58 y xUnit 56/56.
 
 ## Work history
 
@@ -54,6 +55,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 ## Known gotchas
 
 - `LaVolpe-Buttons-Updated-\lvButtons.ctl:1350-1380` confirma que VB6 llama `ScaleImage` y cambia el tamaño del control para `Custom*`.
+- Corrección: el aviso de MSB3821 no se debía a un `Zone.Identifier` detectable ni a la ruta `K:`; el editor de recursos rechazaba el recurso Bitmap binario. El sample ahora usa un PNG copiado como contenido.
 - La comparación full-window no es válida directamente: el cliente WinForms comparable es 508×374; el marco WinForms mide distinto al formulario VB6.
 - Las 32 capturas `net8` contra sí mismas solo validan determinismo, no equivalencia VB6.
 - El intento de enmarcar `Custom3DBorder` con un gradiente blanco/gris sobre la máscara mantuvo los píxeles distintos pero aumentó el delta; fue revertido.

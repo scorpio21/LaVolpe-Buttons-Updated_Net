@@ -20,6 +20,9 @@ Fecha: 2026-11-13. SDK fijado por `global.json` a 8.0.427.
 | Validación de archivos en `artifacts\visual\net8` | 32/32 PNG legibles, 120×40 píxeles, tamaño mayor que cero |
 | `dotnet .\LaVolpe.Buttons.Tests\bin\Release\net8.0-windows\LaVolpe.Buttons.Tests.dll` | 56 correctas, 0 fallidas |
 | `dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj -c Release --no-build` | 56 correctas, 0 fallidas; el comparador visual y el generador de capturas siguen disponibles en `LaVolpe.Buttons.Tests` |
+| `dotnet build .\LaVolpe.Buttons.Net.sln --configuration Debug --no-restore --maxcpucount:1` | Correcto; 0 advertencias, 0 errores. `DesignerSample` ya no embebe la imagen binaria en `Form1.resx` y copia `vb6-round-mouse-icon.png` a `bin\Debug\...\Resources`. |
+| `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj --configuration Debug --no-build` | 58 correctas, 0 fallidas después de retirar el recurso binario del diseñador. |
+| `dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj --configuration Debug --no-build` | 56 correctas, 0 fallidas después de retirar el recurso binario del diseñador. |
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` | Puede fallar en este entorno por compilación paralela (`MSB5021`); la variante reproducible `-m:1` sí es correcta |
 | IDE VB6 + `prjSampleButtons.vbp` | Sesión interactiva verificada el 2026-11-13: el sample original ejecuta y muestra la referencia visual; el EXE independiente sigue fallando con `Reasignación no válida del archivo DLL del sistema`; aún faltan las 32 capturas sistemáticas de #12 |
 | `dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj -c Release --no-restore --output .\artifacts\nuget` | Paquete `LaVolpe.Buttons.Net.1.0.0.nupkg` creado sin warnings; contiene DLL/XML, `LICENSE`, `README.md` y `NOTICE.md` |
