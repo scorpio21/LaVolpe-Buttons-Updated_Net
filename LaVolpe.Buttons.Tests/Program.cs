@@ -387,6 +387,65 @@ public static class Program
             }
         });
 
+        Test("Enabled bloquea interacción y actualiza el estado visual", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "Botón", Size = new Size(120, 40) });
+            var clicks = 0;
+            button.Click += (_, _) => clicks++;
+            button.Enabled = false;
+            button.PerformClick();
+            Check(clicks == 0, $"clics deshabilitado={clicks}");
+            Check(!button.Enabled, "Enabled no se conserva en False");
+            button.Enabled = true;
+            Check(button.Enabled, "Enabled no se restaura en True");
+        });
+
+        Test("Font hereda la fuente del contenedor", form =>
+        {
+            using var font = new Font("Tahoma", 13f, FontStyle.Italic);
+            form.Font = font;
+            var button = Add(form, new LaVolpeButton());
+            Check(button.Font.Name == font.Name, $"fuente={button.Font.Name}");
+            Check(Math.Abs(button.Font.Size - font.Size) < 0.1f, $"tamaño={button.Font.Size}");
+            Check(button.Font.Style == font.Style, $"estilo heredado={button.Font.Style}");
+        });
+
+        Test("FontStyle renderiza los ocho valores VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "Ag", Size = new Size(120, 40), Font = new Font("Arial", 16f) });
+            using var plain = new Bitmap(button.Width, button.Height);
+            button.FontStyle = FontStyles.PlainStyle;
+            button.DrawToBitmap(plain, button.ClientRectangle);
+            foreach (var style in Enum.GetValues<FontStyles>())
+            {
+                button.FontStyle = style;
+                Check(button.FontStyle == style, $"FontStyle={style} no se conserva");
+                using var styled = new Bitmap(button.Width, button.Height);
+                button.DrawToBitmap(styled, button.ClientRectangle);
+                if (style != FontStyles.PlainStyle)
+                {
+                    var differences = 0;
+                    for (var y = 0; y < plain.Height; y++)
+                        for (var x = 0; x < plain.Width; x++)
+                            if (plain.GetPixel(x, y) != styled.GetPixel(x, y)) differences++;
+                    Check(differences > 0, $"FontStyle={style} no cambia el renderizado");
+                }
+            }
+        });
+
+        Test("ForeColor se conserva en los ocho estilos", form =>
+        {
+            var expected = Color.Navy;
+            var method = typeof(LaVolpeButton).GetMethod("GetCaptionColors", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            foreach (var style in Enum.GetValues<BackStyle>())
+            {
+                var button = Add(form, new LaVolpeButton { ButtonStyle = style, ForeColor = expected });
+                var result = method.Invoke(button, new object[] { false, Color.White })!;
+                var color = (Color)result.GetType().GetProperty("Color")!.GetValue(result)!;
+                Check(color == expected, $"{style}: ForeColor={color}");
+            }
+        });
+
         Test("BackColor hereda del contenedor", form =>
         {
             form.BackColor = Color.FromArgb(230, 230, 230);
@@ -1193,6 +1252,35 @@ public static class Program
             using var bitmap = new Bitmap(40, 20);
             button.DrawToBitmap(bitmap, new Rectangle(0, 0, 40, 20));
             Check(bitmap.GetPixel(8, 10).R < bitmap.GetPixel(31, 10).R, "el extremo derecho debe ser más claro");
+        });
+
+        Test("GradientColor y GradientMode cubren las cuatro direcciones", form =>
+        {
+            var modes = new[]
+            {
+                GradientMode.LeftToRight, GradientMode.RightToLeft,
+                GradientMode.TopToBottom, GradientMode.BottomToTop
+            };
+            foreach (var mode in modes)
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    ButtonStyle = BackStyle.Flat,
+                    BackColor = Color.Black,
+                    GradientColor = Color.White,
+                    GradientMode = mode,
+                    Size = new Size(40, 40)
+                });
+                using var bitmap = new Bitmap(40, 40);
+                button.DrawToBitmap(bitmap, button.ClientRectangle);
+                var start = mode is GradientMode.LeftToRight or GradientMode.RightToLeft
+                    ? bitmap.GetPixel(mode == GradientMode.LeftToRight ? 5 : 34, 20)
+                    : bitmap.GetPixel(20, mode == GradientMode.TopToBottom ? 5 : 34);
+                var end = mode is GradientMode.LeftToRight or GradientMode.RightToLeft
+                    ? bitmap.GetPixel(mode == GradientMode.LeftToRight ? 34 : 5, 20)
+                    : bitmap.GetPixel(20, mode == GradientMode.TopToBottom ? 34 : 5);
+                Check(start.GetBrightness() < end.GetBrightness(), $"{mode}: dirección invertida");
+            }
         });
 
         Test("GradientMode no genera canales fuera de rango", form =>
