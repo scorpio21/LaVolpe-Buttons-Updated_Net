@@ -633,7 +633,7 @@ public static class Program
         {
             var empty = Add(form, new LaVolpeButton());
             empty.ButtonShape = ButtonShape.CustomFlat;
-            Check(empty.ButtonShape == ButtonShape.Rectangular, "CustomFlat sin Picture no se rechaza");
+            Check(empty.ButtonShape == ButtonShape.CustomFlat, "CustomFlat se pierde antes de asignar Picture");
             var image = new Bitmap(60, 40);
             _attached.Add(image);
             using (var graphics = Graphics.FromImage(image))
