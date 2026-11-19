@@ -731,6 +731,25 @@ public static class Program
             Check(button.ClientSize == new Size(51, 59), $"ClientSize={button.ClientSize.Width}x{button.ClientSize.Height}");
         });
 
+        Test("Custom* mantiene la máscara en imágenes grandes", form =>
+        {
+            using var image = new Bitmap(520, 520);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Magenta);
+                graphics.FillEllipse(Brushes.RoyalBlue, 4, 4, 512, 512);
+            }
+            var button = Add(form, new LaVolpeButton
+            {
+                Picture = image,
+                ButtonShape = ButtonShape.CustomFlat,
+                Size = new Size(520, 520)
+            });
+            Check(button.Region is not null, "imagen grande: Region=null");
+            Check(!button.Region!.IsVisible(0, 0), "imagen grande: esquina transparente visible");
+            Check(button.Region.IsVisible(260, 260), "imagen grande: centro fuera de la máscara");
+        });
+
         Test("Custom3DBorder dibuja el anillo blanco a gris de VB6", form =>
         {
             using var image = new Bitmap(40, 30);

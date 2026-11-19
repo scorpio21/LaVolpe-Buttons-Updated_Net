@@ -372,7 +372,6 @@ public class LaVolpeButton : Control, IButtonControl
     private static Region BuildImageRegion(Image image, Rectangle bounds)
     {
         var w=Math.Max(1, bounds.Width); var h=Math.Max(1, bounds.Height);
-        if((long)w*h>250_000) return new Region(bounds);
         using var scaled=new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         using(var g=Graphics.FromImage(scaled)){ g.InterpolationMode=InterpolationMode.NearestNeighbor; g.PixelOffsetMode=PixelOffsetMode.Default; g.DrawImage(image, 0, 0, w, h); }
         var data=scaled.LockBits(new Rectangle(0,0,w,h), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
