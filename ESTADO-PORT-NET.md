@@ -2,9 +2,9 @@
 
 ## Estado verificado 2026-11-19
 
-La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 59/59 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` se integra con `HelpProvider` usando `TopicId`, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
+La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 60/60 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` se integra con `HelpProvider` usando `TopicId`, `Index` identifica el control desde sus eventos, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
-**Fecha de esta revisión:** 2026-11-19 (`HelpContextID` integrado con `HelpProvider` y validado mediante prueba real)
+**Fecha de esta revisión:** 2026-11-19 (`Index` validado como identificador de instancia en eventos WinForms)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
 **Revisión anterior:** 2026-11-05 (segunda ronda) - 70 %
 **Estado general estimado:** **≈70 %** (rango 65–75 %; la equivalencia visual no está ponderada en la cifra histórica)
@@ -38,7 +38,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | Sin cambios |
 | Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 80 % | Toolbox, PropertyGrid, paleta, serialización y reapertura validados para enums de apariencia, modo y comportamiento |
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
-| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 59 casos en el harness y 56 en xUnit: paleta, diseñador, `HelpContextID`, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
+| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 60 casos en el harness y 56 en xUnit: paleta, diseñador, `HelpContextID`, `Index`, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
 | **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología; el cambio de paleta no altera el rango global 65–75 %) |
 
@@ -181,7 +181,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `HoverBackColor` | 100 % | 85 % | Default = `BackColor`; locks respetados |
 | `HoverColorLocks` | 100 % | 90 % | Semántica y default de VB6 |
 | `HoverForeColor` | 100 % | 85 % | Igual que el anterior |
-| `Index` | 60 % | 40 % | Propiedad suelta; no recrea control arrays |
+| `Index` | 60 % | **100 %** | Identifica y conserva cada instancia; los eventos WinForms reciben el control por `sender` y la prueba recupera el mismo `Index`. No se inventa un `Control Array` automático que no existe en WinForms |
 | `Left` | 100 % | 100 % | Heredada |
 | `Mode` | 100 % | 90 % | Transiciones de VB6 para `Value` y selección |
 | `MouseIcon` | 55 % | 85 % | Hotspot centrado, `HICON` liberado e integrado con `MousePointer` |
@@ -295,7 +295,7 @@ alias, `DelayDrawing`, máscaras, recorte de esquinas, anillos de borde y degrad
 ### 2. API y compatibilidad de código fuente
 
 * Revisar orden y firmas de eventos VB6, incluido el `DoubleClick` que simula un segundo click.
-* `Index` como control array real o documentar definitivamente que es una propiedad suelta.
+* `Control Array` automático de VB6: WinForms usa la combinación `sender` + `Index`, que ya está validada para identificar cada instancia.
 * Integración de `WhatsThisHelpID` con ayuda contextual; `HelpContextID` ya está integrada con `HelpProvider`.
 
 ### 3. Formulario y proyecto VB6

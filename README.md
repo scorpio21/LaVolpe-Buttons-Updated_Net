@@ -183,8 +183,9 @@ queden estas diferencias objetivas:
 - `HelpContextID` se integra con un `ContextHelpProvider` asignado desde código:
   registra el ID como `HelpNavigator.TopicId` y activa/desactiva la ayuda según
   el valor. `WhatsThisHelpID` sigue siendo un valor compatible almacenado.
-- `Index` se conserva como valor compatible; .NET no recrea los `Control Array` de
-  VB6 porque WinForms no utiliza ese modelo.
+- `Index` se conserva y se puede recuperar desde `sender` en cualquier evento del
+  control. WinForms no recrea automáticamente los `Control Array` de VB6; para
+  identificar cada instancia se usa la combinación `sender` + `Index`.
 - `DragMode` conserva los valores `vbManual`/`vbAutomatic`, pero el ciclo OLE se
   adapta a WinForms y no reproduce el sistema ActiveX binario del OCX.
 - `hWnd`, `hDC`, `StdPicture`, `PropertyBag`, CLSID, registro del OCX y persistencia
@@ -209,7 +210,9 @@ OCX VB6 original.
 - **Máscara de imagen**: se usa el píxel superior izquierdo (±3 por canal) o alpha < 20. Si el control supera 250 000 píxeles, se usa un rectángulo para evitar regiones costosas. Una imagen ya liberada se ignora al recalcular la región.
 - **`DrawToBitmap` no respeta `Region`**: para comprobar el recorte de ventana hay que usar `Region.IsVisible` o una captura real de pantalla.
 - **Eventos OLE adaptados**: `OLEDragDrop`, `OLEStartDrag`, etc. son equivalentes WinForms, no OLE real.
-- **`Index` no crea un arreglo de controles**: es solo una propiedad de compatibilidad.
+- **`Index` no crea un arreglo automático**: el control conserva el índice y los
+  eventos entregan la instancia mediante `sender`, que es el modelo equivalente
+  de WinForms.
 - **Ayuda**: `HelpContextID` requiere asignar un `ContextHelpProvider` con su
   `HelpNamespace` configurado; `WhatsThisHelpID` se conserva, pero todavía no
   tiene integración automática equivalente a VB6.

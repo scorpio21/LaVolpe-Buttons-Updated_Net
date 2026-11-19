@@ -259,6 +259,16 @@ public static class Program
             Check(!helpProvider.GetShowHelp(button), "HelpProvider no se deshabilitó al volver a cero");
         });
 
+        Test("Index identifica el control en sus eventos", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Index = 7 });
+            var eventIndex = -1;
+            button.Click += (sender, _) => eventIndex = ((LaVolpeButton)sender!).Index;
+            Check(button.Index == 7, $"Index={button.Index}");
+            button.PerformClick();
+            Check(eventIndex == 7, $"Index recibido por Click={eventIndex}");
+        });
+
         Test("Setters ignoran enums fuera del rango VB6", form =>
         {
             var button = Add(form, new LaVolpeButton());
