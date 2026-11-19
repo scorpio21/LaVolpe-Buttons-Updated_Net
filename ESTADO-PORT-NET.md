@@ -159,8 +159,8 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 |---|---:|---:|---|
 | `Name` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada de `Control` |
 | `BackColor` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
-| `ButtonShape` | 100 % | ![90 %](https://img.shields.io/badge/90%25-90%25-blue?style=flat) | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` conserva la forma aunque `Picture` se cargue después y redimensiona proporcionalmente como `ScaleImage` |
-| `ButtonStyle` | 100 % | ![80 %](https://img.shields.io/badge/80%25-80%25-blue?style=flat) | Ocho estilos conservados y renderizados con estados normal/marcado; sigue pendiente la paridad píxel a píxel de los bordes GDI de `DrawButton_*` |
+| `ButtonShape` | 100 % | **90 %** | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` conserva la forma aunque `Picture` se cargue después y redimensiona proporcionalmente como `ScaleImage` |
+| `ButtonStyle` | 100 % | **80 %** | Ocho estilos conservados y renderizados con estados normal/marcado; sigue pendiente la paridad píxel a píxel de los bordes GDI de `DrawButton_*` |
 | `Cancel` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
