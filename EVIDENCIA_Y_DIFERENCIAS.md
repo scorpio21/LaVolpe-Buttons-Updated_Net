@@ -31,7 +31,7 @@ Actualización 2026-11-13: la suite actual ejecuta 56 pruebas correctas y 0 fall
 | OLE | Eventos `OLE*` VB6 y `DataObject` | DragDrop WinForms | Firmas y efectos no son equivalentes |
 | Control arrays | `Index` y array VB6 | Controles independientes | No se recrea la semántica del array |
 | Persistencia | PropertyBag/OCX | Serialización WinForms | No hay carga directa de propiedades VB6 |
-| Ayuda | IDs integrados al host VB6 | IDs almacenados | Falta HelpProvider/WhatsThis completo |
+| Ayuda | IDs integrados al host VB6 | `HelpProvider` explícito con `TopicId` | No existe el modo WhatsThis binario de VB6 en WinForms |
 | Regiones custom | Máscara/NormalizeImage y redimensionado del control | Región desde `LockBits` y redimensionado proporcional según `ScaleImage` | La forma y el tamaño se aproximan; la normalización GDI exacta aún difiere |
 | Fuentes | `StdFont`/OLE | `System.Drawing.Font` | Conversión de métricas y persistencia distinta |
 

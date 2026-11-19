@@ -16,7 +16,7 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 | `PictureSize` | `ImageSize` | Implementado | 80 | Falta comparar interpolación original |
 | `Enabled` | `Control.Enabled` | Implementado | 95 | Colores deshabilitados administrados |
 | `ShowFocusRect` | `ShowFocusRect` | Implementado | 85 | Reglas VB6 de botón Default no idénticas |
-| `Value` | `Value`/`Checked`/`Selected` | Implementado | 95 | Semántica VB6; estado marcado en toda la superficie |
+| `Value` | `Value`/`Checked`/`Selected` | Implementado | 100 | Semántica VB6, eventos de cambio y estado marcado en toda la superficie cubiertos por pruebas |
 | `MousePointer` | `MousePointerConstants` → `Cursor` | Implementado | 100 | Mapa de los 15 valores VB6 y alias `vb*` |
 | `MouseIcon` | `Image` → `Cursor` | Implementado | 85 | Hotspot centrado, `DestroyIcon` e integración con `MousePointer = Custom` |
 | `Font` | `System.Drawing.Font` | Implementado | 95 | Hereda la fuente del contenedor como el ambiente VB6 |
@@ -38,10 +38,10 @@ Porcentaje significa cobertura funcional estimada, no equivalencia binaria.
 | `DoubleClick` | `ButtonDoubleClick` | Implementado | 85 | Firma adaptada |
 | OLE events | DragDrop/GiveFeedback | Parcial | 45 | `DataObject` y argumentos no son equivalentes |
 | `DefaultCancel` | `Default`/`Cancel` + `IButtonControl` | Equivalente funcional | 95 | `DialogResult`/`NotifyDefault` y enlace automático a `AcceptButton`/`CancelButton` |
-| `ToolTipText` | `ToolTip` | Implementado | 85 | Componente externo WinForms |
+| `ToolTipText` | `ToolTip` | Implementado | 100 | Texto, limpieza y actualización cubiertos por pruebas |
 | `Index` | `Index` | Compatibilidad | 60 | No crea control arrays VB6 |
 | `HelpContextID` | `int` | Almacenado | 30 | Falta integración HelpProvider |
-| `WhatsThisHelpID` | `int` | Almacenado | 30 | Falta integración de ayuda |
+| `WhatsThisHelpID` | `int` + `WhatsThisHelpProvider` | Equivalente funcional | 100 | `HelpNavigator.TopicId`; WinForms no tiene el modo WhatsThis binario de VB6 |
 | `DragMode` | `DragMode` + `DoDragDrop` | Parcial | 70 | Secuencia start/complete adaptada; efectos y datos OLE distintos |
 | `DragIcon` | `Image` → `Cursor` | Implementado | 85 | `CreateIconIndirect` y `UseDefaultCursors = false` durante el arrastre |
 | `Tag` | `Control.Tag` | Implementado | 100 | Tipo más amplio en .NET |

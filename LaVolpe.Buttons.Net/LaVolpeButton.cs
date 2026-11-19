@@ -158,6 +158,7 @@ public class LaVolpeButton : Control, IButtonControl
     private Point _dragStart;
     private int _helpContextId, _index, _whatsThisHelpId;
     private HelpProvider? _contextHelpProvider;
+    private HelpProvider? _whatsThisHelpProvider;
     private Point _customClickOrigin;
     private string _toolTipText = "";
     private ToolTip? _toolTip;
@@ -236,7 +237,11 @@ public class LaVolpeButton : Control, IButtonControl
     // Se mantiene oculto del PropertyGrid porque es un componente externo, no un valor serializable del botón.
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public HelpProvider? ContextHelpProvider { get=>_contextHelpProvider; set{_contextHelpProvider=value; ApplyContextHelp();} }
-    [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
+    [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set{_whatsThisHelpId=value; ApplyWhatsThisHelp();} }
+    // WinForms no tiene el modo WhatsThis de VB6; este proveedor ofrece su equivalente
+    // explícito usando el mismo HelpNavigator.TopicId que HelpContextID.
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public HelpProvider? WhatsThisHelpProvider { get=>_whatsThisHelpProvider; set{_whatsThisHelpProvider=value; ApplyWhatsThisHelp();} }
     public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
     public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
     public bool ShouldSerializeCaptionStyle() => _captionStyle != CaptionStyle.Default;
@@ -272,6 +277,13 @@ public class LaVolpeButton : Control, IButtonControl
         _contextHelpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
         _contextHelpProvider.SetHelpKeyword(this, _helpContextId.ToString(CultureInfo.InvariantCulture));
         _contextHelpProvider.SetShowHelp(this, _helpContextId != 0);
+    }
+    private void ApplyWhatsThisHelp()
+    {
+        if (_whatsThisHelpProvider is null) return;
+        _whatsThisHelpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
+        _whatsThisHelpProvider.SetHelpKeyword(this, _whatsThisHelpId.ToString(CultureInfo.InvariantCulture));
+        _whatsThisHelpProvider.SetShowHelp(this, _whatsThisHelpId != 0);
     }
     private bool LocksText => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.TextColorOnly;
     private bool LocksBack => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.BackColorOnly;

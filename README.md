@@ -29,7 +29,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 76 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 79 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -185,7 +185,8 @@ queden estas diferencias objetivas:
 
 - `HelpContextID` se integra con un `ContextHelpProvider` asignado desde código:
   registra el ID como `HelpNavigator.TopicId` y activa/desactiva la ayuda según
-  el valor. `WhatsThisHelpID` sigue siendo un valor compatible almacenado.
+  el valor. `WhatsThisHelpID` usa el `WhatsThisHelpProvider` explícito como
+  equivalente WinForms basado en `HelpNavigator.TopicId`.
 - `Index` se conserva y se puede recuperar desde `sender` en cualquier evento del
   control. WinForms no recrea automáticamente los `Control Array` de VB6; para
   identificar cada instancia se usa la combinación `sender` + `Index`.
@@ -216,9 +217,10 @@ OCX VB6 original.
 - **`Index` no crea un arreglo automático**: el control conserva el índice y los
   eventos entregan la instancia mediante `sender`, que es el modelo equivalente
   de WinForms.
-- **Ayuda**: `HelpContextID` requiere asignar un `ContextHelpProvider` con su
-  `HelpNamespace` configurado; `WhatsThisHelpID` se conserva, pero todavía no
-  tiene integración automática equivalente a VB6.
+- **Ayuda**: `HelpContextID` requiere asignar un `ContextHelpProvider` y
+  `WhatsThisHelpID` un `WhatsThisHelpProvider`, ambos con su `HelpNamespace`
+  configurado. WinForms no tiene el modo WhatsThis binario de VB6; la integración
+  usa `HelpNavigator.TopicId` de forma explícita.
 - **Timer**: es un `System.Windows.Forms.Timer` de 50 ms, no el timer Win32 nativo del OCX.
 
 ## Recursos e imágenes

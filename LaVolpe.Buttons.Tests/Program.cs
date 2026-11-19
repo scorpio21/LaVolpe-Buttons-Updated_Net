@@ -303,6 +303,31 @@ public static class Program
             Check(!helpProvider.GetShowHelp(button), "HelpProvider no se deshabilitó al volver a cero");
         });
 
+        Test("WhatsThisHelpID se integra con HelpProvider", form =>
+        {
+            using var helpProvider = new HelpProvider();
+            var button = Add(form, new LaVolpeButton { WhatsThisHelpProvider = helpProvider });
+            button.WhatsThisHelpID = 4321;
+            Check(helpProvider.GetHelpKeyword(button) == "4321", "WhatsThisHelpID no se registró como keyword");
+            Check(helpProvider.GetHelpNavigator(button) == HelpNavigator.TopicId, "WhatsThisHelpID no usa TopicId");
+            Check(helpProvider.GetShowHelp(button), "WhatsThisHelpProvider no quedó habilitado");
+            button.WhatsThisHelpID = 0;
+            Check(!helpProvider.GetShowHelp(button), "WhatsThisHelpProvider no se deshabilitó al volver a cero");
+        });
+
+        Test("ToolTipText actualiza, limpia y conserva el tooltip WinForms", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            button.ToolTipText = "Primer texto";
+            var toolTipField = typeof(LaVolpeButton).GetField("_toolTip", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            var toolTip = (ToolTip)toolTipField.GetValue(button)!;
+            Check(toolTip.GetToolTip(button) == "Primer texto", "tooltip inicial no registrado");
+            button.ToolTipText = "Segundo texto";
+            Check(toolTip.GetToolTip(button) == "Segundo texto", "tooltip no actualizado");
+            button.ToolTipText = null!;
+            Check(button.ToolTipText == string.Empty && toolTip.GetToolTip(button) == string.Empty, "tooltip no limpiado");
+        });
+
         Test("Index identifica el control en sus eventos", form =>
         {
             var button = Add(form, new LaVolpeButton { Index = 7 });
@@ -746,10 +771,27 @@ public static class Program
         Test("CheckBox alterna Value", form =>
         {
             var button = Add(form, new LaVolpeButton { Mode = ButtonMode.CheckBox });
+            var valueChanges = 0;
+            var checkedChanges = 0;
+            button.ValueChanged += (_, _) => valueChanges++;
+            button.CheckedChanged += (_, _) => checkedChanges++;
             button.PerformClick();
             Check(button.Value, "primer clic");
+            Check(button.Checked && button.Selected, "alias de CheckBox incorrectos");
             button.PerformClick();
             Check(!button.Value, "segundo clic");
+            Check(!button.Checked && valueChanges == 2 && checkedChanges == 2, $"eventos Value={valueChanges}, Checked={checkedChanges}");
+        });
+
+        Test("OptionButton publica Value, Selected y SelectedChanged", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            var selectedChanges = 0;
+            button.SelectedChanged += (_, _) => selectedChanges++;
+            button.Selected = true;
+            Check(button.Value && button.Checked && button.Selected, "alias de OptionButton incorrectos");
+            button.Value = false;
+            Check(!button.Value && !button.Selected && selectedChanges == 2, $"eventos SelectedChanged={selectedChanges}");
         });
 
         Test("Clic físico no duplica Click ni Value", form =>
