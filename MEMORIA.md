@@ -10,8 +10,19 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj --configuration Release --no-build` → 56 correctas, 0 fallidas.
 - `dotnet test .\LaVolpe.Buttons.XunitTests\LaVolpe.Buttons.XunitTests.csproj --configuration Release --no-build` → 56 correctas, 0 fallidas con xUnit v3/Microsoft Testing Platform.
 - Captura/compare sample → `sample-client.png`: 19.450/189.992 píxeles distintos (10,24 %), delta 5.207.098 tras portar el anillo de `Custom3DBorder`.
+- Verificación vigente (2026-11-20): `dotnet build .\LaVolpe.Buttons.Net.sln --configuration Debug --no-restore --maxcpucount:1 --verbosity minimal` → 5 proyectos, 0 warnings, 0 errors.
+- Verificación vigente (2026-11-20): `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj --configuration Debug --no-build` → **80 correctas, 0 fallidas**.
 
 ## Current state
+
+- ✅ Estado documental vigente 2026-11-20: media ponderada **80,58 %** (81 % redondeado).
+- ✅ Las áreas `Control WinForms funcional`, `Propiedades y enums`, `Eventos de mouse y teclado` y `CheckBox y OptionButton` aparecen al 100 % azul en `ESTADO-PORT-NET.md`, con evidencia del harness.
+- ✅ `Instalación/distribución` está al 60 % por paquete NuGet/publicación reproducibles en `artifacts\\sdk\\`, sin publicación pública mientras #17 siga abierto.
+- ✅ `Pruebas automatizadas` está al 80 % por 80 casos STA ejecutables.
+- ⚠️ Issue #3 sigue abierto: falta validación física DPI a 120/144/192.
+- ⚠️ Issue #17 sigue abierto: falta confirmar licencia/redistribución del original VB6 antes de publicar NuGet.
+- ⚠️ Issue #22 sigue abierto: ideas de Krypton; la paleta propia ya existe, pero faltan decisiones sobre temas, estados visuales, DPI y accesibilidad. Krypton se usa como inspiración, no como código o recursos copiados.
+- ⚠️ Issue #6 no se toca hasta terminar los demás; no añadir drag-and-drop al sample principal.
 
 - ✅ Clic físico Win32 no duplica `Click`/`Value`; `StandardClick=false` está probado.
 - ✅ `AllowDrop=false` por defecto; `DesignerSample2` es un formulario limpio y no activa drag-and-drop.
@@ -40,19 +51,25 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 
 ## Work history
 
+- `f2a5738` — Refresh distribution and test coverage status (publicado en `origin/main`).
+- `13a5ad0` — Align compatibility area percentages (publicado en `origin/main`).
+- `f0f4b54` — Complete WinForms functional coverage (publicado en `origin/main`).
+- `76301ce` — Document reproducible SDK artifacts (publicado en `origin/main`).
+
 - `8599b56` — Reject self-referential visual comparisons (publicado en `origin/main`).
 - `2ccbe61` — Clarify upstream licensing scope (publicado en `origin/main`).
 - `a6709a3` — Continue VB6 button port and visual parity (publicado en `origin/main`).
 - `e05bb5b` — Cover yellow transparency mask regression (publicado en `origin/main`).
 - `676e07a` — Avoid blocked binary designer resource (publicado en `origin/main`).
 - ✅ `DesignerSample2` nuevo verificado: solución Debug sin errores ni advertencias; harness 58/58 y xUnit 56/56.
-- Pendiente de publicar — Primera paleta visual propia inspirada en ideas de Krypton, sin copiar código ni recursos.
+- ✅ Issue #22 documentado en GitHub con límites BSD-3-Clause: solo inspiración salvo que se copie código, en cuyo caso hay que conservar copyright/licencia en `NOTICE.md`.
 
 ## Next steps
 
 1. Validar DPI físico 120/144/192 si el entorno lo permite (#3); el harness lógico ya está cubierto, pero no basta para cerrar el issue.
-2. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
-3. Mantener los eventos OLE declarados por compatibilidad; el issue #6 se cerró como no planificado porque el VB6 original solo reenvía eventos no utilizados.
+2. Elegir el siguiente bloque de #22: preferiblemente documentar/implementar temas propios y revisar la paleta por estado, sin copiar Krypton.
+3. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
+4. Mantener los eventos OLE declarados por compatibilidad; no tocar #6 hasta terminar los demás.
 
 ## Known gotchas
 
