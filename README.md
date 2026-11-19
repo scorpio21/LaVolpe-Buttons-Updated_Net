@@ -29,7 +29,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 73 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 74 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -41,10 +41,11 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
 | `LaVolpe.Buttons.DesignerSample2/` | Formulario WinForms limpio con un `LaVolpeButton` para validar el diseñador de Visual Studio. No activa drag-and-drop. |
 | `LaVolpe.Buttons.Tests/` | Harness STA de compatibilidad y herramientas de captura/comparación. |
-| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 73 casos. |
+| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 74 casos. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
 | `LaVolpe-Buttons-Updated-/` | Código VB6 original de referencia (no forma parte de la compilación). |
 | `ESTADO-PORT-NET.md` | Estado del port, porcentaje estimado y evidencia por área. |
+| `Tutorial.md` | Guía paso a paso para usar `LaVolpeButton` en Visual Studio. |
 | `COMPATIBILIDAD.md` | Matriz de compatibilidad por propiedad, método y evento. |
 | `PRUEBAS_COMPATIBILIDAD.md` | Casos ejecutados, resultados y pendientes. |
 | `AUDITORIA_VB6_NET8.md` | Auditoría del control VB6 y del port .NET. |
@@ -77,6 +78,8 @@ dotnet run --project .\LaVolpe.Buttons.Sample --configuration Release
 ```
 
 ## Usarlo en una aplicación WinForms
+
+Consulta también el [Tutorial de Visual Studio](Tutorial.md) para añadir el control al Toolbox, colocarlo en el diseñador y guardar sus propiedades.
 
 Añade una referencia a `LaVolpe.Buttons.Net.csproj` o a la DLL publicada y crea el control desde código:
 

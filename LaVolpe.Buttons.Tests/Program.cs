@@ -13,6 +13,24 @@ namespace LaVolpe.Buttons.Tests;
 /// </summary>
 public static class Program
 {
+    [StructLayout(LayoutKind.Sequential)]
+    private struct IconInfo
+    {
+        [MarshalAs(UnmanagedType.Bool)] public bool IsIcon;
+        public int HotspotX;
+        public int HotspotY;
+        public IntPtr MaskBitmap;
+        public IntPtr ColorBitmap;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetIconInfo(IntPtr iconHandle, out IconInfo iconInfo);
+
+    [DllImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool DeleteObject(IntPtr handle);
+
     private static int _passed;
     private static readonly List<string> _failed = new();
     private static readonly List<IDisposable> _attached = new();
@@ -114,6 +132,32 @@ public static class Program
             Check(button.AccessibleRole == AccessibleRole.RadioButton, $"OptionButton role={button.AccessibleRole}");
             button.Mode = ButtonMode.CommandButton;
             Check(button.AccessibleRole == AccessibleRole.PushButton, $"CommandButton role={button.AccessibleRole}");
+        });
+
+        Test("Mode conserva las transiciones VB6 de Value y selección", form =>
+        {
+            var option = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            var sibling = Add(form, new LaVolpeButton { Mode = ButtonMode.OptionButton });
+            option.Value = true;
+            sibling.Value = true;
+            Check(!option.Value && sibling.Value, "OptionButton no deselecciona al hermano");
+
+            var valueChanges = 0;
+            sibling.ValueChanged += (_, _) => valueChanges++;
+            sibling.Mode = ButtonMode.CheckBox;
+            Check(sibling.Value, "al salir de OptionButton no se debe perder Value en CheckBox");
+            option.Value = true;
+            Check(option.Value && sibling.Value, "un CheckBox no debe pertenecer al grupo de opciones");
+
+            sibling.Mode = ButtonMode.CommandButton;
+            Check(!sibling.Value, "CommandButton debe limpiar Value al cambiar de modo");
+            Check(valueChanges == 1, $"ValueChanged={valueChanges}");
+            sibling.Value = true;
+            Check(!sibling.Value, "CommandButton debe rechazar Value=True");
+
+            sibling.Mode = ButtonMode.OptionButton;
+            sibling.Value = true;
+            Check(!option.Value && sibling.Value, "al volver a OptionButton debe recuperar la exclusividad");
         });
 
         Test("Opciones de diseñador WinForms", form =>
@@ -944,6 +988,14 @@ public static class Program
             var button = Add(form, new LaVolpeButton());
             button.MouseIcon = image;
             Check(button.Cursor != Cursors.Default && button.Cursor.Handle != IntPtr.Zero, "cursor no creado");
+            Check(GetIconInfo(button.Cursor.Handle, out var iconInfo), "GetIconInfo no pudo leer el cursor");
+            Check(!iconInfo.IsIcon && iconInfo.HotspotX == 12 && iconInfo.HotspotY == 12,
+                $"hotspot=({iconInfo.HotspotX},{iconInfo.HotspotY})");
+            DeleteObject(iconInfo.MaskBitmap);
+            DeleteObject(iconInfo.ColorBitmap);
+            var firstHandle = button.Cursor.Handle;
+            button.MouseIcon = new Bitmap(32, 20);
+            Check(button.Cursor.Handle != IntPtr.Zero && button.Cursor.Handle != firstHandle, "cursor no sustituido");
             button.MouseIcon = null;
             Check(button.Cursor == Cursors.Default, "cursor no restaurado");
         });
