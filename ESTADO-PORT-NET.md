@@ -157,7 +157,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 
 | Propiedad | Histórico (2026-11-02) | Estado actual (verificado 2026-11-19) | Estado |
 |---|---:|---:|---|
-| `Name` | 100 % | 100 % | Heredada de `Control` |
+| `Name` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada de `Control` |
 | `BackColor` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
 | `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
@@ -165,7 +165,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
 | `CaptionStyle` | 100 % | 65 % | Sombra aproximada, sin offsets/colores por estilo |
-| `CausesValidation` | 100 % | 100 % | Heredada |
+| `CausesValidation` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `CustomClick` | 100 % | 65 % | Desplazamiento implementado; no se restringe a formas custom |
 | `Default` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Enter`, `NotifyDefault`, enlace automático a `Form.AcceptButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `DragIcon` | 50 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Image` propia, cursor/HICON creado y liberado; aplicado durante `OnGiveFeedback`, con `UseDefaultCursors = False`, y cubierto por pruebas reales |
@@ -182,23 +182,23 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `HoverColorLocks` | 100 % | 90 % | Semántica y default de VB6 |
 | `HoverForeColor` | 100 % | 85 % | Igual que el anterior |
 | `Index` | 60 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Identifica y conserva cada instancia; los eventos WinForms reciben el control por `sender` y la prueba recupera el mismo `Index`. No se inventa un `Control Array` automático que no existe en WinForms |
-| `Left` | 100 % | 100 % | Heredada |
+| `Left` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `Mode` | 100 % | 90 % | Transiciones de VB6 para `Value` y selección |
 | `MouseIcon` | 55 % | 85 % | Hotspot centrado, `HICON` liberado e integrado con `MousePointer` |
-| `MousePointer` | 100 % | 100 % | `MousePointerConstants` con mapa a `Cursor`; `MouseIcon` implica `vbCustom` |
+| `MousePointer` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `MousePointerConstants` con mapa a `Cursor`; `MouseIcon` implica `vbCustom` |
 | `Picture` | 100 % | 82 % | Máscara por color/alfa y escalado; falta transparencia exacta |
 | `PictureAlign` | 100 % | 82 % | Cálculo aproximado en casos extremos |
 | `PictureSize` | 100 % | 88 % | `Fill_ScaleUpDown`, `FillStretch`, bloqueo de tamaños fijos en `Custom*` y redimensionado proporcional; interpolación aún distinta |
-| `ResetDefaultColors` | 100 % | 75 % | Restaura colores y vuelve a heredar del contenedor al cambiar de padre |
+| `ResetDefaultColors` | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | 75 % | Restaura colores y vuelve a heredar del contenedor al cambiar de padre |
 | `ShowFocusRect` | 100 % | 92 % | Anillo por familia de estilo; las formas `Custom*` no lo dibujan |
-| `TabIndex` / `TabStop` | 100 % | 100 % | Heredadas |
-| `Tag` | 100 % | 100 % | Heredada |
+| `TabIndex` / `TabStop` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat)| Heredadas |
+| `Tag` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `ToolTipText` | 85 % | 85 % | Componente `ToolTip` externo |
-| `Top` | 100 % | 100 % | Heredada |
+| `Top` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `Value` | 100 % | 95 % | CommandButton lo rechaza; CheckBox/OptionButton marcan toda la superficie |
-| `Visible` | 100 % | 100 % | Heredada |
+| `Visible` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `WhatsThisHelpID` | 30 % | 20 % | Almacenada; sin integración |
-| `Width` | 100 % | 100 % | Heredada |
+| `Width` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 
 **Promedio de estas propiedades: ~84 %** (80 % el 2026-11-02, 67 % el 2026-11-04, ~70 % en la
 primera ronda y ~79 % en la segunda ronda del 2026-11-05).
