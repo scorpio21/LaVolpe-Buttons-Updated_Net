@@ -1232,6 +1232,12 @@ public static class Program
             Check(Offset(plain, true) == new Point(2, 1), $"forma redonda marcada={Offset(plain, true)}");
             var java = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.Java });
             Check(Offset(java, true) == Point.Empty, $"Java marcado={Offset(java, true)}");
+            var custom = Add(form, new LaVolpeButton { ButtonShape = ButtonShape.CustomFlat, CustomClick = CustomClick.West });
+            Check(Offset(custom, false) == Point.Empty, "CustomClick no debe desplazar en reposo");
+            var pressedField = typeof(LaVolpeButton).GetField("_pressed", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            pressedField.SetValue(custom, true);
+            Check(Offset(custom, false) == new Point(2, 1), $"CustomClick altera el offset de contenido={Offset(custom, false)}");
+            pressedField.SetValue(custom, false);
         });
 
         Test("CustomClick desplaza y restaura el control VB6", form =>
@@ -1251,6 +1257,48 @@ public static class Program
             Check(button.Location == origin + new Size(1, 0), $"posición pulsada={button.Location}");
             up.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 10, 10, 0) });
             Check(button.Location == origin, $"posición restaurada={button.Location}");
+        });
+
+        Test("CustomClick cubre las ocho direcciones y restricciones VB6", form =>
+        {
+            var offsets = new Dictionary<CustomClick, Size>
+            {
+                [CustomClick.North] = new Size(0, -1),
+                [CustomClick.NorthEast] = new Size(1, -1),
+                [CustomClick.NorthWest] = new Size(-1, -1),
+                [CustomClick.SouthEast] = new Size(1, 1),
+                [CustomClick.SouthWest] = new Size(-1, 1),
+                [CustomClick.East] = new Size(1, 0),
+                [CustomClick.South] = new Size(0, 1),
+                [CustomClick.West] = new Size(-1, 0)
+            };
+            var move = typeof(LaVolpeButton).GetMethod("SetCustomClickMove", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            foreach (var pair in offsets)
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    Location = new Point(100, 100),
+                    ButtonShape = ButtonShape.CustomFlat,
+                    CustomClick = pair.Key
+                });
+                var origin = button.Location;
+                move.Invoke(button, new object[] { true });
+                Check(button.Location == origin + pair.Value, $"{pair.Key}: posición={button.Location}");
+                move.Invoke(button, new object[] { false });
+                Check(button.Location == origin, $"{pair.Key}: no restaura posición");
+            }
+            var rectangular = Add(form, new LaVolpeButton { Location = new Point(100, 100), CustomClick = CustomClick.East });
+            var rectangularOrigin = rectangular.Location;
+            move.Invoke(rectangular, new object[] { true });
+            Check(rectangular.Location == rectangularOrigin, "forma rectangular no debe moverse");
+            var checkBox = Add(form, new LaVolpeButton
+            {
+                Location = new Point(100, 100), ButtonShape = ButtonShape.CustomFlat,
+                Mode = ButtonMode.CheckBox, CustomClick = CustomClick.East
+            });
+            var checkOrigin = checkBox.Location;
+            move.Invoke(checkBox, new object[] { true });
+            Check(checkBox.Location == checkOrigin, "CheckBox no debe mover el control");
         });
 
         Test("Custom marcado pinta el caption", form =>

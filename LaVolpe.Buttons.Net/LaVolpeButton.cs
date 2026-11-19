@@ -1214,7 +1214,9 @@ public class LaVolpeButton : Control, IButtonControl
     private Point ContentOffset(bool selected)
     {
         if(_style==BackStyle.Java) return Point.Empty;
-        if(_pressed) return CustomClickOffset();
+        // VB6 MoveButton desplaza el control físicamente para CustomClick;
+        // el texto y la imagen siguen usando el offset normal de pulsación.
+        if(_pressed) return new Point(1 + (_shape > ButtonShape.FullDiagonal ? 1 : 0), 1);
         if(selected) return new Point(1 + (_shape>ButtonShape.FullDiagonal?1:0), 1);
         return Point.Empty;
     }
