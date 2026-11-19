@@ -159,7 +159,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 |---|---:|---:|---|
 | `Name` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada de `Control` |
 | `BackColor` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
-| `ButtonShape` | 100 % | **98 %** | Las nueve formas, regiones, máscaras, persistencia de `Custom*` y máscaras de imágenes grandes están cubiertas; redimensiona proporcionalmente como `ScaleImage`. Queda la comparación píxel a píxel de casos extremos |
+| `ButtonShape` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Compatibilidad funcional completa: nueve formas, regiones, máscaras, persistencia de `Custom*`, imágenes grandes y redimensionado proporcional como `ScaleImage`, todo cubierto por pruebas. La diferencia píxel a píxel pertenece a la equivalencia visual global |
 | `ButtonStyle` | 100 % | **80 %** | Ocho estilos conservados y renderizados con estados normal/marcado; sigue pendiente la paridad píxel a píxel de los bordes GDI de `DrawButton_*` |
 | `Cancel` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
