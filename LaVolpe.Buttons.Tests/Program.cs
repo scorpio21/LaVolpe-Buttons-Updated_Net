@@ -374,6 +374,67 @@ public static class Program
             }
         });
 
+        Test("Picture, PictureAlign y PictureSize cubren la matriz VB6", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "A", Size = new Size(120, 60) });
+            using var image = new Bitmap(40, 20, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var imageGraphics = Graphics.FromImage(image))
+            {
+                imageGraphics.Clear(Color.Yellow);
+                imageGraphics.FillRectangle(Brushes.Red, 10, 4, 20, 12);
+            }
+            image.SetPixel(1, 0, Color.FromArgb(255, 255, 253, 0));
+            image.SetPixel(2, 0, Color.FromArgb(255, 255, 248, 0));
+            image.SetPixel(3, 0, Color.FromArgb(0, 255, 255, 0));
+            button.Picture = image;
+            var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            using var bitmap = new Bitmap(button.Width, button.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using var graphics = Graphics.FromImage(bitmap);
+            foreach (var size in Enum.GetValues<ImageSize>())
+            {
+                button.PictureSize = size;
+                var layout = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+                var imageRect = (Rectangle)(layout.GetType().GetField("Image") ?? layout.GetType().GetField("Item2")!).GetValue(layout)!;
+                Check(imageRect.Width > 0 && imageRect.Height > 0, $"PictureSize={size} no genera imagen");
+                Check(button.ClientRectangle.Contains(imageRect), $"PictureSize={size} deja la imagen fuera: {imageRect}");
+                if (size is ImageSize.Size16x16 or ImageSize.Size24x24 or ImageSize.Size32x32)
+                {
+                    var expected = ((int)size + 2) * 8;
+                    Check(imageRect.Width == expected && imageRect.Height == expected, $"PictureSize={size}: {imageRect.Size}");
+                }
+            }
+            button.PictureSize = ImageSize.FillStretch;
+            var stretch = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+            var stretchRect = (Rectangle)(stretch.GetType().GetField("Image") ?? stretch.GetType().GetField("Item2")!).GetValue(stretch)!;
+            Check(stretchRect.Size == new Size(114, 54), $"FillStretch={stretchRect.Size}");
+            button.PictureSize = ImageSize.FillScaleUpDown;
+            var scale = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+            var scaleRect = (Rectangle)(scale.GetType().GetField("Image") ?? scale.GetType().GetField("Item2")!).GetValue(scale)!;
+            Check(scaleRect.Size == new Size(96, 48), $"FillScaleUpDown={scaleRect.Size}");
+
+            button.PictureSize = ImageSize.Size16x16;
+            foreach (var align in Enum.GetValues<ImagePlacement>())
+            {
+                button.PictureAlign = align;
+                var layout = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+                var imageRect = (Rectangle)(layout.GetType().GetField("Image") ?? layout.GetType().GetField("Item2")!).GetValue(layout)!;
+                Check(button.ClientRectangle.Contains(imageRect), $"PictureAlign={align} deja la imagen fuera: {imageRect}");
+            }
+
+            using var rendered = new Bitmap(40, 20, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (var renderGraphics = Graphics.FromImage(rendered))
+            {
+                renderGraphics.Clear(Color.Transparent);
+                var draw = typeof(LaVolpeButton).GetMethod("DrawImageWithMask", BindingFlags.NonPublic | BindingFlags.Static)!;
+                draw.Invoke(null, new object[] { renderGraphics, image, new Rectangle(0, 0, 40, 20) });
+            }
+            Check(rendered.GetPixel(0, 0).A == 0, "Picture no elimina el color máscara");
+            Check(rendered.GetPixel(1, 0).A == 0, "Picture no aplica tolerancia VB6 de ±3");
+            Check(rendered.GetPixel(2, 0).A > 0, "Picture elimina colores fuera de la tolerancia VB6");
+            Check(rendered.GetPixel(3, 0).A == 0, "Picture no elimina alpha transparente");
+            Check(rendered.GetPixel(20, 10).R > 200, "Picture no conserva el contenido visible");
+        });
+
         Test("Caption layout admite longitudes y saltos VB6", form =>
         {
             var button = Add(form, new LaVolpeButton { Size = new Size(160, 60), Font = new Font("Tahoma", 9.75f, FontStyle.Bold) });
@@ -534,6 +595,38 @@ public static class Program
             Check(button.GradientMode == GradientMode.None, $"GradientMode={button.GradientMode}");
             Check(button.HoverColorLocks == HoverColorLocks.TextAndBackColor, $"HoverColorLocks={button.HoverColorLocks}");
             Check(button.Palette.NormalBackColor.IsEmpty, "Palette no se restablece");
+            var panel = new Panel { BackColor = Color.MidnightBlue, Size = new Size(200, 100) };
+            form.Controls.Add(panel);
+            var inherited = new LaVolpeButton { BackColor = Color.Orange };
+            panel.Controls.Add(inherited);
+            inherited.ResetDefaultColors = true;
+            var newPanel = new Panel { BackColor = Color.DarkGreen, Size = new Size(200, 100) };
+            form.Controls.Add(newPanel);
+            panel.Controls.Remove(inherited);
+            newPanel.Controls.Add(inherited);
+            Check(inherited.BackColor == Color.DarkGreen, $"BackColor no vuelve a heredar al cambiar de padre: {inherited.BackColor}");
+        });
+
+        Test("ShowFocusRect controla el foco en las formas compatibles", form =>
+        {
+            foreach (var shape in new[] { ButtonShape.Rectangular, ButtonShape.LeftDiagonal, ButtonShape.Round3D, ButtonShape.RoundFlat })
+            {
+                var button = Add(form, new LaVolpeButton { ButtonShape = shape, Size = new Size(120, 40), ShowFocusRect = true });
+                button.Focus();
+                Application.DoEvents();
+                using var focused = new Bitmap(button.Width, button.Height);
+                using var hidden = new Bitmap(button.Width, button.Height);
+                button.DrawToBitmap(focused, button.ClientRectangle);
+                button.ShowFocusRect = false;
+                button.DrawToBitmap(hidden, button.ClientRectangle);
+                var different = 0;
+                for (var y = 0; y < focused.Height; y++)
+                    for (var x = 0; x < focused.Width; x++)
+                        if (focused.GetPixel(x, y).ToArgb() != hidden.GetPixel(x, y).ToArgb()) different++;
+                Check(different > 0, $"{shape}: ShowFocusRect no cambia el renderizado");
+                form.Controls.Remove(button);
+                button.Dispose();
+            }
         });
 
         Test("HoverColorLocks sincroniza colores como VB6", form =>
