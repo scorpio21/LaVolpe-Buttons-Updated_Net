@@ -584,6 +584,35 @@ public static class Program
             }
         });
 
+        Test("ButtonShape cubre las nueve formas y sus regiones", form =>
+        {
+            using var image = new Bitmap(60, 40);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.Magenta);
+                using var brush = new SolidBrush(Color.CornflowerBlue);
+                graphics.FillEllipse(brush, 0, 0, 60, 40);
+            }
+            _attached.Add(image);
+            foreach (var shape in Enum.GetValues<ButtonShape>())
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    Size = new Size(60, 40),
+                    Picture = image,
+                    ButtonShape = shape
+                });
+                Check(button.ButtonShape == shape, $"{shape}: valor no conservado");
+                if (shape == ButtonShape.Rectangular)
+                    Check(button.Region is null || button.Region.IsVisible(30, 20), "Rectangular: región inesperada");
+                else
+                {
+                    Check(button.Region is not null, $"{shape}: Region=null");
+                    Check(button.Region!.IsVisible(30, 20), $"{shape}: centro fuera de la región");
+                }
+            }
+        });
+
         Test("Regiones conservadas en escalas equivalentes a DPI", form =>
         {
             using var dpiImage = new Bitmap(32, 32);
