@@ -1041,6 +1041,31 @@ public static class Program
             Check(true);
         });
 
+        Test("ButtonStyle cubre los ocho estilos y sus estados", form =>
+        {
+            for (var i = 0; i < 8; i++)
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    Caption = $"Style {i}",
+                    ButtonStyle = (BackStyle)i,
+                    Mode = ButtonMode.CheckBox,
+                    Size = new Size(120, 40)
+                });
+                Check(button.ButtonStyle == (BackStyle)i, $"estilo {i}: valor no conservado");
+                using var normal = new Bitmap(button.Width, button.Height);
+                using var checkedState = new Bitmap(button.Width, button.Height);
+                button.DrawToBitmap(normal, button.ClientRectangle);
+                button.Value = true;
+                button.DrawToBitmap(checkedState, button.ClientRectangle);
+                var differences = 0;
+                for (var y = 0; y < normal.Height; y++)
+                    for (var x = 0; x < normal.Width; x++)
+                        if (normal.GetPixel(x, y) != checkedState.GetPixel(x, y)) differences++;
+                Check(differences > 0, $"estilo {i}: el estado marcado no cambia el renderizado");
+            }
+        });
+
         Test("Java conserva ForeColor", form =>
         {
             var button = Add(form, new LaVolpeButton { ButtonStyle = BackStyle.Java, ForeColor = Color.Navy });
