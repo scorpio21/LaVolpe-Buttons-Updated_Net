@@ -157,15 +157,15 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 
 | Propiedad | Histórico (2026-11-02) | Estado actual (verificado 2026-11-19) | Estado |
 |---|---:|---:|---|
-| `Name` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada de `Control` |
-| `BackColor` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
+| `Name` | 100 % | !(https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada de `Control` |
+| `BackColor` | 100 % | !(https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
 | `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
-| `Cancel` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
+| `Cancel` | 65 % | !(https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
 | `CaptionStyle` | 100 % | 65 % | Sombra aproximada, sin offsets/colores por estilo |
-| `CausesValidation` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
+| `CausesValidation` | 100 % | !(https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Heredada |
 | `CustomClick` | 100 % | 65 % | Desplazamiento implementado; no se restringe a formas custom |
 | `Default` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Enter`, `NotifyDefault`, enlace automático a `Form.AcceptButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `DragIcon` | 50 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Image` propia, cursor/HICON creado y liberado; aplicado durante `OnGiveFeedback`, con `UseDefaultCursors = False`, y cubierto por pruebas reales |
