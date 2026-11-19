@@ -158,7 +158,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | Propiedad | Histórico (2026-11-02) | Estado actual (verificado 2026-11-19) | Estado |
 |---|---:|---:|---|
 | `Name` | 100 % | 100 % | Heredada de `Control` |
-| `BackColor` | 100 % | 100 % | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
+| `BackColor` | 100 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | Se aplica en los 8 estilos, conserva el valor configurado y queda cubierto por prueba de fondo efectivo y renderizado |
 | `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
 | `Cancel` | 65 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
