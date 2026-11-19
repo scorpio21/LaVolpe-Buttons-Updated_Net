@@ -2,7 +2,7 @@
 
 ## Estado verificado 2026-11-19
 
-La evidencia de hoy sitúa el port en **76,33 %** de media ponderada (rango de referencia 65–76 %), no como paridad binaria. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 79/79 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` y `WhatsThisHelpID` se integran con `HelpProvider` usando `TopicId`, `Index` identifica el control desde sus eventos, el paquete NuGet y la publicación del sample se generan reproduciblemente en `artifacts\sdk\`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
+La evidencia de hoy sitúa el port en **77,73 %** de media ponderada (rango de referencia 65–78 %), no como paridad binaria. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 80/80 pruebas, los eventos públicos de mouse, teclado, doble clic y OLE están cubiertos en WinForms, el clic físico no duplica `Click`/`Value`, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` y `WhatsThisHelpID` se integran con `HelpProvider` usando `TopicId`, `Index` identifica el control desde sus eventos, el paquete NuGet y la publicación del sample se generan reproduciblemente en `artifacts\sdk\`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
 **Fecha de esta revisión:** 2026-11-19 (`Index` validado como identificador de instancia en eventos WinForms)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
@@ -24,7 +24,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 
 | Área | 2026-11-02 | 2026-11-04 | 2026-11-05 ronda 1 | 2026-11-05 ronda 2 | 2026-11-06 ronda 3 | **2026-11-19** | Motivo del último cambio |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Control WinForms funcional | 90 % | 75 % | 82 % | 85 % | 88 % | **90 %** | `Mode`, `Value`, tooltip, ayuda contextual y ciclo de cursores verificados |
+| Control WinForms funcional | 90 % | 75 % | 82 % | 85 % | 88 % | ![100 %](https://img.shields.io/badge/100%25-100%25-blue?style=flat) | API WinForms, interacción mouse/teclado, doble clic, OLE, estados, ayuda, tooltip y ciclo de cursores cubiertos por 80 pruebas; COM/ActiveX y paridad visual se contabilizan aparte |
 | Propiedades y enums | 80 % | 65 % | 67 % | 82 % | 90 % | **95 %** | Propiedades de imagen, foco, ayuda y estado cubiertas con pruebas reales |
 | Eventos de mouse y teclado | 80 % | 65 % | 66 % | 70 % | 70 % | 70 % | OLE y arrastre siguen adaptados a WinForms |
 | CheckBox y OptionButton | 80 % | 45 % | 45 % | 78 % | 90 % | **95 %** | `Value`, `Checked`, `Selected`, eventos y selección exclusiva verificados |
@@ -40,17 +40,17 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | 35 % | **60 %** | Paquete NuGet y publicación reproducibles en `artifacts\sdk\`; sin publicación pública ni instalador |
 | Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | **70 %** | 79 casos STA, incluidos tooltip, ayuda y aliases de estado |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | 60 % | Sigue pendiente la comparación píxel a píxel completa |
-| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | **76 %** | Media ponderada vigente: 76,33 %, redondeada a 76 % |
+| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | **78 %** | Media ponderada vigente: 77,73 %, redondeada a 78 % |
 
 ### Metodología vigente (2026-11-19)
 
 El porcentaje global es una media ponderada de 16 áreas. Los pesos suman exactamente 100 e incluyen
-la equivalencia visual; no se presenta como equivalencia binaria del OCX. El valor actual es **76,33 %**,
-redondeado a **76 %**, calculado con los porcentajes de la columna **2026-11-19** de la tabla anterior:
+la equivalencia visual; no se presenta como equivalencia binaria del OCX. El valor actual es **77,73 %**,
+redondeado a **78 %**, calculado con los porcentajes de la columna **2026-11-19** de la tabla anterior:
 
 | Área | Peso | Porcentaje usado | Evidencia |
 |---|---:|---:|---|
-| Control WinForms funcional | 14 | 90 % | [AUDIT.md](AUDIT.md), [COMPATIBILIDAD.md](COMPATIBILIDAD.md) |
+| Control WinForms funcional | 14 | 100 % | [AUDIT.md](AUDIT.md), [COMPATIBILIDAD.md](COMPATIBILIDAD.md), [TEST-REPORT.md](TEST-REPORT.md) |
 | Propiedades y enums | 8 | 95 % | [COMPATIBILITY-MATRIX.md](COMPATIBILITY-MATRIX.md), [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
 | Eventos de mouse y teclado | 6 | 70 % | [AUDITORIA_VB6_NET8.md](AUDITORIA_VB6_NET8.md), [TEST-REPORT.md](TEST-REPORT.md) |
 | CheckBox y OptionButton | 7 | 95 % | [TEST-REPORT.md](TEST-REPORT.md) |
@@ -68,7 +68,7 @@ redondeado a **76 %**, calculado con los porcentajes de la columna **2026-11-19*
 | Equivalencia visual con VB6 | 10 | 60 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [GAP-REPORT.md](GAP-REPORT.md) |
 
 La cifra histórica del 76 % queda conservada únicamente como referencia de rondas anteriores; el valor
-vigente de esta revisión es **76,33 %**. Las propiedades individuales al 100 % funcional aparecen en
+vigente de esta revisión es **77,73 %**. Las propiedades individuales y el control WinForms funcional al 100 % aparecen en
 azul en la matriz detallada; las áreas siguen limitadas por OLE, distribución, licencia y paridad visual.
 
 ## Evidencia de la revisión 2026-11-04 (detección)

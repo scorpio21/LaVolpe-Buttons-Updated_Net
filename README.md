@@ -10,7 +10,7 @@ Inspired by the original LaVolpe Buttons control for VB6. This project is an ind
 
 ![Estado del port .NET](docs/port-progress.svg)
 
-El rango global estimado es **65–76 %**. La media ponderada de esta revisión es **75,83 %** (76 % redondeado). Las barras resumen la compatibilidad
+El rango global estimado es **65–78 %**. La media ponderada de esta revisión es **77,73 %** (78 % redondeado). Las barras resumen la compatibilidad
 por área; la metodología, la evidencia y las limitaciones están documentadas
 en [ESTADO-PORT-NET.md](ESTADO-PORT-NET.md).
 
@@ -29,7 +29,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 79 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 80 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 

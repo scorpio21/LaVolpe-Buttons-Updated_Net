@@ -826,6 +826,30 @@ public static class Program
             Check(keyDown == 2 && keyUp == 2, $"LvKeyDown={keyDown}, LvKeyUp={keyUp}");
         });
 
+        Test("Eventos públicos de mouse, teclado y doble clic", form =>
+        {
+            var button = Add(form, new LaVolpeButton());
+            var mouseDown = 0;
+            var mouseUp = 0;
+            var mouseMove = 0;
+            var keyPress = 0;
+            var doubleClick = 0;
+            button.LvMouseDown += (_, e) => { if (e.Button == MouseButtons.Left) mouseDown++; };
+            button.LvMouseUp += (_, e) => { if (e.Button == MouseButtons.Left) mouseUp++; };
+            button.LvMouseMove += (_, _) => mouseMove++;
+            button.LvKeyPress += (_, e) => { if (e.KeyChar == 'x') keyPress++; };
+            button.ButtonDoubleClick += (_, buttonNumber) => { if (buttonNumber == (int)MouseButtons.Left) doubleClick++; };
+            var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            typeof(LaVolpeButton).GetMethod("OnMouseMove", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.None, 0, 4, 5, 0) });
+            typeof(LaVolpeButton).GetMethod("OnMouseDown", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 4, 5, 0) });
+            typeof(LaVolpeButton).GetMethod("OnMouseUp", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 4, 5, 0) });
+            typeof(LaVolpeButton).GetMethod("OnKeyPress", flags)!.Invoke(button, new object[] { new KeyPressEventArgs('x') });
+            typeof(LaVolpeButton).GetMethod("OnMouseDoubleClick", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 2, 4, 5, 0) });
+            Check(mouseDown == 1 && mouseUp == 1 && mouseMove == 1, $"mouse={mouseDown}/{mouseUp}/{mouseMove}");
+            Check(keyPress == 1, $"LvKeyPress={keyPress}");
+            Check(doubleClick == 1, $"ButtonDoubleClick={doubleClick}");
+        });
+
         Test("Escape y flechas reproducen la navegación VB6", form =>
         {
             var cancel = Add(form, new LaVolpeButton { Cancel = true });
@@ -1212,6 +1236,8 @@ public static class Program
             var button = Add(form, new LaVolpeButton());
             button.DragIcon = image;
             Check(button.DragIcon == image, "DragIcon no asignado");
+            var feedbackEvent = 0;
+            button.OLEGiveFeedback += (_, _) => feedbackEvent++;
             var field = typeof(LaVolpeButton).GetField("_dragIconCursor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var dragCursor = field?.GetValue(button) as Cursor;
             Check(dragCursor is not null, "cursor de arrastre no creado");
@@ -1220,6 +1246,7 @@ public static class Program
                 .Invoke(button, new object[] { feedback });
             Check(!feedback.UseDefaultCursors, "DragIcon no sustituyó el cursor durante OLEGiveFeedback");
             Check(ReferenceEquals(button.Cursor, dragCursor), "OLEGiveFeedback no aplicó el cursor DragIcon");
+            Check(feedbackEvent == 1, $"OLEGiveFeedback={feedbackEvent}");
             button.DragIcon = null;
             Check(field?.GetValue(button) is null, "cursor de arrastre no liberado");
         });
