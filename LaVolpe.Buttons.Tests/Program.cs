@@ -351,6 +351,42 @@ public static class Program
             }
         });
 
+        Test("CaptionAlign cubre las nueve alineaciones", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "Texto", Size = new Size(160, 60) });
+            var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", BindingFlags.NonPublic | BindingFlags.Instance)!;
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            foreach (var alignment in Enum.GetValues<ContentAlignment>())
+            {
+                button.CaptionAlign = alignment;
+                var result = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+                var textField = result.GetType().GetField("Text") ?? result.GetType().GetField("Item1")!;
+                var textRect = (Rectangle)textField!.GetValue(result)!;
+                Check(button.ClientRectangle.Contains(textRect), $"{alignment}: caption fuera del cliente {textRect}");
+                Check(textRect.Width > 0 && textRect.Height > 0, $"{alignment}: rectángulo vacío");
+            }
+        });
+
+        Test("CaptionStyle dibuja los tres estados", form =>
+        {
+            var button = Add(form, new LaVolpeButton { Caption = "Texto", Size = new Size(140, 40) });
+            using var normal = new Bitmap(button.Width, button.Height);
+            using var styled = new Bitmap(button.Width, button.Height);
+            button.CaptionStyle = CaptionStyle.Default;
+            button.DrawToBitmap(normal, button.ClientRectangle);
+            foreach (var style in new[] { CaptionStyle.Raised, CaptionStyle.Sunken })
+            {
+                button.CaptionStyle = style;
+                button.DrawToBitmap(styled, button.ClientRectangle);
+                var differences = 0;
+                for (var y = 0; y < normal.Height; y++)
+                    for (var x = 0; x < normal.Width; x++)
+                        if (normal.GetPixel(x, y) != styled.GetPixel(x, y)) differences++;
+                Check(differences > 0, $"{style}: no cambia el renderizado");
+            }
+        });
+
         Test("BackColor hereda del contenedor", form =>
         {
             form.BackColor = Color.FromArgb(230, 230, 230);

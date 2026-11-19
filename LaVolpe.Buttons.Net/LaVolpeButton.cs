@@ -1254,6 +1254,12 @@ public class LaVolpeButton : Control, IButtonControl
         ContentAlignment.TopRight or ContentAlignment.MiddleRight or ContentAlignment.BottomRight => 1,
         _ => 2
     };
+    private int CaptionY(int textHeight, int containerHeight) => _captionAlign switch
+    {
+        ContentAlignment.TopLeft or ContentAlignment.TopCenter or ContentAlignment.TopRight => 4,
+        ContentAlignment.BottomLeft or ContentAlignment.BottomCenter or ContentAlignment.BottomRight => Math.Max(4, containerHeight - 5 - textHeight),
+        _ => (containerHeight - textHeight) / 2
+    };
     // Traduce CalculateBoundingRects de lvButtons.ctl (texto e imagen).
     private (Rectangle Text, Rectangle Image, bool ShowImage) ComputeLayout(Graphics g, Font f, Rectangle client, string text)
     {
@@ -1303,7 +1309,7 @@ public class LaVolpeButton : Control, IButtonControl
                         left=((adjWidth-(imgLeft?size:0)-(imgRight?size:0))-cw)/2+lEdge+(imgLeft?size:0);
                     break;
             }
-            trect=new Rectangle(left,(h-chh)/2,cw,chh);
+            trect=new Rectangle(left,CaptionY(chh,h),cw,chh);
         }
         Rectangle irect=Rectangle.Empty;
         bool show=false;
@@ -1349,11 +1355,11 @@ public class LaVolpeButton : Control, IButtonControl
                         if(hasText) trect.Y=iy-2-ch;
                         break;
                 }
-                if(hasText && _pictureAlign<ImagePlacement.TopCenter) trect.Y=(h-ch)/2;
+                if(hasText && _pictureAlign<ImagePlacement.TopCenter) trect.Y=CaptionY(ch,h);
                 irect=new Rectangle(ix,iy,size,size);
             }
         }
-        else if(hasText) trect.Y=(h-ch)/2;
+        else if(hasText) trect.Y=CaptionY(ch,h);
         // Comprobaciones de sanidad finales de VB6.
         if(hasText)
         {
