@@ -28,26 +28,39 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-        this.laVolpeButton1 = new LaVolpe.Buttons.Net.LaVolpeButton();
-        this.SuspendLayout();
+        laVolpeButton1 = new LaVolpe.Buttons.Net.LaVolpeButton();
+        SuspendLayout();
         // 
         // laVolpeButton1
         // 
-        this.laVolpeButton1.Caption = "LaVolpe Button";
-        this.laVolpeButton1.Location = new System.Drawing.Point(330, 190);
-        this.laVolpeButton1.Name = "laVolpeButton1";
-        this.laVolpeButton1.Size = new System.Drawing.Size(140, 40);
-        this.laVolpeButton1.TabIndex = 0;
+        laVolpeButton1.AccessibleName = "LaVolpe Button";
+        laVolpeButton1.AccessibleRole = AccessibleRole.PushButton;
+        laVolpeButton1.BackColor = SystemColors.Control;
+        laVolpeButton1.ButtonShape = Net.ButtonShape.RightDiagonal;
+        laVolpeButton1.ButtonStyle = Net.BackStyle.XP;
+        laVolpeButton1.Caption = "LaVolpe Button";
+        laVolpeButton1.DragIcon = null;
+        laVolpeButton1.GradientColor = SystemColors.ControlLight;
+        laVolpeButton1.HoverBackColor = SystemColors.Control;
+        laVolpeButton1.HoverForeColor = SystemColors.ControlText;
+        laVolpeButton1.Location = new Point(330, 190);
+        laVolpeButton1.MouseIcon = null;
+        laVolpeButton1.Name = "laVolpeButton1";
+        laVolpeButton1.Picture = null;
+        laVolpeButton1.ResetDefaultColors = false;
+        laVolpeButton1.ShowFocusRect = true;
+        laVolpeButton1.Size = new Size(140, 40);
+        laVolpeButton1.TabIndex = 0;
         // 
         // Form1
         // 
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
-        this.Controls.Add(this.laVolpeButton1);
-        this.Name = "Form1";
-        this.Text = "Form1";
-        this.ResumeLayout(false);
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(800, 450);
+        Controls.Add(laVolpeButton1);
+        Name = "Form1";
+        Text = "Form1";
+        ResumeLayout(false);
     }
 
     #endregion
