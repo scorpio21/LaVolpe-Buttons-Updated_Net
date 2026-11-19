@@ -161,15 +161,15 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `BackColor` | 100 % | 92 % | Se aplica en los 8 estilos; los tonos se derivan con `Shade()` |
 | `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
-| `Cancel` | 65 % | **100 %** | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
+| `Cancel` | 65 % | <span style="color:blue"><strong>100 %</strong></span> | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
 | `CaptionStyle` | 100 % | 65 % | Sombra aproximada, sin offsets/colores por estilo |
 | `CausesValidation` | 100 % | 100 % | Heredada |
 | `CustomClick` | 100 % | 65 % | Desplazamiento implementado; no se restringe a formas custom |
-| `Default` | 65 % | **100 %** | `Enter`, `NotifyDefault`, enlace automático a `Form.AcceptButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
-| `DragIcon` | 50 % | **100 %** | `Image` propia, cursor/HICON creado y liberado; aplicado durante `OnGiveFeedback`, con `UseDefaultCursors = False`, y cubierto por pruebas reales |
-| `DragMode` | 65 % | **100 %** | `vbManual` no inicia arrastre automático; `vbAutomatic` usa el umbral de movimiento, crea el `DataObject`, dispara `OLEStartDrag` y completa el ciclo con `OLECompleteDrag`; cubierto por pruebas reales |
+| `Default` | 65 % | <span style="color:blue"><strong>100 %</strong></span> | `Enter`, `NotifyDefault`, enlace automático a `Form.AcceptButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
+| `DragIcon` | 50 % | <span style="color:blue"><strong>100 %</strong></span> | `Image` propia, cursor/HICON creado y liberado; aplicado durante `OnGiveFeedback`, con `UseDefaultCursors = False`, y cubierto por pruebas reales |
+| `DragMode` | 65 % | <span style="color:blue"><strong>100 %</strong></span> | `vbManual` no inicia arrastre automático; `vbAutomatic` usa el umbral de movimiento, crea el `DataObject`, dispara `OLEStartDrag` y completa el ciclo con `OLECompleteDrag`; cubierto por pruebas reales |
 | `Enabled` | 100 % | 95 % | Heredada y con pintura deshabilitada |
 | `Font` | 100 % | 95 % | Hereda la fuente del contenedor, como VB6 |
 | `FontStyle` | 100 % | 95 % | Alias `lv_Bold`…`lv_BoldItalicUnderline` |
@@ -177,11 +177,11 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `GradientColor` | 100 % | 85 % | Funciona; no usa todas las fórmulas de VB6 |
 | `GradientMode` | 100 % | 90 % | Las 4 direcciones verificadas |
 | `Height` | 100 % | 100 % | Heredada |
-| `HelpContextID` | 30 % | **100 %** | Se registra en un `HelpProvider` asignado como `HelpNavigator.TopicId`, se habilita con ID distinto de cero y se deshabilita al volver a cero; cubierto por pruebas reales |
+| `HelpContextID` | 30 % | <span style="color:blue"><strong>100 %</strong></span> | Se registra en un `HelpProvider` asignado como `HelpNavigator.TopicId`, se habilita con ID distinto de cero y se deshabilita al volver a cero; cubierto por pruebas reales |
 | `HoverBackColor` | 100 % | 85 % | Default = `BackColor`; locks respetados |
 | `HoverColorLocks` | 100 % | 90 % | Semántica y default de VB6 |
 | `HoverForeColor` | 100 % | 85 % | Igual que el anterior |
-| `Index` | 60 % | **100 %** | Identifica y conserva cada instancia; los eventos WinForms reciben el control por `sender` y la prueba recupera el mismo `Index`. No se inventa un `Control Array` automático que no existe en WinForms |
+| `Index` | 60 % | <span style="color:blue"><strong>100 %</strong></span> | Identifica y conserva cada instancia; los eventos WinForms reciben el control por `sender` y la prueba recupera el mismo `Index`. No se inventa un `Control Array` automático que no existe en WinForms |
 | `Left` | 100 % | 100 % | Heredada |
 | `Mode` | 100 % | 90 % | Transiciones de VB6 para `Value` y selección |
 | `MouseIcon` | 55 % | 85 % | Hotspot centrado, `HICON` liberado e integrado con `MousePointer` |
