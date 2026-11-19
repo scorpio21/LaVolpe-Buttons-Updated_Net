@@ -10,7 +10,7 @@ Inspired by the original LaVolpe Buttons control for VB6. This project is an ind
 
 ![Estado del port .NET](docs/port-progress.svg)
 
-El rango global estimado es **65–75 %**. Las barras resumen la compatibilidad
+El rango global estimado es **65–76 %**. La media ponderada de esta revisión es **75,83 %** (76 % redondeado). Las barras resumen la compatibilidad
 por área; la metodología, la evidencia y las limitaciones están documentadas
 en [ESTADO-PORT-NET.md](ESTADO-PORT-NET.md).
 
