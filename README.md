@@ -135,14 +135,18 @@ dotnet add package LaVolpe.Buttons.Net --version 1.0.0
 Para generar el paquete localmente:
 
 ```powershell
-dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj --configuration Release --no-restore --output .\artifacts\nuget
+dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj --configuration Release --no-restore --output .\artifacts\sdk\nuget
 ```
 
 ```powershell
 dotnet publish .\LaVolpe.Buttons.Sample\LaVolpe.Buttons.Sample.csproj `
   --configuration Release `
-  --output .\artifacts\publish
+  --output .\artifacts\sdk\publish
 ```
+
+La salida reproducible queda en `artifacts\sdk\`: `nuget\LaVolpe.Buttons.Net.1.0.0.nupkg`
+y `publish\` con el sample y la DLL. Es una salida local de validación; no debe
+publicarse en `nuget.org` mientras el issue de licencia upstream siga abierto.
 
 ## Características
 

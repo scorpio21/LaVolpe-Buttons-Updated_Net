@@ -2,7 +2,7 @@
 
 ## Estado verificado 2026-11-19
 
-La evidencia de hoy sitúa el port en **75,83 %** de media ponderada (rango de referencia 65–76 %), no como paridad binaria. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 79/79 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` y `WhatsThisHelpID` se integran con `HelpProvider` usando `TopicId`, `Index` identifica el control desde sus eventos, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
+La evidencia de hoy sitúa el port en **76,33 %** de media ponderada (rango de referencia 65–76 %), no como paridad binaria. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 79/79 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` y `WhatsThisHelpID` se integran con `HelpProvider` usando `TopicId`, `Index` identifica el control desde sus eventos, el paquete NuGet y la publicación del sample se generan reproduciblemente en `artifacts\sdk\`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
 **Fecha de esta revisión:** 2026-11-19 (`Index` validado como identificador de instancia en eventos WinForms)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
@@ -37,15 +37,15 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Formulario de ejemplo | 85 % | 35 % | 35 % | 58 % | 58 % | 58 % | La demo sigue siendo un subconjunto |
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | 65 % | Sin cambios |
 | Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 80 % | 80 % | Toolbox, PropertyGrid y serialización ya validados |
-| Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | 35 % | NuGet local; sin publicación ni instalador |
+| Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | 35 % | **60 %** | Paquete NuGet y publicación reproducibles en `artifacts\sdk\`; sin publicación pública ni instalador |
 | Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | **70 %** | 79 casos STA, incluidos tooltip, ayuda y aliases de estado |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | 60 % | Sigue pendiente la comparación píxel a píxel completa |
-| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | **76 %** | Media ponderada vigente: 75,83 %, redondeada a 76 % |
+| **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | **76 %** | Media ponderada vigente: 76,33 %, redondeada a 76 % |
 
 ### Metodología vigente (2026-11-19)
 
 El porcentaje global es una media ponderada de 16 áreas. Los pesos suman exactamente 100 e incluyen
-la equivalencia visual; no se presenta como equivalencia binaria del OCX. El valor actual es **75,83 %**,
+la equivalencia visual; no se presenta como equivalencia binaria del OCX. El valor actual es **76,33 %**,
 redondeado a **76 %**, calculado con los porcentajes de la columna **2026-11-19** de la tabla anterior:
 
 | Área | Peso | Porcentaje usado | Evidencia |
@@ -63,12 +63,12 @@ redondeado a **76 %**, calculado con los porcentajes de la columna **2026-11-19*
 | Formulario de ejemplo | 5 | 58 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [SampleForm.cs](LaVolpe.Buttons.Sample/SampleForm.cs) |
 | Proyecto de ejemplo | 3 | 65 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
 | Diseñador de Visual Studio | 4 | 80 % | [PRUEBAS_COMPATIBILIDAD.md](PRUEBAS_COMPATIBILIDAD.md) |
-| Instalación/distribución | 2 | 35 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
+| Instalación/distribución | 2 | 60 % | [README.md](README.md), [MIGRATION-NOTES.md](MIGRATION-NOTES.md) |
 | Pruebas automatizadas | 3 | 70 % | [TEST-REPORT.md](TEST-REPORT.md) |
 | Equivalencia visual con VB6 | 10 | 60 % | [VISUAL-COMPARISON.md](VISUAL-COMPARISON.md), [GAP-REPORT.md](GAP-REPORT.md) |
 
 La cifra histórica del 76 % queda conservada únicamente como referencia de rondas anteriores; el valor
-vigente de esta revisión es **75,83 %**. Las propiedades individuales al 100 % funcional aparecen en
+vigente de esta revisión es **76,33 %**. Las propiedades individuales al 100 % funcional aparecen en
 azul en la matriz detallada; las áreas siguen limitadas por OLE, distribución, licencia y paridad visual.
 
 ## Evidencia de la revisión 2026-11-04 (detección)
