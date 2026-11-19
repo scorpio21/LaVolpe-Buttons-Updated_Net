@@ -980,9 +980,11 @@ public static class Program
                     ButtonStyle = (BackStyle)i,
                     Mode = ButtonMode.CheckBox
                 });
+                Check(button.ButtonStyle == (BackStyle)i, $"estilo {i} no se conserva");
                 using (var bitmap = new Bitmap(100, 36))
                 {
                     button.DrawToBitmap(bitmap, new Rectangle(0, 0, 100, 36));
+                    Check(bitmap.GetPixel(50, 18).A != 0, $"estilo {i} no pinta el fondo");
                     button.Value = true;
                     button.DrawToBitmap(bitmap, new Rectangle(0, 0, 100, 36));
                     button.Value = false;
