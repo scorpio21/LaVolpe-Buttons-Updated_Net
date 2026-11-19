@@ -513,6 +513,44 @@ public static class Program
             Check(button.HoverBackColor == Color.Blue, $"BackColor no sincronizó gradiente={button.HoverBackColor}");
         });
 
+        Test("HoverColorLocks cubre las cuatro políticas VB6", form =>
+        {
+            var policies = new[]
+            {
+                (HoverColorLocks.TextAndBackColor, Color.Red, Color.Blue),
+                (HoverColorLocks.TextColorOnly, Color.Yellow, Color.Blue),
+                (HoverColorLocks.BackColorOnly, Color.Red, Color.White),
+                (HoverColorLocks.NoLocks, Color.Yellow, Color.White)
+            };
+            foreach (var policy in policies)
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    BackColor = Color.Red,
+                    ForeColor = Color.Blue,
+                    HoverBackColor = Color.Yellow,
+                    HoverForeColor = Color.White
+                });
+                button.HoverColorLocks = policy.Item1;
+                Check(button.HoverBackColor == policy.Item2, $"{policy.Item1}: hover back inicial={button.HoverBackColor}");
+                Check(button.HoverForeColor == policy.Item3, $"{policy.Item1}: hover fore inicial={button.HoverForeColor}");
+                button.BackColor = Color.Green;
+                button.ForeColor = Color.Purple;
+                var expectedBack = policy.Item1 is HoverColorLocks.TextAndBackColor or HoverColorLocks.BackColorOnly ? Color.Green : policy.Item2;
+                var expectedFore = policy.Item1 is HoverColorLocks.TextAndBackColor or HoverColorLocks.TextColorOnly ? Color.Purple : policy.Item3;
+                Check(button.HoverBackColor == expectedBack, $"{policy.Item1}: hover back tras cambio={button.HoverBackColor}");
+                Check(button.HoverForeColor == expectedFore, $"{policy.Item1}: hover fore tras cambio={button.HoverForeColor}");
+            }
+            var gradient = Add(form, new LaVolpeButton
+            {
+                BackColor = Color.Red,
+                GradientColor = Color.Green,
+                GradientMode = GradientMode.TopToBottom,
+                HoverColorLocks = HoverColorLocks.BackColorOnly
+            });
+            Check(gradient.HoverBackColor == Color.Green, $"gradiente: hover back={gradient.HoverBackColor}");
+        });
+
         Test("CommandButton rechaza Value", form =>
         {
             var button = Add(form, new LaVolpeButton());
