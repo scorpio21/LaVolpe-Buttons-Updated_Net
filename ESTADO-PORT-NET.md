@@ -155,7 +155,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 
 ## Porcentaje por propiedad VB6
 
-| Propiedad | 2026-11-02 | 2026-11-05 (ronda 2) | Estado |
+| Propiedad | Histórico (2026-11-02) | Estado actual (verificado 2026-11-19) | Estado |
 |---|---:|---:|---|
 | `Name` | 100 % | 100 % | Heredada de `Control` |
 | `BackColor` | 100 % | 92 % | Se aplica en los 8 estilos; los tonos se derivan con `Shade()` |
