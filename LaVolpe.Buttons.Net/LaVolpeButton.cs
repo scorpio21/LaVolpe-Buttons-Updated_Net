@@ -6,6 +6,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -156,6 +157,7 @@ public class LaVolpeButton : Control, IButtonControl
     private DialogResult _dialogResult = DialogResult.None;
     private Point _dragStart;
     private int _helpContextId, _index, _whatsThisHelpId;
+    private HelpProvider? _contextHelpProvider;
     private Point _customClickOrigin;
     private string _toolTipText = "";
     private ToolTip? _toolTip;
@@ -229,7 +231,11 @@ public class LaVolpeButton : Control, IButtonControl
     [Category("Behavior"), DefaultValue(DragModeConstants.vbManual), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)] public DragModeConstants DragMode { get=>_dragMode ? DragModeConstants.vbAutomatic : DragModeConstants.vbManual; set{if(!Enum.IsDefined(value))return;_dragMode=value==DragModeConstants.vbAutomatic;} }
     [Category("Behavior"), DefaultValue(DialogResult.None)] public DialogResult DialogResult { get=>_dialogResult; set=>_dialogResult=value; }
     [Category("Design"), DefaultValue(0)] public int Index { get=>_index; set=>_index=value; }
-    [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set=>_helpContextId=value; }
+    [Category("Help"), DefaultValue(0)] public int HelpContextID { get=>_helpContextId; set{_helpContextId=value; ApplyContextHelp();} }
+    // El HelpProvider pertenece al formulario o al contenedor y se inyecta desde código.
+    // Se mantiene oculto del PropertyGrid porque es un componente externo, no un valor serializable del botón.
+    [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public HelpProvider? ContextHelpProvider { get=>_contextHelpProvider; set{_contextHelpProvider=value; ApplyContextHelp();} }
     [Category("Help"), DefaultValue(0)] public int WhatsThisHelpID { get=>_whatsThisHelpId; set=>_whatsThisHelpId=value; }
     public bool ShouldSerializeButtonShape() => _shape != ButtonShape.Rectangular;
     public bool ShouldSerializeButtonStyle() => _style != BackStyle.Windows95;
@@ -260,6 +266,13 @@ public class LaVolpeButton : Control, IButtonControl
     [Browsable(false)] public IntPtr hDC { get { if(_hdc==IntPtr.Zero){ _hdcGraphics=Graphics.FromHwnd(Handle); _hdc=_hdcGraphics.GetHdc(); } return _hdc; } }
     [Category("LaVolpe")] public bool ResetDefaultColors { get => _resetDefaultColors; set { _resetDefaultColors = value; if (value) ResetDefaultColorsNow(); } }
     public void ResetDefaultColorsNow(){_normalBack=SystemColors.Control;_hoverBack=Color.Empty;_gradientColor=SystemColors.ControlLight;_hoverFore=SystemColors.ControlText;_hoverColorLocks=HoverColorLocks.TextAndBackColor;_gradientMode=GradientMode.None;_explicitBackColor=false;_palette.Reset();base.BackColor=_normalBack;base.ForeColor=SystemColors.ControlText;_resetDefaultColors=false;InvalidateIfNeeded();}
+    private void ApplyContextHelp()
+    {
+        if (_contextHelpProvider is null) return;
+        _contextHelpProvider.SetHelpNavigator(this, HelpNavigator.TopicId);
+        _contextHelpProvider.SetHelpKeyword(this, _helpContextId.ToString(CultureInfo.InvariantCulture));
+        _contextHelpProvider.SetShowHelp(this, _helpContextId != 0);
+    }
     private bool LocksText => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.TextColorOnly;
     private bool LocksBack => _hoverColorLocks is HoverColorLocks.TextAndBackColor or HoverColorLocks.BackColorOnly;
     private Color HoverBackEffective => _hoverBack.IsEmpty ? (_gradientMode == GradientMode.None ? _normalBack : _gradientColor) : _hoverBack;

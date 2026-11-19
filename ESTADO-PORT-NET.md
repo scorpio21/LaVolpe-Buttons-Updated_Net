@@ -1,10 +1,10 @@
 # Estado del port de LaVolpe Buttons a .NET
 
-## Estado verificado 2026-11-18
+## Estado verificado 2026-11-19
 
-La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 58/58 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
+La cifra histórica del 76 % de esta revisión ya no debe interpretarse como paridad final: la evidencia actual sitúa el port aproximadamente en el rango 65–75 %. La solución compila con 0 advertencias y 0 errores usando `--maxcpucount:1`, el harness ejecuta 59/59 pruebas, el clic físico no duplica `Click`/`Value`, el teclado `Space`/`Enter`, Escape y flechas reproducen la navegación cubierta, el temporizador de hover se activa y detiene correctamente, `ResetDefaultColors` restaura la paleta y el gradiente, `HoverColorLocks` sincroniza colores como VB6, `Refresh` redibuja el control, `CustomClick` desplaza y restaura botones custom, `Custom*` redimensiona proporcionalmente como `ScaleImage`, el layout de captions cubre textos largos y saltos `||`, `Custom3DBorder` dibuja el anillo blanco→gris de VB6, la paleta visual se configura y persiste en Visual Studio, `ButtonShape`, `CheckBox` y `OptionButton` se guardan y reaparecen al reabrir el formulario, `HelpContextID` se integra con `HelpProvider` usando `TopicId`, se genera el paquete NuGet local `LaVolpe.Buttons.Net.1.0.0.nupkg`, y la comparación VB6/.NET disponible queda en 19.450/189.992 píxeles distintos (10,24 %). Permanecen abiertas las diferencias visuales, la validación DPI en equipos físicos y la licencia upstream.
 
-**Fecha de esta revisión:** 2026-11-18 (persistencia de enums de apariencia, modo y comportamiento validada en el diseñador)
+**Fecha de esta revisión:** 2026-11-19 (`HelpContextID` integrado con `HelpProvider` y validado mediante prueba real)
 **Versión de la biblioteca evaluada:** `1.0.0` (`LaVolpe.Buttons.Net`)
 **Revisión anterior:** 2026-11-05 (segunda ronda) - 70 %
 **Estado general estimado:** **≈70 %** (rango 65–75 %; la equivalencia visual no está ponderada en la cifra histórica)
@@ -38,7 +38,7 @@ Pruebas: `k:\Proyectos\LaVolpe-Buttons-Updated\LaVolpe.Buttons.Tests\`
 | Proyecto de ejemplo | 90 % | 60 % | 60 % | 65 % | 65 % | Sin cambios |
 | Diseñador de Visual Studio | 60 % | 45 % | 46 % | 50 % | 80 % | Toolbox, PropertyGrid, paleta, serialización y reapertura validados para enums de apariencia, modo y comportamiento |
 | Instalación/distribución | 30 % | 35 % | 35 % | 35 % | 35 % | NuGet local generado; sin publicación ni instalador |
-| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 58 casos en el harness y 56 en xUnit: paleta, diseñador, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
+| Pruebas automatizadas | 25 % | 0 % | 0 % | 50 % | 65 % | 59 casos en el harness y 56 en xUnit: paleta, diseñador, `HelpContextID`, `Refresh`, teclado, hover, puntero, `DragIcon`, OLE, DPI y clic físico |
 | Equivalencia visual con VB6 | 50 % | 30 % | 38 % | 45 % | 60 % | Anillos y degradado XP; falta comparación píxel a píxel |
 | **Aplicación completa exportada** | **75 %** | **53 %** | **58 %** | **70 %** | **76 %** | Media ponderada de las áreas (ver metodología; el cambio de paleta no altera el rango global 65–75 %) |
 
@@ -161,15 +161,15 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `BackColor` | 100 % | 92 % | Se aplica en los 8 estilos; los tonos se derivan con `Shade()` |
 | `ButtonShape` | 100 % | 85 % | Diagonales, elipses, `LopOffCorners` y máscaras; `Custom*` redimensiona proporcionalmente como `ScaleImage` |
 | `ButtonStyle` | 100 % | 75 % | Tres anillos de borde y colores por estado según `DrawButton_*` |
-| `Cancel` | 65 % | 60 % | `Escape` y enlace automático a `Form.CancelButton`, con limpieza al cambiar de formulario |
+| `Cancel` | 65 % | **100 %** | `Escape`, enlace automático a `Form.CancelButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
 | `Caption` | 100 % | 95 % | `Text` sincronizado y mnemónico resuelto |
 | `CaptionAlign` | 100 % | 75 % | Se expone `ContentAlignment` (9 valores) en vez de 3 alineaciones |
 | `CaptionStyle` | 100 % | 65 % | Sombra aproximada, sin offsets/colores por estilo |
 | `CausesValidation` | 100 % | 100 % | Heredada |
 | `CustomClick` | 100 % | 65 % | Desplazamiento implementado; no se restringe a formas custom |
-| `Default` | 65 % | 60 % | `Enter`, `NotifyDefault` y enlace automático a `Form.AcceptButton`, con limpieza al cambiar de formulario |
-| `DragIcon` | 50 % | 85 % | `Image` propia, cursor/HICON creado y liberado; usada en `OnGiveFeedback` |
-| `DragMode` | 65 % | 45 % | `DoDragDrop`; efectos y datos OLE distintos |
+| `Default` | 65 % | **100 %** | `Enter`, `NotifyDefault`, enlace automático a `Form.AcceptButton`, desenlace al desactivar y limpieza al cambiar de formulario; cubierto por pruebas reales |
+| `DragIcon` | 50 % | **100 %** | `Image` propia, cursor/HICON creado y liberado; aplicado durante `OnGiveFeedback`, con `UseDefaultCursors = False`, y cubierto por pruebas reales |
+| `DragMode` | 65 % | **100 %** | `vbManual` no inicia arrastre automático; `vbAutomatic` usa el umbral de movimiento, crea el `DataObject`, dispara `OLEStartDrag` y completa el ciclo con `OLECompleteDrag`; cubierto por pruebas reales |
 | `Enabled` | 100 % | 95 % | Heredada y con pintura deshabilitada |
 | `Font` | 100 % | 95 % | Hereda la fuente del contenedor, como VB6 |
 | `FontStyle` | 100 % | 95 % | Alias `lv_Bold`…`lv_BoldItalicUnderline` |
@@ -177,7 +177,7 @@ Sonda integral ejecutada fuera del repositorio y, después, **portada al proyect
 | `GradientColor` | 100 % | 85 % | Funciona; no usa todas las fórmulas de VB6 |
 | `GradientMode` | 100 % | 90 % | Las 4 direcciones verificadas |
 | `Height` | 100 % | 100 % | Heredada |
-| `HelpContextID` | 30 % | 20 % | Almacenada; sin `HelpProvider` |
+| `HelpContextID` | 30 % | **100 %** | Se registra en un `HelpProvider` asignado como `HelpNavigator.TopicId`, se habilita con ID distinto de cero y se deshabilita al volver a cero; cubierto por pruebas reales |
 | `HoverBackColor` | 100 % | 85 % | Default = `BackColor`; locks respetados |
 | `HoverColorLocks` | 100 % | 90 % | Semántica y default de VB6 |
 | `HoverForeColor` | 100 % | 85 % | Igual que el anterior |
@@ -296,7 +296,7 @@ alias, `DelayDrawing`, máscaras, recorte de esquinas, anillos de borde y degrad
 
 * Revisar orden y firmas de eventos VB6, incluido el `DoubleClick` que simula un segundo click.
 * `Index` como control array real o documentar definitivamente que es una propiedad suelta.
-* Integración de `HelpContextID`/`WhatsThisHelpID` con `HelpProvider`.
+* Integración de `WhatsThisHelpID` con ayuda contextual; `HelpContextID` ya está integrada con `HelpProvider`.
 
 ### 3. Formulario y proyecto VB6
 

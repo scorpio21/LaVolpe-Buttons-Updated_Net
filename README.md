@@ -29,7 +29,7 @@ El control compila sin errores ni advertencias y cuenta con una suite de pruebas
 - Gradientes en cuatro direcciones y paleta derivada de `BackColor`.
 - Imágenes con las colocaciones y tamaños del original, `MouseIcon` con hotspot centrado, `MousePointerConstants` y `ToolTipText`.
 - Compatibilidad de API: `hDC`, `hwnd`, `Index`, `DelayDrawing(bool)`, `RedrawButton()`, `DragIcon`, alias `lv_*` de los enums y eventos `Lv*`.
-- 58 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
+- 59 pruebas automáticas de compatibilidad (ver [Pruebas](#pruebas)).
 
 Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-diferencias-conocidas).
 
@@ -41,7 +41,7 @@ Todavía hay diferencias conocidas; consulte [Limitaciones](#limitaciones-y-dife
 | `LaVolpe.Buttons.Sample/` | Aplicación de ejemplo con estilos, formas, modos, imágenes y gradientes. |
 | `LaVolpe.Buttons.DesignerSample2/` | Formulario WinForms limpio con un `LaVolpeButton` para validar el diseñador de Visual Studio. No activa drag-and-drop. |
 | `LaVolpe.Buttons.Tests/` | Harness STA de compatibilidad y herramientas de captura/comparación. |
-| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 58 casos. |
+| `LaVolpe.Buttons.XunitTests/` | Runner xUnit v3/Microsoft Testing Platform para los 59 casos. |
 | `LaVolpe.Buttons.Net.sln` | Solución .NET (biblioteca, ejemplo y pruebas). |
 | `LaVolpe-Buttons-Updated-/` | Código VB6 original de referencia (no forma parte de la compilación). |
 | `ESTADO-PORT-NET.md` | Estado del port, porcentaje estimado y evidencia por área. |
@@ -180,8 +180,9 @@ La API funcional principal de `lvButtons_H` ya está implementada y verificada e
 WinForms. No obstante, no es correcto declarar una equivalencia del 100 % mientras
 queden estas diferencias objetivas:
 
-- `HelpContextID` y `WhatsThisHelpID` se conservan como propiedades, pero todavía
-  no están conectadas a un `HelpProvider` o a una ayuda contextual automática.
+- `HelpContextID` se integra con un `ContextHelpProvider` asignado desde código:
+  registra el ID como `HelpNavigator.TopicId` y activa/desactiva la ayuda según
+  el valor. `WhatsThisHelpID` sigue siendo un valor compatible almacenado.
 - `Index` se conserva como valor compatible; .NET no recrea los `Control Array` de
   VB6 porque WinForms no utiliza ese modelo.
 - `DragMode` conserva los valores `vbManual`/`vbAutomatic`, pero el ciclo OLE se
@@ -209,7 +210,9 @@ OCX VB6 original.
 - **`DrawToBitmap` no respeta `Region`**: para comprobar el recorte de ventana hay que usar `Region.IsVisible` o una captura real de pantalla.
 - **Eventos OLE adaptados**: `OLEDragDrop`, `OLEStartDrag`, etc. son equivalentes WinForms, no OLE real.
 - **`Index` no crea un arreglo de controles**: es solo una propiedad de compatibilidad.
-- **Ayuda**: `HelpContextID` y `WhatsThisHelpID` se almacenan pero no abren ayuda por sí solos.
+- **Ayuda**: `HelpContextID` requiere asignar un `ContextHelpProvider` con su
+  `HelpNamespace` configurado; `WhatsThisHelpID` se conserva, pero todavía no
+  tiene integración automática equivalente a VB6.
 - **Timer**: es un `System.Windows.Forms.Timer` de 50 ms, no el timer Win32 nativo del OCX.
 
 ## Recursos e imágenes

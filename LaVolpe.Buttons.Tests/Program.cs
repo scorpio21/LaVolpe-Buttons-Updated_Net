@@ -247,6 +247,18 @@ public static class Program
             Check(button.DragMode == DragModeConstants.vbAutomatic, $"DragMode={button.DragMode}");
         });
 
+        Test("HelpContextID se integra con HelpProvider", form =>
+        {
+            using var helpProvider = new HelpProvider();
+            var button = Add(form, new LaVolpeButton { ContextHelpProvider = helpProvider });
+            button.HelpContextID = 1234;
+            Check(helpProvider.GetHelpKeyword(button) == "1234", "HelpContextID no se registró como keyword");
+            Check(helpProvider.GetHelpNavigator(button) == HelpNavigator.TopicId, "HelpContextID no usa TopicId");
+            Check(helpProvider.GetShowHelp(button), "HelpProvider no quedó habilitado");
+            button.HelpContextID = 0;
+            Check(!helpProvider.GetShowHelp(button), "HelpProvider no se deshabilitó al volver a cero");
+        });
+
         Test("Setters ignoran enums fuera del rango VB6", form =>
         {
             var button = Add(form, new LaVolpeButton());
@@ -801,7 +813,13 @@ public static class Program
             button.DragIcon = image;
             Check(button.DragIcon == image, "DragIcon no asignado");
             var field = typeof(LaVolpeButton).GetField("_dragIconCursor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            Check(field?.GetValue(button) is Cursor, "cursor de arrastre no creado");
+            var dragCursor = field?.GetValue(button) as Cursor;
+            Check(dragCursor is not null, "cursor de arrastre no creado");
+            var feedback = new GiveFeedbackEventArgs(DragDropEffects.Copy, true);
+            typeof(LaVolpeButton).GetMethod("OnGiveFeedback", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                .Invoke(button, new object[] { feedback });
+            Check(!feedback.UseDefaultCursors, "DragIcon no sustituyó el cursor durante OLEGiveFeedback");
+            Check(ReferenceEquals(button.Cursor, dragCursor), "OLEGiveFeedback no aplicó el cursor DragIcon");
             button.DragIcon = null;
             Check(field?.GetValue(button) is null, "cursor de arrastre no liberado");
         });
@@ -815,12 +833,19 @@ public static class Program
             Check(data.GetDataPresent(DataFormats.Text), "Text ausente");
             Check((string?)data.GetData(DataFormats.UnicodeText) == "texto de prueba", "texto Unicode incorrecto");
 
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            var manual = Add(form, new LaVolpeButton { Caption = "manual", DragMode = DragModeConstants.vbManual });
+            var manualStarted = false;
+            manual.OLEStartDrag += (_, _) => manualStarted = true;
+            typeof(LaVolpeButton).GetMethod("OnMouseDown", flags)!.Invoke(manual, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0) });
+            typeof(LaVolpeButton).GetMethod("OnMouseMove", flags)!.Invoke(manual, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 20, 1, 0) });
+            Check(!manualStarted, "vbManual inició OLEStartDrag automáticamente");
+
             var button = Add(form, new LaVolpeButton { DragMode = DragModeConstants.vbAutomatic });
             var started = false;
             var completed = false;
             button.OLEStartDrag += (_, args) => { started = true; args.Effect = DragDropEffects.None; };
             button.OLECompleteDrag += (_, _) => completed = true;
-            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             typeof(LaVolpeButton).GetMethod("OnMouseDown", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0) });
             typeof(LaVolpeButton).GetMethod("OnMouseMove", flags)!.Invoke(button, new object[] { new MouseEventArgs(MouseButtons.Left, 1, 20, 1, 0) });
             Check(started, "OLEStartDrag no se notificó");
