@@ -358,6 +358,28 @@ public static class Program
             Check(button.BackColor == form.BackColor, $"{button.BackColor} != {form.BackColor}");
         });
 
+        Test("BackColor se aplica en los ocho estilos", form =>
+        {
+            var getUpBack = typeof(LaVolpeButton).GetMethod("GetUpBack", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            var expected = Color.FromArgb(40, 80, 120);
+            foreach (var style in Enum.GetValues<BackStyle>())
+            {
+                var button = Add(form, new LaVolpeButton
+                {
+                    BackColor = expected,
+                    ButtonStyle = style,
+                    Size = new Size(120, 40)
+                });
+                var effective = (Color)getUpBack.Invoke(button, null)!;
+                Check(effective != Color.Empty, $"{style}: BackColor efectivo vacío");
+                Check(button.BackColor == expected, $"{style}: BackColor={button.BackColor}");
+                using var bitmap = new Bitmap(button.Width, button.Height);
+                button.DrawToBitmap(bitmap, button.ClientRectangle);
+                Check(bitmap.GetPixel(button.Width / 2, button.Height / 2).A != 0,
+                    $"{style}: el fondo no se ha pintado");
+            }
+        });
+
         Test("ResetDefaultColors restaura colores y gradiente", form =>
         {
             var button = Add(form, new LaVolpeButton());
