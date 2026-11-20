@@ -64,6 +64,9 @@ public static class Program
         if (args.Length == 2 && args[0].Equals("--physical-dpi-report", StringComparison.OrdinalIgnoreCase))
             return GeneratePhysicalDpiReport(args[1]);
 
+        if (args.Length == 2 && args[0].Equals("--palette-snapshot", StringComparison.OrdinalIgnoreCase))
+            return GeneratePaletteSnapshots(args[1]);
+
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("LaVolpe.Buttons.Tests - pruebas de compatibilidad");
         Console.WriteLine(new string('-', 70));
@@ -1925,6 +1928,61 @@ public static class Program
         Console.WriteLine($"Observed DPI: {(observed.Length == 0 ? "none" : string.Join(", ", observed))}");
         return rows.Any(row => row.Contains("REVISAR", StringComparison.Ordinal)) ? 1 : 0;
     }
+
+    private static int GeneratePaletteSnapshots(string outputDirectory)
+    {
+        Directory.CreateDirectory(outputDirectory);
+        var paletteStates = new[] { "normal", "hover", "pressed", "checked", "disabled", "focus" };
+        foreach (var state in paletteStates)
+        {
+            using var form = new Form { ClientSize = new Size(160, 72), ShowInTaskbar = false, StartPosition = FormStartPosition.Manual, Location = new Point(-3000, 0) };
+            using var button = new LaVolpeButton { Caption = state, Size = new Size(120, 40), Location = new Point(20, 16) };
+            button.Palette.NormalBackColor = Color.FromArgb(32, 48, 64);
+            button.Palette.HoverBackColor = Color.FromArgb(48, 72, 96);
+            button.Palette.PressedBackColor = Color.FromArgb(24, 36, 48);
+            button.Palette.CheckedBackColor = Color.FromArgb(64, 96, 128);
+            button.Palette.DisabledBackColor = Color.FromArgb(96, 96, 96);
+            button.Palette.TextColor = Color.White;
+            button.Palette.HoverTextColor = Color.White;
+            button.Palette.DisabledTextColor = Color.LightGray;
+            button.Palette.FocusColor = Color.Gold;
+            form.Controls.Add(button);
+            form.Show();
+            Application.DoEvents();
+
+            switch (state)
+            {
+                case "hover":
+                    SetPrivateField(button, "_hovered", true);
+                    break;
+                case "pressed":
+                    SetPrivateField(button, "_pressed", true);
+                    break;
+                case "checked":
+                    button.Mode = ButtonMode.CheckBox;
+                    button.Value = true;
+                    break;
+                case "disabled":
+                    button.Enabled = false;
+                    break;
+                case "focus":
+                    button.Focus();
+                    break;
+            }
+
+            Application.DoEvents();
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            button.DrawToBitmap(bitmap, button.ClientRectangle);
+            bitmap.Save(Path.Combine(outputDirectory, $"palette-{state}.png"), System.Drawing.Imaging.ImageFormat.Png);
+            form.Close();
+        }
+
+        Console.WriteLine($"Palette snapshots: {outputDirectory}");
+        return 0;
+    }
+
+    private static void SetPrivateField(object instance, string name, object value) =>
+        instance.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(instance, value);
 
     [DllImport("gdi32.dll")]
     private static extern int GetDeviceCaps(IntPtr hdc, int index);

@@ -30,6 +30,7 @@ Fecha: 2026-11-19. SDK fijado por `global.json` a 8.0.427.
 | Diagnóstico físico en `artifacts\dpi\issue-3\125` | `DISPLAY1` a 120 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
 | Diagnóstico físico en `artifacts\dpi\issue-3\150` | `DISPLAY1` a 144 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
 | Diagnóstico físico en `artifacts\dpi\issue-3\200` | `DISPLAY1` a 192 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
+| `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Debug --no-build -- --palette-snapshot .\artifacts\visual\palette` | 6 capturas PNG generadas: normal, hover, pressed, checked, disabled y focus; todas legibles y con estados diferenciados |
 
 ## Casos cubiertos por el harness
 

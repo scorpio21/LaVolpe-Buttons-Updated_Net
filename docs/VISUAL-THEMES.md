@@ -30,3 +30,13 @@ button.Palette.FocusColor = Color.Gold;
 `Color.Empty` significa “usar el renderer VB6 existente”. `ResetPalette()` devuelve todos los estados a `Empty`, conserva la compatibilidad visual por defecto y elimina la serialización personalizada.
 
 La cobertura del harness verifica los colores por estado, `ResetPalette`, `ShouldSerializePalette`, la presentación `(predeterminada)/(personalizada)` y la compatibilidad con `ResetDefaultColors`. La paleta no modifica eventos OLE, drag-and-drop ni la lógica de `Value`.
+
+## Evidencia visual
+
+Para generar una captura por estado:
+
+```powershell
+dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Debug --no-build -- --palette-snapshot .\artifacts\visual\palette
+```
+
+El comando produce `palette-normal.png`, `palette-hover.png`, `palette-pressed.png`, `palette-checked.png`, `palette-disabled.png` y `palette-focus.png`.
