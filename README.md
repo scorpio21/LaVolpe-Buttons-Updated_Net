@@ -203,6 +203,8 @@ queden estas diferencias objetivas:
 - La validación DPI física del control .NET cubre monitores reales a 96, 120, 144
   y 192 DPI. La comparación física equivalente con el OCX VB6 original queda fuera
   de esta evidencia.
+- La arquitectura de estados de la paleta visual propia está documentada en
+  [`docs/VISUAL-THEMES.md`](docs/VISUAL-THEMES.md).
 - La licencia del código VB6 original y de algunas imágenes upstream sigue sin
   estar verificada; por eso el paquete no debe publicarse como si relicenciara el
   OCX original.

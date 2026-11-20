@@ -65,6 +65,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ Issue #22 documentado en GitHub con límites BSD-3-Clause: solo inspiración salvo que se copie código, en cuyo caso hay que conservar copyright/licencia en `NOTICE.md`.
 - ✅ Rama `codex/issue-3-dpi-validation` creada para el issue #3; el harness ahora genera `--physical-dpi-report` con la matriz de monitores/DPI físicos, valida tamaño/región/layout en cada pantalla detectada y guarda una captura PNG por monitor. El procedimiento queda documentado en `docs/DPI-VALIDATION.md`.
 - ✅ `LaVolpe.Buttons.Tests` inicializa `ApplicationConfiguration`/`PerMonitorV2`; el diagnóstico dejó de quedar fijado a 96 DPI y ya detecta 120, 144, 192 y otros valores físicos.
+- ✅ Issue #22: la arquitectura propia de estados de `LaVolpeButton.Palette` queda documentada en `docs\VISUAL-THEMES.md`, sin copiar código ni recursos de Krypton.
 
 ## Next steps
 
