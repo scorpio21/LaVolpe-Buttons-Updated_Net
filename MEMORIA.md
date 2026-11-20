@@ -19,7 +19,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ Las áreas `Control WinForms funcional`, `Propiedades y enums`, `Eventos de mouse y teclado` y `CheckBox y OptionButton` aparecen al 100 % azul en `ESTADO-PORT-NET.md`, con evidencia del harness.
 - ✅ `Instalación/distribución` está al 60 % por paquete NuGet/publicación reproducibles en `artifacts\\sdk\\`, sin publicación pública mientras #17 siga abierto.
 - ✅ `Pruebas automatizadas` está al 80 % por 80 casos STA ejecutables.
-- ⚠️ Issue #3 sigue abierto: falta validación física DPI a 120/144/192.
+- ✅ Issue #3 cerrado en GitHub como completado: validación física WinForms completa a 96/120/144/192 DPI.
 - ⚠️ Issue #17 sigue abierto: falta confirmar licencia/redistribución del original VB6 antes de publicar NuGet.
 - ⚠️ Issue #22 sigue abierto: ideas de Krypton; la paleta propia ya existe, pero faltan decisiones sobre temas, estados visuales, DPI y accesibilidad. Krypton se usa como inspiración, no como código o recursos copiados.
 - ⚠️ Issue #6 no se toca hasta terminar los demás; no añadir drag-and-drop al sample principal.
@@ -40,7 +40,7 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - ✅ `ShadeColor` reproduce las conversiones VB6 de los canales verde y azul y `BuildImageRegion` usa `NearestNeighbor`; `FillConfiguredGradient` y el borde `Round3D` reproducen la secuencia de `LoadGradientColors` con clamp VB6; la métrica visual actual es 10,24 %.
 - ✅ `ButtonShape=Custom*` sin `Picture` se rechaza, `Picture=null` devuelve a rectangular y `PictureSize` fijo se rechaza en custom.
 - ✅ `TimerUpdate(long)` y los hooks auxiliares OLE dejaron de ser API pública; la cobertura interna permanece.
-- ✅ DPI lógico 96/120/144/192 y hook `OnDpiChangedAfterParent` cubiertos; la pantalla primaria del equipo actual fue medida a 96 DPI (3440×1440), por lo que la comparación física VB6 a 120/144/192 sigue pendiente.
+- ✅ DPI lógico 96/120/144/192 y hook `OnDpiChangedAfterParent` cubiertos; la validación física del control WinForms pasó en `DISPLAY1` a 96, 120, 144 y 192 DPI con región/layout correctos. La comparación física del OCX VB6 sigue fuera del alcance validado.
 - ⚠️ Pintado no es pixel-equivalente; los issues visuales #2 y #12 se cerraron por quedar fuera del objetivo actual de implantación .NET.
 - ✅ La atribución de procedencia se añadió a `LICENSE`, `README.md`, `NOTICE.md` y al paquete NuGet; issue #17 sigue abierto porque los términos de redistribución del original no están verificados.
 - ✅ Issue #16 validado en Visual Studio Enterprise: `Form1.cs [Diseño]` carga, `LaVolpeButton` aparece en el Toolbox y el PropertyGrid expone sus propiedades principales; issue cerrado en GitHub.
@@ -63,13 +63,14 @@ Continuar el port VB6→WinForms de LaVolpe Buttons en `K:\Proyectos\LaVolpe-But
 - `676e07a` — Avoid blocked binary designer resource (publicado en `origin/main`).
 - ✅ `DesignerSample2` nuevo verificado: solución Debug sin errores ni advertencias; harness 58/58 y xUnit 56/56.
 - ✅ Issue #22 documentado en GitHub con límites BSD-3-Clause: solo inspiración salvo que se copie código, en cuyo caso hay que conservar copyright/licencia en `NOTICE.md`.
+- ✅ Rama `codex/issue-3-dpi-validation` creada para el issue #3; el harness ahora genera `--physical-dpi-report` con la matriz de monitores/DPI físicos, valida tamaño/región/layout en cada pantalla detectada y guarda una captura PNG por monitor. El procedimiento queda documentado en `docs/DPI-VALIDATION.md`.
+- ✅ `LaVolpe.Buttons.Tests` inicializa `ApplicationConfiguration`/`PerMonitorV2`; el diagnóstico dejó de quedar fijado a 96 DPI y ya detecta 120, 144, 192 y otros valores físicos.
 
 ## Next steps
 
-1. Validar DPI físico 120/144/192 si el entorno lo permite (#3); el harness lógico ya está cubierto, pero no basta para cerrar el issue.
-2. Elegir el siguiente bloque de #22: preferiblemente documentar/implementar temas propios y revisar la paleta por estado, sin copiar Krypton.
-3. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
-4. Mantener los eventos OLE declarados por compatibilidad; no tocar #6 hasta terminar los demás.
+1. Elegir el siguiente bloque de #22: preferiblemente documentar/implementar temas propios y revisar la paleta por estado, sin copiar Krypton.
+2. Resolver los términos legales originales antes de publicar NuGet (#17); no cerrar sin verificar la licencia upstream.
+3. Mantener los eventos OLE declarados por compatibilidad; no tocar #6 hasta terminar los demás.
 
 ## Known gotchas
 

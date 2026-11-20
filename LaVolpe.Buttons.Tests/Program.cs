@@ -43,6 +43,9 @@ public static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        ApplicationConfiguration.Initialize();
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        Application.EnableVisualStyles();
         _passed = 0;
         _failed.Clear();
         _attached.Clear();
@@ -58,7 +61,9 @@ public static class Program
         if (args.Length == 3 && args[0].Equals("--visual-compare", StringComparison.OrdinalIgnoreCase))
             return CompareVisualSnapshots(args[1], args[2]);
 
-        Application.EnableVisualStyles();
+        if (args.Length == 2 && args[0].Equals("--physical-dpi-report", StringComparison.OrdinalIgnoreCase))
+            return GeneratePhysicalDpiReport(args[1]);
+
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("LaVolpe.Buttons.Tests - pruebas de compatibilidad");
         Console.WriteLine(new string('-', 70));
@@ -1715,7 +1720,6 @@ public static class Program
 
     private static int GenerateVisualSnapshots(string outputDirectory)
     {
-        Application.EnableVisualStyles();
         Directory.CreateDirectory(outputDirectory);
         var styles = Enum.GetValues<BackStyle>().Distinct().ToArray();
         var states = new[]
@@ -1853,6 +1857,73 @@ public static class Program
     {
         if (!condition)
             throw new AssertFailedException($"{_current}: {detail}");
+    }
+
+    private static int GeneratePhysicalDpiReport(string outputDirectory)
+    {
+        Directory.CreateDirectory(outputDirectory);
+
+        using var form = new Form
+        {
+            AutoScaleMode = AutoScaleMode.Dpi,
+            FormBorderStyle = FormBorderStyle.FixedToolWindow,
+            ShowInTaskbar = false,
+            StartPosition = FormStartPosition.Manual,
+            Size = new Size(260, 150),
+            Text = "LaVolpe DPI probe"
+        };
+        var button = new LaVolpeButton
+        {
+            ButtonShape = ButtonShape.Round3D,
+            Caption = "DPI probe",
+            Size = new Size(120, 40),
+            Location = new Point(20, 20)
+        };
+        form.Controls.Add(button);
+        form.Show();
+
+        var layoutMethod = typeof(LaVolpeButton).GetMethod("ComputeLayout", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var rows = new List<string>();
+        foreach (var screen in Screen.AllScreens)
+        {
+            form.Location = new Point(screen.WorkingArea.Left + 20, screen.WorkingArea.Top + 20);
+            Application.DoEvents();
+            var actualScreen = Screen.FromControl(form);
+            var dpi = form.DeviceDpi;
+            var expectedSize = new Size(
+                (int)Math.Round(120 * dpi / 96f),
+                (int)Math.Round(40 * dpi / 96f));
+            using var bitmap = new Bitmap(button.Width, button.Height);
+            button.DrawToBitmap(bitmap, button.ClientRectangle);
+            var imageName = string.Concat(screen.DeviceName.Select(character => Path.GetInvalidFileNameChars().Contains(character) ? '_' : character));
+            var imagePath = Path.Combine(outputDirectory, $"{imageName}-dpi{dpi}.png");
+            bitmap.Save(imagePath, System.Drawing.Imaging.ImageFormat.Png);
+            using var graphics = Graphics.FromImage(bitmap);
+            var layout = layoutMethod.Invoke(button, new object[] { graphics, button.Font, button.ClientRectangle, button.Caption })!;
+            var textRect = (Rectangle)(layout.GetType().GetField("Text") ?? layout.GetType().GetField("Item1")!).GetValue(layout)!;
+            var imageRect = (Rectangle)(layout.GetType().GetField("Image") ?? layout.GetType().GetField("Item2")!).GetValue(layout)!;
+            var layoutOk = button.Region is not null
+                && button.Width > 0
+                && button.Height > 0
+                && button.Region.IsVisible(button.Width / 2, button.Height / 2)
+                && button.ClientRectangle.Contains(textRect)
+                && button.ClientRectangle.Contains(imageRect);
+            rows.Add($"| `{screen.DeviceName}` | {actualScreen.DeviceName} | {dpi} | {button.DeviceDpi} | {button.Size.Width}x{button.Size.Height} | {expectedSize.Width}x{expectedSize.Height} | `{Path.GetFileName(imagePath)}` | {(layoutOk ? "OK" : "REVISAR")} |");
+        }
+
+        form.Close();
+        var reportPath = Path.Combine(outputDirectory, "physical-dpi-report.md");
+        var targetDpis = new[] { 96, 120, 144, 192 };
+        var observed = Screen.AllScreens.Length == 0 ? Array.Empty<int>() : rows
+            .Select(row => int.Parse(row.Split('|', StringSplitOptions.TrimEntries)[3]))
+            .Distinct()
+            .OrderBy(value => value)
+            .ToArray();
+        var matrix = string.Join(", ", targetDpis.Select(dpi => $"{dpi}: {(observed.Contains(dpi) ? "presente" : "no disponible")}"));
+        File.WriteAllText(reportPath, $"# Physical DPI report\n\nGenerated: {DateTimeOffset.Now:O}\n\nTarget matrix: {matrix}\n\n| Source monitor | Effective monitor | Form DPI | Button DPI | Button size | DPI-scaled expected | Capture | Result |\n|---|---|---:|---:|---:|---:|---|---|\n{string.Join(Environment.NewLine, rows)}\n");
+        Console.WriteLine($"Physical DPI report: {reportPath}");
+        Console.WriteLine($"Observed DPI: {(observed.Length == 0 ? "none" : string.Join(", ", observed))}");
+        return rows.Any(row => row.Contains("REVISAR", StringComparison.Ordinal)) ? 1 : 0;
     }
 
     [DllImport("gdi32.dll")]

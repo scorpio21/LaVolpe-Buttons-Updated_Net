@@ -26,6 +26,10 @@ Fecha: 2026-11-19. SDK fijado por `global.json` a 8.0.427.
 | `dotnet build .\LaVolpe.Buttons.Net.sln -c Release` | Puede fallar en este entorno por compilación paralela (`MSB5021`); la variante reproducible `-m:1` sí es correcta |
 | IDE VB6 + `prjSampleButtons.vbp` | Sesión interactiva verificada el 2026-11-13: el sample original ejecuta y muestra la referencia visual; el EXE independiente sigue fallando con `Reasignación no válida del archivo DLL del sistema`; aún faltan las 32 capturas sistemáticas de #12 |
 | `dotnet pack .\LaVolpe.Buttons.Net\LaVolpe.Buttons.Net.csproj -c Release --no-restore --output .\artifacts\nuget` | Paquete `LaVolpe.Buttons.Net.1.0.0.nupkg` creado sin warnings; contiene DLL/XML, `LICENSE`, `README.md` y `NOTICE.md` |
+| `dotnet run --project .\LaVolpe.Buttons.Tests\LaVolpe.Buttons.Tests.csproj -c Debug --no-build -- --physical-dpi-report .\artifacts\dpi\issue-3` | Diagnóstico físico reproducible: monitor `DISPLAY1` a 96 DPI, botón a 96 DPI, tamaño/región/layout correctos y captura `__._DISPLAY1-dpi96.png` |
+| Diagnóstico físico en `artifacts\dpi\issue-3\125` | `DISPLAY1` a 120 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
+| Diagnóstico físico en `artifacts\dpi\issue-3\150` | `DISPLAY1` a 144 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
+| Diagnóstico físico en `artifacts\dpi\issue-3\200` | `DISPLAY1` a 192 DPI; `Form DPI == Button DPI`, región/layout correctos, resultado `OK` |
 
 ## Casos cubiertos por el harness
 

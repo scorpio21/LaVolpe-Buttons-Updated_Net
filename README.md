@@ -200,8 +200,9 @@ queden estas diferencias objetivas:
   binaria no pueden ser idénticos en una biblioteca WinForms administrada.
 - La pintura, las regiones personalizadas y la normalización de imágenes son
   funcionalmente equivalentes, pero no se ha demostrado igualdad píxel a píxel.
-- La validación DPI disponible es lógica; falta una comparación física del OCX y
-  del control .NET en monitores reales de 120, 144 y 192 DPI.
+- La validación DPI física del control .NET cubre monitores reales a 96, 120, 144
+  y 192 DPI. La comparación física equivalente con el OCX VB6 original queda fuera
+  de esta evidencia.
 - La licencia del código VB6 original y de algunas imágenes upstream sigue sin
   estar verificada; por eso el paquete no debe publicarse como si relicenciara el
   OCX original.
